@@ -1,0 +1,11 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: docker/workspace.Dockerfile
+    container_name: php-testbench
+    restart: unless-stopped
+    tty: true
+    working_dir: /code
+    volumes:
+      - ./:/code:delegated
