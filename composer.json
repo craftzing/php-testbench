@@ -1,26 +1,46 @@
 {
-    "name": "craftzing/:package_name",
-    "description": ":package_description",
+    "name": "craftzing/php-testbench",
+    "description": "Combining all common test tools and utilities",
     "keywords": [],
     "type": "library",
+    "homepage": "https://github.com/craftzing/php-testbench",
+    "support": {
+        "issues": "https://github.com/craftzing/php-testbench/issues",
+        "source": "https://github.com/craftzing/php-testbench"
+    },
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email"
+            "name": "Pieter Pelgrims",
+            "email": "pieter.pelgrims@craftzing.com"
         }
     ],
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^8.3",
+        "illuminate/contracts": "^10.10.0|^11.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "friendsofphp/php-cs-fixer": "^3.68",
+        "illuminate/container": "^10.10.0|^11.0",
+        "orchestra/testbench": "^9.9",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
     },
     "autoload": {
         "psr-4": {
-            "Craftzing\\:package_namespace\\": "src"
+            "Craftzing\\TestBench\\": "src"
         }
     },
     "config": {
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "cs:check": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run",
+        "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose",
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --ansi",
+        "phpunit": "vendor/bin/phpunit --colors=always --display-phpunit-deprecations --display-deprecations"
+    }
 }
