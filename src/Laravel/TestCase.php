@@ -57,7 +57,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return array<int, class-string>
+     * @return array<int, int|class-string>
      */
     protected function setUpTraits(): array
     {
