@@ -6,7 +6,7 @@ namespace Craftzing\TestBench\Laravel\Attributes;
 
 use Attribute;
 use Closure;
-use Illuminate\Container\Container;
+use Illuminate\Foundation\Application;
 
 /**
  * @deprecated 8.3
@@ -33,7 +33,7 @@ final readonly class Resolve
         $this->using = $using ? $using(...) : null;
     }
 
-    public function __invoke(string $abstract, Container $app): mixed
+    public function __invoke(string $abstract, Application $app): mixed
     {
         // If the property is set to be resolved by alias, we should use the alias instead of the abstract
         // classFQN. This is useful when working with fakes that may be bound to multiple abstractions...
@@ -74,7 +74,7 @@ final readonly class Resolve
         return $instance;
     }
 
-    private function addConditionalBindingsToAbstract(string $abstract, Container $app): void
+    private function addConditionalBindingsToAbstract(string $abstract, Application $app): void
     {
         foreach ($this->with as $binding => $implementation) {
             $app->when($abstract)
