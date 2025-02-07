@@ -1,7 +1,7 @@
 {
     "name": "craftzing/php-testbench",
     "description": "Combining all common test tools and utilities",
-    "keywords": [],
+    "keywords": ["php", "laravel", "laravel-framework", "test", "testing", "test bench", "utilities"],
     "type": "library",
     "homepage": "https://github.com/craftzing/php-testbench",
     "support": {
