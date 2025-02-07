@@ -63,4 +63,12 @@ abstract class TestCase extends BaseTestCase
     {
         return array_flip(class_uses_recursive(static::class));
     }
+
+    protected function tearDown(): void
+    {
+        $this->app->flush();
+        $this->app = null;
+
+        parent::tearDown();
+    }
 }
