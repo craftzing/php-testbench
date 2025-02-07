@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint;
 
+use Craftzing\TestBench\Laravel\Extensions\Bus\TestFixture\FakeCommand;
 use Craftzing\TestBench\Laravel\TestCase;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Console\Scheduling\Schedule;
@@ -35,9 +36,4 @@ final class IsScheduledTest extends TestCase
 
         $this->assertThat(FakeCommand::class, new IsScheduled('@hourly', $this->app));
     }
-}
-
-final class FakeCommand
-{
-    //
 }
