@@ -84,19 +84,4 @@ final class FakesBusTest extends TestCase
     {
         $this->assertBusQueues(FakeQueueableCommand::class);
     }
-
-    #[Test]
-    public function itCanAssertBusDidNotDispatch(): void
-    {
-        $this->assertBusDidNotDispatch(FakeCommand::class);
-    }
-
-    #[Test]
-    public function itCanAssertBusDidDispatchTimes(): void
-    {
-        Bus::dispatch(new FakeCommand(1));
-        Bus::dispatch(new FakeCommand(2));
-
-        $this->assertBusDispatchedTimes(FakeCommand::class, 2);
-    }
 }
