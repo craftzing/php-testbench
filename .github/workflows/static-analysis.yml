@@ -1,4 +1,4 @@
-name: Code style
+name: Static analysis
 on: [push]
 
 jobs:
