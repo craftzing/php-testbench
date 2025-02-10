@@ -1,24 +1,18 @@
-workspace-service := workspace
-
 .PHONY: up
-up:
+up: ## Up the project using Docker Composer
 	docker compose up --detach
-	docker compose exec ${workspace-service} composer install
+	docker compose exec php84 composer install
 
 .PHONY: down
-down:
+down: ## Shutdown the project using Docker Composer
 	docker compose down
 
-.PHONY: test
-test:
-	docker compose exec ${workspace-service} composer cs:check
-	docker compose exec ${workspace-service} composer phpstan
-	docker compose exec ${workspace-service} composer phpunit
+.PHONY: php83
+php83: ## Open an interactive shell into the `php83` (service in docker-compose.yml)
+	docker compose up -d
+	docker compose exec php83 sh
 
-.PHONY: format
-format:
-	docker compose exec ${workspace-service} composer cs:fix
-
-.PHONY: phpunit
-phpunit:
-	docker compose exec ${workspace-service} composer phpunit
+.PHONY: php84
+php84: ## Open an interactive shell into the `php84` (service in docker-compose.yml)
+	docker compose up -d
+	docker compose exec php84 sh

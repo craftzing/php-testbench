@@ -5,10 +5,10 @@ addgroup -g 1000 -S app \
   && adduser -u 1000 -S app -G app \
   && chown app /code
 
-apk upgrade \
-  && apk --update --no-cache add \
+apk -U upgrade
+apk --no-cache add \
     ${PHPIZE_DEPS} \
-    curl
+    curl \
+    linux-headers # Required for xdebug
 
-  # Install Composer
-  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+pecl install xdebug && docker-php-ext-enable xdebug
