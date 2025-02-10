@@ -53,5 +53,10 @@
             "@composer phpunit"
         ],
         "test:coverage": "@composer phpunit -- --coverage-text"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
     }
 }
