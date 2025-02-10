@@ -11,6 +11,10 @@
     "license": "MIT",
     "authors": [
         {
+            "name": "Rémi Pelhate",
+            "email": "remi.pelhate@craftzing.com"
+        },
+        {
             "name": "Pieter Pelgrims",
             "email": "pieter.pelgrims@craftzing.com"
         }
