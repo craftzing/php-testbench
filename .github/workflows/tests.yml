@@ -1,5 +1,4 @@
----
-name: Quality assurance
+name: Tests
 on: [push, pull_request]
 
 jobs:
@@ -13,22 +12,10 @@ jobs:
         dependency-version: [prefer-lowest, prefer-stable]
     name: PHP ${{ matrix.php }} - ${{ matrix.dependency-version }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: xdebug
-
-      - name: Install dependencies
-        run: |
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
-
-      - name: Run tests
-        run: vendor/bin/phpunit --coverage-clover=coverage.clover
-
-      - name: Run PHPStan analysis
-        run: vendor/bin/phpstan analyse --memory-limit=-1
-        if: ${{ matrix.php == '8.3' }}
+      - run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+      - run: composer test:coverage
