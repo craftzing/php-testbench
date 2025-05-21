@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\Laravel\Utils;
 
 use Closure;
+use Deprecated;
 
+#[Deprecated('Use Craftzing\TestBench\Laravel\NestedAssertions\IsTrueWhen instead')]
 final readonly class HandleDispatchAssertions
 {
     public function __construct(
