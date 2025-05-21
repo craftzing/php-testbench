@@ -4,52 +4,31 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Doubles;
 
-use Exception;
 use PHPUnit\Framework\Assert;
 
 use function call_user_func_array;
 use function is_callable;
 
-/**
- * @template InvocationArguments as array<int, mixed>
- */
 final class SpyCallable
 {
     /**
-     * @var InvocationArguments[]
+     * @var array<int, CallableInvocation>
      */
-    private array $invocations = [];
+    private(set) array $invocations = [];
 
     public function __construct(
-        public readonly mixed $returnValueWhenCalled = null,
-        public readonly ?Exception $exceptionWhenCalled = null,
+        public readonly mixed $return = null,
     ) {}
 
-    /**
-     * @param Exception|null $exceptionWhenCalled
-     * @return SpyCallable<array<int, mixed>>
-     */
-    public static function throwExceptionWhenCalled(?Exception $exceptionWhenCalled = null): self
+    public function __invoke(mixed ...$arguments): mixed
     {
-        return new self(null, $exceptionWhenCalled ?: new Exception('SpyCallable configured to fail when called.'));
-    }
+        $this->invocations[] = new CallableInvocation(...$arguments);
 
-    /**
-     * @param InvocationArguments $arguments
-     */
-    public function __invoke(...$arguments): mixed
-    {
-        $this->invocations[] = $arguments;
-
-        if ($this->exceptionWhenCalled) {
-            throw $this->exceptionWhenCalled;
+        if (is_callable($this->return)) {
+            return call_user_func_array($this->return, $arguments);
         }
 
-        if (is_callable($this->returnValueWhenCalled)) {
-            return call_user_func_array($this->returnValueWhenCalled, $arguments);
-        }
-
-        return $this->returnValueWhenCalled;
+        return $this->return;
     }
 
     public function assertWasCalled(?callable $assertions = null, string $message = ''): void
@@ -79,11 +58,7 @@ final class SpyCallable
         $this->assertWasCalledTimes(1);
     }
 
-    /**
-     * @param InvocationArguments $expectedArguments
-     * @see assertWasCalledOnceWithEqualArguments for stricter comparison
-     */
-    public function assertWasCalledOnceWithArguments(...$expectedArguments): void
+    public function assertWasCalledOnceWithArguments(mixed ...$expectedArguments): void
     {
         $matchingInvocations = [];
 
@@ -105,10 +80,7 @@ final class SpyCallable
         );
     }
 
-    /**
-     * @param InvocationArguments $expectedArguments
-     */
-    public function assertWasCalledOnceWithEqualArguments(...$expectedArguments): void
+    public function assertWasCalledOnceWithEqualArguments(mixed ...$expectedArguments): void
     {
         $matchingInvocations = [];
 
