@@ -21,16 +21,25 @@
     ],
     "require": {
         "php": "^8.3",
-        "fakerphp/faker": "^1.24",
-        "illuminate/console": "^10.10.0|^11.0",
-        "illuminate/contracts": "^10.10.0|^11.0"
+        "fakerphp/faker": "^1.24"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.68",
-        "illuminate/container": "^10.10.0|^11.0",
+        "illuminate/container": "^10.10|^11.0",
+        "illuminate/console": "^10.10|^11.0",
+        "illuminate/contracts": "^10.10|^11.0",
         "orchestra/testbench": "^9.9",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5"
+    },
+    "suggest": {
+        "illuminate/console": "Needed to use testbench utils (Craftzing\\TestBench\\Laravel) for Laravel",
+        "illuminate/contracts": "Needed to use testbench utils (Craftzing\\TestBench\\Laravel) for Laravel"
+    },
+    "conflict": {
+        "illuminate/console": "<10.10",
+        "illuminate/contracts": "<10.10",
+        "phpunit/phpunit": "<11.5 || >=12.0"
     },
     "autoload": {
         "psr-4": {
