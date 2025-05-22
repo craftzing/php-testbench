@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
 use Closure;
+use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
@@ -15,7 +16,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use function array_filter;
 use function count;
 
-final class WasCalled extends Constraint
+final class WasCalled extends Constraint implements Quantable
 {
     public function __construct(
         public readonly ?Closure $assertInvocation = null,
