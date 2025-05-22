@@ -137,7 +137,7 @@ final class WasCalledTest extends TestCase
         $quantise->applyTo(fn () => $callable('first', 'last'));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called $quantise->expected times with the expected invocation assertions.");
+        $this->expectExceptionMessage("was called $quantise->expected times with expected invocation assertions.");
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
