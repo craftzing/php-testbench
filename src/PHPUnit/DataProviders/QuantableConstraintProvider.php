@@ -39,18 +39,27 @@ final readonly class QuantableConstraintProvider
         Collection::times($this->times, $callback(...));
     }
 
+    /**
+     * @return iterable<array{self}>
+     */
     public static function cases(): iterable
     {
         yield 'Never' => [new self('never', 0)];
         yield from self::atLeastOnce();
     }
 
+    /**
+     * @return iterable<array{self}>
+     */
     public static function atLeastOnce(): iterable
     {
         yield 'Multiple times' => [new self('times', random_int(2, 10))];
         yield 'Once' => [new self('once', 1)];
     }
 
+    /**
+     * @return iterable<array{self}>
+     */
     public static function tooFewOrTooManyTimes(): iterable
     {
         yield 'Too few times' => [new self('times', 2, 1)];

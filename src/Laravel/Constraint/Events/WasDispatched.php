@@ -6,7 +6,6 @@ namespace Craftzing\TestBench\Laravel\Constraint\Events;
 
 use Closure;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Override;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -65,6 +64,9 @@ final class WasDispatched extends Constraint implements Quantable
         };
     }
 
+    /**
+     * @param array{string|object} $dispatchedEvent
+     */
     private function matchesEventAssertions(array $dispatchedEvent): bool
     {
         [$event] = $dispatchedEvent;
