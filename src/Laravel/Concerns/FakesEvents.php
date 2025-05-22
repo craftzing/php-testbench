@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Concerns;
 
-use Craftzing\TestBench\Laravel\Utils\HandleDispatchAssertions;
+use Craftzing\TestBench\Laravel\NestedAssertions\IsTrueWhen;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Traits\ReflectsClosures;
@@ -73,7 +73,7 @@ trait FakesEvents
 
         if (is_callable($event)) {
             $eventType = $this->firstClosureParameterType($event);
-            $callback = new HandleDispatchAssertions($event);
+            $callback = new IsTrueWhen($event);
         }
 
         return [$eventType, $callback];

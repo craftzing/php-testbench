@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\Laravel\Concerns;
 
 use Craftzing\TestBench\Laravel\Extensions\Bus\FakeCommandHandler;
-use Craftzing\TestBench\Laravel\Utils\HandleDispatchAssertions;
+use Craftzing\TestBench\Laravel\NestedAssertions\IsTrueWhen;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,7 +51,7 @@ trait FakesBus
             return;
         }
 
-        Bus::assertDispatched($this->firstClosureParameterType($command), new HandleDispatchAssertions($command));
+        Bus::assertDispatched($this->firstClosureParameterType($command), new IsTrueWhen($command));
     }
 
     private function assertBusDidNotDispatch(string $commandClass): void
