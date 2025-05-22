@@ -29,6 +29,8 @@ trait FakesEvents
     }
 
     /**
+     * @deprecated Use WasDispatched constraint instead.
+     * @see \Craftzing\TestBench\Laravel\Constraint\Events\WasDispatched
      * @param class-string|callable(object): void $event
      */
     private function assertEventWasDispatched(string|callable $event): void
@@ -39,6 +41,8 @@ trait FakesEvents
     }
 
     /**
+     * @deprecated Use WasDispatched constraint instead.
+     * @see \Craftzing\TestBench\Laravel\Constraint\Events\WasDispatched::never()
      * @param class-string|callable(object): void $event
      */
     private function assertEventWasNotDispatched(string|callable $event): void
@@ -48,6 +52,10 @@ trait FakesEvents
         Event::assertNotDispatched($eventType, $callback);
     }
 
+    /**
+     * @deprecated Use WasDispatched constraint instead.
+     * @see \Craftzing\TestBench\Laravel\Constraint\Events\WasDispatched::times()
+     */
     private function assertEventWasDispatchedTimes(string $event, int $times): void
     {
         Event::assertDispatchedTimes($event, $times);
