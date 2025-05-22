@@ -84,7 +84,7 @@ final class WasCalledTest extends TestCase
         $callable('last', 'first');
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('was called with the expected invocation assertions.');
+        $this->expectExceptionMessage('was called with expected invocation assertions.');
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);

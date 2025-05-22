@@ -73,7 +73,7 @@ final class WasCalled extends Constraint implements Quantable
         }
 
         if ($this->assertInvocation !== null) {
-            $message .= ' with the expected invocation assertions';
+            $message .= ' with expected invocation assertions';
         }
 
         return $message;
