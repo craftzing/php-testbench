@@ -32,12 +32,12 @@ final class HasListener extends Constraint
         public string $method = self::DEFAULT_METHOD {
             set(string $method) {
                 method_exists($this->listener, $method) or throw new InvalidArgumentException(
-                    "Method $this->listener::$method does not exist."
+                    "Method $this->listener::$method does not exist.",
                 );
 
                 $this->method = $method;
             }
-        }
+        },
     ) {
         $this->eventFake = $this->resolveEventFake();
     }
@@ -47,6 +47,9 @@ final class HasListener extends Constraint
         return new self($listener::class);
     }
 
+    /**
+     * @param array{object|class-string, string} $listen
+     */
     public static function method(array $listen): self
     {
         is_callable($listen) or throw new InvalidArgumentException('The given listener method is not callable.');
