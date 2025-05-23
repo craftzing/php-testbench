@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
+use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraintProvider;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-
-use function random_int;
 
 final class WasCalledTest extends TestCase
 {
@@ -37,44 +35,18 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    public function itCanConstructWithExpectedInvocationOfTimes(): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
+    public function itImplementsTheQuantableInterface(QuantableConstraintProvider $quantise): void
     {
         $assertInvocation = function (): void {};
-        $times = random_int(1, 100);
         $instance = new WasCalled($assertInvocation);
 
-        $instanceWithTimes = $instance->times($times);
+        $quantisedInstance = $quantise($instance);
 
         $this->assertNull($instance->times);
         $this->assertSame($assertInvocation, $instance->assertInvocation);
-        $this->assertSame($times, $instanceWithTimes->times);
-        $this->assertSame($assertInvocation, $instanceWithTimes->assertInvocation);
-    }
-
-    #[Test]
-    public function itCanConstructWithExpectationsNeverToBeCalled(): void
-    {
-        $instance = new WasCalled();
-
-        $instanceWithTimes = $instance->never();
-
-        $this->assertNull($instance->times);
-        $this->assertNull($instance->assertInvocation);
-        $this->assertSame(0, $instanceWithTimes->times);
-        $this->assertNull($instanceWithTimes->assertInvocation);
-    }
-
-    #[Test]
-    public function itCanConstructWithExpectationsToBeCalledOnce(): void
-    {
-        $instance = new WasCalled();
-
-        $instanceWithTimes = $instance->once();
-
-        $this->assertNull($instance->times);
-        $this->assertNull($instance->assertInvocation);
-        $this->assertSame(1, $instanceWithTimes->times);
-        $this->assertNull($instanceWithTimes->assertInvocation);
+        $this->assertSame($quantise->times, $quantisedInstance->times);
+        $this->assertSame($assertInvocation, $quantisedInstance->assertInvocation);
     }
 
     #[Test]
@@ -95,13 +67,12 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[TestWith([1], 'Once')]
-    #[TestWith([3], 'Multiple times')]
-    public function itPassesWhenCalled(int $times): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'atLeastOnce')]
+    public function itPassesWhenCalled(QuantableConstraintProvider $quantise): void
     {
         $callable = new SpyCallable();
 
-        Collection::times($times, $callable(...));
+        $quantise->applyTo($callable);
 
         $this->assertThat($callable, new WasCalled());
     }
@@ -113,7 +84,7 @@ final class WasCalledTest extends TestCase
         $callable('last', 'first');
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('was called with the expected invocation assertions.');
+        $this->expectExceptionMessage('was called with expected invocation assertions.');
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
@@ -135,58 +106,56 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[TestWith([2, 1], 'Too few times')]
-    #[TestWith([2, 3], 'Too many times')]
-    public function itFailsWhenNotCalledExpectedTimes(int $expected, int $actual): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenNotCalledExpectedTimes(QuantableConstraintProvider $quantise): void
     {
         $callable = new SpyCallable();
-        Collection::times($actual, $callable(...));
+        $quantise->applyTo($callable(...));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called $expected times.");
+        $this->expectExceptionMessage("was called $quantise->expected times.");
 
-        $this->assertThat($callable, new WasCalled()->times($expected));
+        $this->assertThat($callable, new WasCalled()->times($quantise->expected));
     }
 
     #[Test]
-    public function itPassesWhenCalledExpectedTimes(): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
+    public function itPassesWhenCalledExpectedTimes(QuantableConstraintProvider $quantise): void
     {
-        $expected = random_int(1, 10);
         $callable = new SpyCallable();
 
-        Collection::times($expected, $callable(...));
+        $quantise->applyTo($callable(...));
 
-        $this->assertThat($callable, new WasCalled()->times($expected));
+        $this->assertThat($callable, $quantise(new WasCalled()));
     }
 
     #[Test]
-    #[TestWith([2, 1], 'Too few times')]
-    #[TestWith([2, 3], 'Too many times')]
-    public function itFailsWhenNotCalledExpectedTimesWithExpectedArguments(int $expected, int $actual): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenNotCalledExpectedTimesWithExpectedArguments(QuantableConstraintProvider $quantise): void
     {
         $callable = new SpyCallable();
-        Collection::times($actual, fn () => $callable('first', 'last'));
+        $quantise->applyTo(fn () => $callable('first', 'last'));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called $expected times with the expected invocation assertions.");
+        $this->expectExceptionMessage("was called $quantise->expected times with expected invocation assertions.");
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
             $this->assertSame('last', $last);
-        })->times($expected));
+        })->times($quantise->expected));
     }
 
     #[Test]
-    public function itPassesWhenCalledExpectedTimesWithExpectedArguments(): void
+    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
+    public function itPassesWhenCalledExpectedTimesWithExpectedArguments(QuantableConstraintProvider $quantise): void
     {
-        $expected = random_int(1, 10);
         $callable = new SpyCallable();
 
-        Collection::times($expected, fn () => $callable('first', 'last'));
+        $quantise->applyTo(fn () => $callable('first', 'last'));
 
-        $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
+        $this->assertThat($callable, $quantise(new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
             $this->assertSame('last', $last);
-        })->times($expected));
+        })));
     }
 }
