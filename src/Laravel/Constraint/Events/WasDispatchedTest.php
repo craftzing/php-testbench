@@ -53,7 +53,7 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    public function itCannotEvaluateInvalidValuesThatAreNotFCQNs(): void
+    public function itCannotEvaluateValuesThatAreNotStrings(): void
     {
         WasDispatched::spy();
         $event = new DummyEvent();
