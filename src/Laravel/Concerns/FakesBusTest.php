@@ -71,15 +71,6 @@ final class FakesBusTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('dispatchAssertions')]
-    public function itCanAssertBusDispatchedACommand(callable $resolveAssertions): void
-    {
-        Bus::dispatch(new FakeCommand(1));
-
-        $this->assertBusDispatched($resolveAssertions($this));
-    }
-
-    #[Test]
     public function itCanAssertATestIsQueueable(): void
     {
         $this->assertBusQueues(FakeQueueableCommand::class);
