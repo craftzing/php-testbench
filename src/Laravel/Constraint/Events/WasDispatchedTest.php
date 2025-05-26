@@ -235,6 +235,7 @@ final class WasDispatchedTest extends TestCase
 
         $eventConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($event);
 
+        $this->assertNotEmpty($eventConstraints);
         $this->assertEquals($expected, $eventConstraints);
     }
 
