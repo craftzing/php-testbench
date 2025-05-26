@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\Laravel\Constraint\Events;
+namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
-use Craftzing\TestBench\Laravel\Doubles\Events\DummyEvent;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
 use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraintProvider;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
 use LogicException;
 use Orchestra\Testbench\TestCase;
@@ -19,6 +18,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\IsIdentical;
 use PHPUnit\Framework\ExpectationFailedException;
+use stdClass;
 
 final class WasDispatchedTest extends TestCase
 {
@@ -49,15 +49,15 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    public function itCanConstructWithEventConstraints(): void
+    public function itCanConstructWithCommandConstraints(): void
     {
         WasDispatched::spy();
-        $eventConstraints = [new IsIdentical('event')];
+        $commandConstraints = [new IsIdentical('command')];
 
-        $instance = new WasDispatched()->withEventConstraints(...$eventConstraints);
+        $instance = new WasDispatched()->withCommandConstraints(...$commandConstraints);
 
         $this->assertNull($instance->times);
-        $this->assertSame($eventConstraints, $instance->objectConstraints);
+        $this->assertSame($commandConstraints, $instance->objectConstraints);
     }
 
     #[Test]
@@ -65,15 +65,15 @@ final class WasDispatchedTest extends TestCase
     public function itImplementsTheQuantableInterface(QuantableConstraintProvider $quantise): void
     {
         WasDispatched::spy();
-        $eventConstraints = [new IsIdentical('event')];
-        $instance = new WasDispatched()->withEventConstraints(...$eventConstraints);
+        $commandConstraints = [new IsIdentical('command')];
+        $instance = new WasDispatched()->withCommandConstraints(...$commandConstraints);
 
         $quantisedInstance = $quantise($instance);
 
         $this->assertNull($instance->times);
         $this->assertSame($quantise->times, $quantisedInstance->times);
-        $this->assertSame($eventConstraints, $instance->objectConstraints);
-        $this->assertSame($eventConstraints, $quantisedInstance->objectConstraints);
+        $this->assertSame($commandConstraints, $instance->objectConstraints);
+        $this->assertSame($commandConstraints, $quantisedInstance->objectConstraints);
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(WasDispatched::class . ' can only be evaluated for strings or event instances');
+        $this->expectExceptionMessage(WasDispatched::class . ' can only be evaluated for strings or command instances');
 
         $this->assertThat($value, new WasDispatched());
     }
@@ -96,9 +96,9 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('event was dispatched.');
+        $this->expectExceptionMessage('command was dispatched.');
 
-        $this->assertThat('event', new WasDispatched());
+        $this->assertThat(stdClass::class, new WasDispatched());
     }
 
     #[Test]
@@ -106,37 +106,37 @@ final class WasDispatchedTest extends TestCase
     public function itPassesWhenDispatched(QuantableConstraintProvider $quantise): void
     {
         WasDispatched::spy();
-        $event = 'some.event';
+        $command = new stdClass();
 
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
-        $this->assertThat($event, $quantise(new WasDispatched()));
+        $this->assertThat($command::class, $quantise(new WasDispatched()));
     }
 
     #[Test]
-    public function itFailsWhenDispatchedButNotWithGivenEventConstraints(): void
+    public function itFailsWhenDispatchedButNotWithGivenCommandConstraints(): void
     {
         WasDispatched::spy();
-        $event = new DummyEvent('first', 'last');
-        Event::dispatch($event);
+        $command = new stdClass();
+        Bus::dispatch($command);
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('event was dispatched with given event constraints.');
+        $this->expectExceptionMessage('command was dispatched with given command constraints.');
 
-        $this->assertThat($event, new WasDispatched()->withEventConstraints(
+        $this->assertThat($command, new WasDispatched()->withCommandConstraints(
             new Callback(fn () => false),
         ));
     }
 
     #[Test]
-    public function itPassesWhenDispatchedWithGivenEventConstraints(): void
+    public function itPassesWhenDispatchedWithGivenCommandConstraints(): void
     {
         WasDispatched::spy();
-        $event = new DummyEvent('first', 'last');
+        $command = new stdClass();
 
-        Event::dispatch($event);
+        Bus::dispatch($command);
 
-        $this->assertThat($event, new WasDispatched()->withEventConstraints(
+        $this->assertThat($command, new WasDispatched()->withCommandConstraints(
             new Callback(fn () => true),
         ));
     }
@@ -146,13 +146,13 @@ final class WasDispatchedTest extends TestCase
     public function itFailsWhenDispatchedButNotGivenTimes(QuantableConstraintProvider $quantise): void
     {
         WasDispatched::spy();
-        $event = 'some.event';
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $command = new stdClass();
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s).");
+        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s).");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected));
+        $this->assertThat($command::class, new WasDispatched()->times($quantise->expected));
     }
 
     #[Test]
@@ -160,121 +160,134 @@ final class WasDispatchedTest extends TestCase
     public function itPassesWhenDispatchedGivenTimes(QuantableConstraintProvider $quantise): void
     {
         WasDispatched::spy();
-        $event = 'some.event';
+        $command = new stdClass();
 
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
-        $this->assertThat($event, $quantise(new WasDispatched()));
+        $this->assertThat($command::class, $quantise(new WasDispatched()));
     }
 
     #[Test]
     #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
-    public function itFailsWhenDispatchedWithGivenEventConstrainsButNotGivenTimes(
+    public function itFailsWhenDispatchedWithGivenCommandConstrainsButNotGivenTimes(
         QuantableConstraintProvider $quantise,
     ): void {
         WasDispatched::spy();
-        $event = new DummyEvent('first', 'last');
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $command = new stdClass();
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s)");
+        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s)");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withEventConstraints(
+        $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withCommandConstraints(
             new Callback(fn () => true),
         ));
     }
 
     #[Test]
     #[DataProviderExternal(QuantableConstraintProvider::class, 'atLeastOnce')]
-    public function itFailsWhenDispatchedGivenTimesButNotWithGivenEventConstrains(
+    public function itFailsWhenDispatchedGivenTimesButNotWithGivenCommandConstrains(
         QuantableConstraintProvider $quantise,
     ): void {
         WasDispatched::spy();
-        $event = new DummyEvent('first', 'last');
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $command = new stdClass();
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s) with given event constraints.");
+        $this->expectExceptionMessage(
+            "command was dispatched $quantise->expected time(s) with given command constraints.",
+        );
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withEventConstraints(
+        $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withCommandConstraints(
             new Callback(fn () => false),
         ));
     }
 
     #[Test]
     #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenDispatchedGivenTimesWithGivenEventConstraints(
+    public function itPassesWhenDispatchedGivenTimesWithGivenCommandConstraints(
         QuantableConstraintProvider $quantise,
     ): void {
         WasDispatched::spy();
-        $event = new DummyEvent('first', 'last');
+        $command = new stdClass();
 
-        $quantise->applyTo(fn () => Event::dispatch($event));
+        $quantise->applyTo(fn () => Bus::dispatch($command));
 
-        $this->assertThat($event, $quantise(new WasDispatched()->withEventConstraints(
+        $this->assertThat($command, $quantise(new WasDispatched()->withCommandConstraints(
             new Callback(fn () => true),
         )));
     }
 
     #[Test]
-    public function itCannotDeriveEventConstraintsFromEventStrings(): void
+    public function itCannotDeriveCommandConstraintsFromCommandStrings(): void
     {
         WasDispatched::spy();
+        $command = new readonly class
+        {
+            public function __construct(
+                public string $first = 'first',
+            ) {}
+        };
 
-        $eventConstraints = new WasDispatched()->givenOrDerivedObjectConstraints(DummyEvent::class);
+        $commandConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($command::class);
 
-        $this->assertEmpty($eventConstraints);
+        $this->assertEmpty($commandConstraints);
     }
 
     #[Test]
-    public function itCanDeriveEventConstraintsFromEventObjects(): void
+    public function itCanDeriveCommandConstraintsFromCommandObjects(): void
     {
         WasDispatched::spy();
-        $event = new DummyEvent('actual');
-        $expected = new DeriveConstraintsFromObjectUsingReflection()->__invoke($event);
+        $command = new readonly class
+        {
+            public function __construct(
+                public string $first = 'first',
+            ) {}
+        };
+        $expected = new DeriveConstraintsFromObjectUsingReflection()->__invoke($command);
 
-        $eventConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($event);
+        $commandConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($command);
 
-        $this->assertNotEmpty($eventConstraints);
-        $this->assertEquals($expected, $eventConstraints);
+        $this->assertNotEmpty($commandConstraints);
+        $this->assertEquals($expected, $commandConstraints);
     }
 
     #[Test]
-    public function itCanDeriveEventConstraintsFromEventObjectsUsingCustomImplementations(): void
+    public function itCanDeriveCommandConstraintsFromCommandObjectsUsingCustomImplementations(): void
     {
-        $event = new DummyEvent('actual');
+        $command = new stdClass();
         $deriveConstraintsFromObject = DeriveConstraintsFromObjectUsingFakes::passingConstraints();
         WasDispatched::spy();
         WasDispatched::deriveConstraintsFromObjectUsing($deriveConstraintsFromObject);
 
-        $eventConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($event);
+        $commandConstraints = new WasDispatched()->givenOrDerivedObjectConstraints($command);
 
-        $this->assertEquals($deriveConstraintsFromObject->constraints, $eventConstraints);
+        $this->assertEquals($deriveConstraintsFromObject->constraints, $commandConstraints);
     }
 
     #[Test]
-    public function itFailsWhenNotDispatchedWithDerivedEventConstraints(): void
+    public function itFailsWhenNotDispatchedWithDerivedCommandConstraints(): void
     {
-        $event = new DummyEvent('actual');
+        $command = new stdClass();
         WasDispatched::spy();
         WasDispatched::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::failingConstraints());
-        Event::dispatch($event);
+        Bus::dispatch($command);
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('event was dispatched with derived event constraints.');
+        $this->expectExceptionMessage('command was dispatched with derived command constraints.');
 
-        $this->assertThat($event, new WasDispatched());
+        $this->assertThat($command, new WasDispatched());
     }
 
     #[Test]
-    public function itPassesWhenDispatchedWithDerivedEventConstraints(): void
+    public function itPassesWhenDispatchedWithDerivedCommandConstraints(): void
     {
-        $event = new DummyEvent('actual');
+        $command = new stdClass();
         WasDispatched::spy();
         WasDispatched::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::passingConstraints());
 
-        Event::dispatch($event);
+        Bus::dispatch($command);
 
-        $this->assertThat($event, new WasDispatched());
+        $this->assertThat($command, new WasDispatched());
     }
 }
