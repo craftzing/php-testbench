@@ -13,7 +13,6 @@ use Illuminate\Contracts\Bus\Dispatcher as BusContract;
 use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Testing\Fakes\BusFake;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class FakesBusTest extends TestCase
