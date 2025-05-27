@@ -84,7 +84,7 @@ final class WasCalledTest extends TestCase
         $callable('last', 'first');
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('was called with expected invocation assertions.');
+        $this->expectExceptionMessage('was called with given invocation assertions.');
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
@@ -113,7 +113,7 @@ final class WasCalledTest extends TestCase
         $quantise->applyTo($callable(...));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called $quantise->expected times.");
+        $this->expectExceptionMessage("was called $quantise->expected time(s).");
 
         $this->assertThat($callable, new WasCalled()->times($quantise->expected));
     }
@@ -137,7 +137,7 @@ final class WasCalledTest extends TestCase
         $quantise->applyTo(fn () => $callable('first', 'last'));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called $quantise->expected times with expected invocation assertions.");
+        $this->expectExceptionMessage("was called $quantise->expected time(s) with given invocation assertions.");
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
