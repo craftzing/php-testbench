@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\Laravel\Constraint;
+namespace Craftzing\TestBench\Laravel\Constraint\Scheduling;
 
 use Cron\CronExpression;
 use Illuminate\Console\Application as Artisan;
