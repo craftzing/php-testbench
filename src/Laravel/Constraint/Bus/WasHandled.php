@@ -4,42 +4,136 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
+use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
+use Craftzing\TestBench\PHPUnit\Constraint\Objects\DerivesConstraintsFromObjects;
+use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Traits\ReflectsClosures;
-
+use InvalidArgumentException;
+use LogicException;
+use Override;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Framework\ExpectationFailedException;
+use ReflectionClass;
 
 use function class_basename;
+use function class_exists;
+use function gettype;
+use function is_object;
+use function is_string;
 
 final class WasHandled extends Constraint implements Quantable
 {
+    use ProvidesAdditionalFailureDescription;
+    use DerivesConstraintsFromObjects;
     use ReflectsClosures;
+
+    private readonly Dispatcher $bus;
 
     public function __construct(
         public readonly ?int $times = null,
-    ) {}
-
-    public function times(int $count): Quantable
-    {
-        return new self($count);
+        Constraint ...$commandConstraints,
+    ) {
+        $this->bus = Bus::getFacadeRoot();
+        $this->objectConstraints = $commandConstraints;
     }
 
-    public function never(): Quantable
+    public function times(int $count): self
     {
-        return new self(0);
+        return new self($count, ...$this->objectConstraints);
     }
 
-    public function once(): Quantable
+    public function never(): self
     {
-        return new self(1);
+        return new self(0, ...$this->objectConstraints);
+    }
+
+    public function once(): self
+    {
+        return new self(1, ...$this->objectConstraints);
+    }
+
+    public function withCommandConstraints(Constraint ...$commandConstraints): self
+    {
+        return new self($this->times, ...$commandConstraints);
+    }
+
+    #[Override]
+    protected function matches(mixed $other): bool
+    {
+        $commandName = match (true) {
+            is_object($other) => $other::class,
+            is_string($other) && class_exists($other) => $other,
+            default => throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for strings or command instances, got ' . gettype($other) . '.',
+            ),
+        };
+        $command = match ($other) {
+            $commandName => new ReflectionClass($other)->newInstanceWithoutConstructor(),
+            default => $other,
+        };
+        $handler = $this->handler($command);
+        $assertInvocation = match ($this->givenOrDerivedObjectConstraints($other)) {
+            [] => null,
+            default => $this->assertHandlerWasInvokedWithCommandConstraints(...),
+        };
+
+        try {
+            Assert::assertThat($handler, new WasCalled($assertInvocation, $this->times));
+        } catch (ExpectationFailedException $expectationFailed) {
+            $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function handler(object $command): SpyCallable
+    {
+        $handler = $this->bus->getCommandHandler($command);
+
+        if (! $handler instanceof SpyCallable) {
+            throw new LogicException(
+                'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::using() first.',
+            );
+        }
+
+        return $handler;
+    }
+
+    private function assertHandlerWasInvokedWithCommandConstraints(object $command): void
+    {
+        foreach ($this->givenOrDerivedObjectConstraints($command) as $constraint) {
+            Assert::assertThat($command, $constraint);
+        }
     }
 
     public function toString(): string
     {
-        return 'was handled';
+        return 'command was handled';
+    }
+
+    protected function failureDescription(mixed $other): string
+    {
+        $message = parent::failureDescription($other);
+
+        if ($this->times !== null) {
+            $message .= " $this->times time(s)";
+        }
+
+        $message .= match (true) {
+            $this->objectConstraints !== [] => ' with given command constraints',
+            $this->givenOrDerivedObjectConstraints($other) !== [] => ' with derived command constraints',
+            default => '',
+        };
+
+        return $message;
     }
 
     /**
