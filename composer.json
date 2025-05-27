@@ -25,9 +25,9 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.75",
-        "illuminate/console": "^10.10|^11.0",
-        "illuminate/container": "^10.10|^11.0",
-        "illuminate/contracts": "^10.10|^11.0",
+        "illuminate/console": "^10.10|^11.0|^12.0",
+        "illuminate/container": "^10.10|^11.0|^12.0",
+        "illuminate/contracts": "^10.10|^11.0|^12.0",
         "orchestra/testbench": "^9.9",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5"
