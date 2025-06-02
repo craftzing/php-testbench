@@ -69,7 +69,8 @@
             "@composer phpstan",
             "@composer phpunit"
         ],
-        "test:coverage": "@composer phpunit -- --coverage-text"
+        "coverage:summary": "@composer phpunit -- --coverage-text",
+        "coverage:report": "@composer phpunit -- --coverage-html=.reports/coverage"
     },
     "extra": {
         "branch-alias": {
