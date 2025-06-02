@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Events;
 
+use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Override;
 use PHPUnit\Framework\Constraint\Constraint;
+
+use PHPUnit\Framework\ExpectationFailedException;
 
 use function class_exists;
 use function gettype;
@@ -18,6 +21,7 @@ use function is_string;
 final class HasListener extends Constraint
 {
     use RequiresEventFake;
+    use ProvidesAdditionalFailureDescription;
 
     private const string DEFAULT_METHOD = '__invoke';
 
@@ -69,10 +73,16 @@ final class HasListener extends Constraint
             self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
         );
 
-        Event::assertListening($other, match ($this->method) {
-            self::DEFAULT_METHOD => $this->listener,
-            default => [$this->listener, $this->method],
-        });
+        try {
+            Event::assertListening($other, match ($this->method) {
+                self::DEFAULT_METHOD => $this->listener,
+                default => [$this->listener, $this->method],
+            });
+        } catch (ExpectationFailedException $expectationFailed) {
+            $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
+
+            return false;
+        }
 
         return true;
     }
