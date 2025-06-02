@@ -1,17 +1,4 @@
 services:
-  php83:
-    build:
-      context: .
-      dockerfile: docker/php83/Dockerfile
-    container_name: php-test-bench.craftzing.php83
-    restart: unless-stopped
-    tty: true
-    working_dir: /code
-    environment:
-      XDEBUG_MODE: coverage
-    volumes:
-      - ./:/code:delegated
-
   php84:
     build:
       context: .
