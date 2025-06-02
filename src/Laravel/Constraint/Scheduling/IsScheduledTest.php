@@ -10,6 +10,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Constraint\Constraint;
 use stdClass;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class IsScheduledTest extends TestCase
 {
     #[Test]

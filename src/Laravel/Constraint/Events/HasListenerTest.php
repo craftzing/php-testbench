@@ -14,6 +14,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class HasListenerTest extends TestCase
 {
     private const string DEFAULT_METHOD = '__invoke';

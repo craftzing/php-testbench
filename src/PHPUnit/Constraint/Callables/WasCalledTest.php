@@ -12,6 +12,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class WasCalledTest extends TestCase
 {
     #[Test]
