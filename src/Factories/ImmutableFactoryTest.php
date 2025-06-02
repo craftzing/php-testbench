@@ -145,13 +145,13 @@ final class ImmutableFactoryTest extends TestCase
     {
         yield [
             $attributes = [
-                'last' => Str::ulid()->toString(),
-                'attributes' => Str::ulid()->toString(),
+                'last' => Str::ulid()->toBase32(),
+                'attributes' => Str::ulid()->toBase32(),
             ],
             $state = [
-                'first' => Str::ulid()->toString(),
-                'last' => Str::ulid()->toString(),
-                'state' => Str::ulid()->toString(),
+                'first' => Str::ulid()->toBase32(),
+                'last' => Str::ulid()->toBase32(),
+                'state' => Str::ulid()->toBase32(),
             ],
             [...$state, ...$attributes],
         ];
