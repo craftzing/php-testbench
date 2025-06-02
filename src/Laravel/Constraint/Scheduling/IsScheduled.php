@@ -4,74 +4,64 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Scheduling;
 
+use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Cron\CronExpression;
 use Illuminate\Console\Application as Artisan;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Container\Container;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
+use Override;
 use PHPUnit\Framework\Constraint\Constraint;
-use UnexpectedValueException;
 
-use function collect;
 use function is_string;
 
 final class IsScheduled extends Constraint
 {
-    /**
-     * @var Collection<int, Event>
-     */
-    private Collection $events;
+    use ProvidesAdditionalFailureDescription;
 
-    private ?Event $matchingScheduledTask = null;
+    private readonly Schedule $schedule;
 
     public function __construct(
         private readonly string $frequency,
-        private readonly Container $app,
+        Container $container,
     ) {
         // The Artisan console must be initialised in order to schedule the tasks...
-        new Artisan($this->app, $this->app['events'], 'testing');
-
-        /** @var Schedule $schedule */
-        $schedule = $this->app[Schedule::class];
-        $this->events = collect($schedule->events());
+        new Artisan($container, $container['events'], 'testing');
+        $this->schedule = $container->make(Schedule::class);
     }
 
+    #[Override]
     protected function matches(mixed $other): bool
     {
-        if (is_string($other) === false) {
-            throw new UnexpectedValueException('Scheduling assertions must be using on classnames of scheduled tasks.');
-        }
+        is_string($other) && class_exists($other) or throw new InvalidArgumentException(
+            self::class . ' can only be evaluated for classnames of scheduled tasks.',
+        );
 
-        $this->matchingScheduledTask = $this->events->first(fn (Event $event): bool => $event->description === $other);
+        $matchingScheduledTask = new Collection($this->schedule->events())
+            ->first(fn (Event $event): bool => $event->description === $other);
 
-        if ($this->matchingScheduledTask === null) {
+        if ($matchingScheduledTask === null) {
+            $this->additionalFailureDescriptions[] = 'Not scheduled.';
+
             return false;
         }
 
         $expectedExpression = new CronExpression($this->frequency);
-        $actualExpression = new CronExpression($this->matchingScheduledTask->expression);
+        $actualExpression = new CronExpression($matchingScheduledTask->expression);
 
         if ($expectedExpression->getExpression() !== $actualExpression->getExpression()) {
+            $this->additionalFailureDescriptions[] = "Scheduled to run {$actualExpression->getExpression()}.";
+
             return false;
         }
 
         return true;
     }
 
-    protected function failureDescription(mixed $other): string
-    {
-        $message = "task [$other] {$this->toString()}";
-
-        if ($this->matchingScheduledTask === null) {
-            return $message;
-        }
-
-        return "$message $this->frequency as it is scheduled to run {$this->matchingScheduledTask->expression}";
-    }
-
     public function toString(): string
     {
-        return 'is scheduled';
+        return "is scheduled $this->frequency";
     }
 }
