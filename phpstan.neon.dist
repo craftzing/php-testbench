@@ -5,5 +5,3 @@ parameters:
 	excludePaths:
 		- ./*/*Test.php
 		- ./*/Testing/*
-	ignoreErrors:
-		- '#is used zero times and is not analysed\.$#'

@@ -25,20 +25,28 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.75",
+        "illuminate/collections": "^10.10|^11.0|^12.0",
         "illuminate/console": "^10.10|^11.0|^12.0",
         "illuminate/container": "^10.10|^11.0|^12.0",
         "illuminate/contracts": "^10.10|^11.0|^12.0",
+        "illuminate/support": "^10.10|^11.0|^12.0",
         "orchestra/testbench": "^9.9",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5"
     },
     "suggest": {
-        "illuminate/console": "Needed to use testbench utils (Craftzing\\TestBench\\Laravel) for Laravel",
-        "illuminate/contracts": "Needed to use testbench utils (Craftzing\\TestBench\\Laravel) for Laravel"
+        "illuminate/collections": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel) and factories",
+        "illuminate/console": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel)",
+        "illuminate/container": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel)",
+        "illuminate/contracts": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel)",
+        "illuminate/support": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel) and factories"
     },
     "conflict": {
+        "illuminate/collections": "<10.10",
+        "illuminate/container": "<10.10",
         "illuminate/console": "<10.10",
         "illuminate/contracts": "<10.10",
+        "illuminate/support": "<10.10",
         "phpunit/phpunit": "<11.5 || >=12.0"
     },
     "autoload": {
