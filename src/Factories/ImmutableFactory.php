@@ -17,7 +17,10 @@ use function iterator_to_array;
  */
 abstract class ImmutableFactory
 {
-    public function __construct(
+    /**
+     * @param array<string, mixed> $state
+     */
+    final public function __construct(
         public ?Generator $faker = null,
         public readonly array $state = [],
         public readonly int $count = 1,
@@ -26,7 +29,8 @@ abstract class ImmutableFactory
     }
 
     /**
-     * @return $this
+     * @param array<string, mixed> $state
+     * @return static<TClass>
      */
     public function state(array $state): static
     {
@@ -34,7 +38,7 @@ abstract class ImmutableFactory
     }
 
     /**
-     * @return $this
+     * @return static<TClass>
      */
     public function times(int $count): static
     {
@@ -83,7 +87,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<array<string, mixed>>
+     * @return array<int, TClass>
      */
     public function rawMany(array $attributes = []): array
     {
@@ -92,7 +96,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return Collection<array<string, mixed>>
+     * @return Collection<int, array<string, mixed>>
      */
     public function rawCollection(array $attributes = []): Collection
     {
@@ -119,7 +123,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return \Illuminate\Support\Collection<TClass>
+     * @return Collection<int, TClass>
      */
     public function makeCollection(array $attributes = []): Collection
     {
