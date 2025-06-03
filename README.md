@@ -1,51 +1,59 @@
-[![Laravel Lokalise webhooks](art/banner.jpg)](https://craftzing.com)
+![Laravel Abilities banner](/art/banner-light.jpg#gh-light-mode-only)
+![Laravel Abilities banner](/art/banner-dark.jpg#gh-dark-mode-only)
 
-![Quality assurance](https://github.com/craftzing/php-testbench/workflows/Quality%20assurance/badge.svg)
-![Code style](https://github.com/craftzing/php-testbench/workflows/Code%20style/badge.svg)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/881eb71372c1b12c18d5/test_coverage)](https://codeclimate.com/github/craftzing/php-testbench/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/881eb71372c1b12c18d5/maintainability)](https://codeclimate.com/github/craftzing/php-testbench/maintainability)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat&color=4D6CB8)](https://github.com/craftzing/php-testbench/blob/master/LICENSE)
+[![tests](https://github.com/craftzing/php-testbench/actions/workflows/tests.yml/badge.svg)](https://github.com/craftzing/php-testbench/actions/workflows/tests.yml)
+[![static-analysis](https://github.com/craftzing/php-testbench/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/craftzing/php-testbench/actions/workflows/static-analysis.yml)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat&color=4D6CB8)](https://github.com/craftzing/php-testbench/blob/master/LICENSE)
 
-This package serves as a starting point to create a new PHP package. Everything's in place to get you started quickly:
-- Documentation outline
-- Basic workflows
-- Basic config files
-- ...
+PHP Testbench is a set of common testing utilities we use at [Craftzing](https://craftzing.com) across all of our PHP 
+projects.
 
-Perform a "search and replace" action for the following placeholders and update them with an according value:
-- `php-testbench`: Please make sure to use lowercase and dashes as a separator (e.g. `my-package`)
-- `php-testbenchspace`: Not that the default namespace is already set to be `Craftzing\Laravel` (e.g. `MyPackage`)
-- `:package_description`
-- `:author_name`
-- `:author_email`
+# 🔥 Features
 
-Replace the banner at the top of this file with one for this package.
+- Immutable object factories with an API similar to Laravel's [Eloquent Factories](https://laravel.com/docs/eloquent-factories).
+- Custom [PHPUnit](https://phpunit.de) constraints.
+- Extended PHPUnit constraints for Laravel.
+- Common test doubles.
 
-Then, replace this section with a short description about what the package does. You can add a short code-snippet if 
-you want. From then on, you can start implementing some code, write the docs, ...
+# 🏁 Getting started
 
-## 🔥 Features
+> [!IMPORTANT]
+> This package has not been released yet. However, as it merely contains testing utilities, it can safely be installed
+> as a dev dependency. Make sure to add the following configuration to your composer.json:
+> ```json
+> "repositories": [
+>     {
+>         "type": "vcs",
+>         "url": "https://github.com/craftzing/php-testbench.git"
+>     }
+> ],
+> ```
 
-- **Short feature title.** Short feature description. Make it sound zazzy!
+This package requires:
+- [PHP](https://www.php.net/supported-versions.php) 8.4
 
-## 📚 Docs
+You can install this package using [Composer](https://getcomposer.org) by running the following command:
+```shell
+composer require craftzing/php-testbench --dev
+```
 
-- [Getting started](/docs/getting-started.md)
-- [Usage](/docs/usage.md)
+# 📝 Changelog
 
-## 📝 Changelog
+Check out our [Change log](/CHANGELOG.md) for information on what has changed recently.
 
-Check out our [Change log](/CHANGELOG.md).
-
-## 🤝 How to contribute
+# 🤝 How to contribute
 
 Have an idea for a feature? Wanna improve the docs? Found a bug? Check out our [Contributing guide](/CONTRIBUTING.md).
 
-## 💙 Thanks to...
+# 💙 Thanks to...
 
 - [The entire Craftzing team](https://craftzing.com)
-- [All current and future contributors](https://github.com/creaftzing/php-testbench/graphs/contributors)
+- [All current and future contributors](https://github.com/creaftzing/laravel-abilities/graphs/contributors)
 
-## 🔑 License
+# 👮 Security
+
+If you discover any security-related issues, please email security@craftzing.com instead of using the issue tracker.
+
+# 🔑 License
 
 The MIT License (MIT). Please see [License File](/LICENSE) for more information.
