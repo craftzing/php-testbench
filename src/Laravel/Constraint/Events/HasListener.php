@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Override;
 use PHPUnit\Framework\Constraint\Constraint;
-
 use PHPUnit\Framework\ExpectationFailedException;
 
 use function class_exists;
