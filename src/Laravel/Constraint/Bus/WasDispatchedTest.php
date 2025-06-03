@@ -20,6 +20,9 @@ use PHPUnit\Framework\Constraint\IsIdentical;
 use PHPUnit\Framework\ExpectationFailedException;
 use stdClass;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class WasDispatchedTest extends TestCase
 {
     #[Before]

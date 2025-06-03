@@ -21,6 +21,9 @@ use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\ExpectationFailedException;
 use stdClass;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class WasHandledTest extends TestCase
 {
     #[Before]

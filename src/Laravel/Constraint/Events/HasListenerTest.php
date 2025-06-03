@@ -14,6 +14,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class HasListenerTest extends TestCase
 {
     private const string DEFAULT_METHOD = '__invoke';
@@ -126,7 +129,7 @@ final class HasListenerTest extends TestCase
         HasListener::spy();
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('listener attached to it');
+        $this->expectExceptionMessage('has listener.');
 
         $this->assertThat(DummyEvent::class, new HasListener(DummyListener::class));
     }
@@ -148,7 +151,7 @@ final class HasListenerTest extends TestCase
         Event::listen(DummyEvent::class, DummyListener::class);
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('listener attached to it');
+        $this->expectExceptionMessage('has listener.');
 
         $this->assertThat(DummyEvent::class, new HasListener(DummyListener::class, 'handle'));
     }

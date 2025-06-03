@@ -8,7 +8,6 @@ addgroup -g 1000 -S app \
 apk -U upgrade
 apk --no-cache add \
     ${PHPIZE_DEPS} \
-    curl \
-    linux-headers # Required for xdebug
+    curl
 
-pecl install xdebug && docker-php-ext-enable xdebug
+pecl install pcov && docker-php-ext-enable pcov

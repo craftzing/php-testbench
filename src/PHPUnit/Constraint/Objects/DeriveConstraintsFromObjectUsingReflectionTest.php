@@ -8,6 +8,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class DeriveConstraintsFromObjectUsingReflectionTest extends TestCase
 {
     #[Test]

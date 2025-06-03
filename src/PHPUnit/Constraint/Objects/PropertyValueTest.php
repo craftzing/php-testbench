@@ -16,6 +16,9 @@ use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class PropertyValueTest extends TestCase
 {
     #[Test]
