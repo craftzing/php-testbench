@@ -58,7 +58,7 @@ final class EnumCasesProvider
     public function differentInstance(): UnitEnum
     {
         $differentOptions = $this->options;
-dump($this->options, $this->instance, $this->instanceKeyInOptions);
+
         unset($differentOptions[$this->instanceKeyInOptions]);
 
         return $differentOptions[array_rand($differentOptions)];
