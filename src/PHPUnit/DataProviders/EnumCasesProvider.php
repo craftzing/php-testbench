@@ -23,7 +23,14 @@ final class EnumCasesProvider
     private readonly array $options;
 
     private int|string $instanceKeyInOptions {
-        get => array_search($this->instance, $this->options) ?: '';
+        get {
+            $key = array_search($this->instance, $this->options, true);
+
+            return match ($key) {
+                false => '',
+                default => $key,
+            };
+        }
     }
 
     /**
@@ -51,7 +58,7 @@ final class EnumCasesProvider
     public function differentInstance(): UnitEnum
     {
         $differentOptions = $this->options;
-
+dump($this->options, $this->instance, $this->instanceKeyInOptions);
         unset($differentOptions[$this->instanceKeyInOptions]);
 
         return $differentOptions[array_rand($differentOptions)];
