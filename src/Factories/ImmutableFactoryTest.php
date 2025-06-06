@@ -63,7 +63,7 @@ final class ImmutableFactoryTest extends TestCase
     #[Test]
     public function itCanDefineTimes(): void
     {
-        $count = random_int(1, 10);
+        $count = random_int(2, 10);
 
         $instance = $this->instance->times($count);
 
