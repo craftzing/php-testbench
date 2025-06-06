@@ -15,7 +15,7 @@ use function count;
 /**
  * @template TValue
  */
-final class EnumCasesProvider
+final class EnumCaseProvider
 {
     /**
      * @var array<int, TValue>

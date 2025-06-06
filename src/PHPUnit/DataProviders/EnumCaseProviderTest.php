@@ -27,7 +27,7 @@ use function iterator_to_array;
 /**
  * @codeCoverageIgnore
  */
-final class EnumCasesProviderTest extends TestCase
+final class EnumCaseProviderTest extends TestCase
 {
     private const array ENUM_FQCNS = [
         UnitEnum::class,
@@ -54,7 +54,7 @@ final class EnumCasesProviderTest extends TestCase
 
         $this->expectException(ValueError::class);
 
-        new EnumCasesProvider(
+        new EnumCaseProvider(
             $this->faker->randomElement($cases),
             $this->faker->randomElement($cases),
         );
@@ -74,7 +74,7 @@ final class EnumCasesProviderTest extends TestCase
 
         $this->expectException(ValueError::class);
 
-        new EnumCasesProvider($case, $differentEnumCase, $differentEnumCase);
+        new EnumCaseProvider($case, $differentEnumCase, $differentEnumCase);
     }
 
     #[Test]
@@ -84,7 +84,7 @@ final class EnumCasesProviderTest extends TestCase
         $cases = $enumFQCN::cases();
         $case = $cases[array_rand($cases)];
 
-        $provider = new EnumCasesProvider($case, ...$cases);
+        $provider = new EnumCaseProvider($case, ...$cases);
 
         $this->assertSame($case, $provider->instance);
     }
@@ -96,7 +96,7 @@ final class EnumCasesProviderTest extends TestCase
         $cases = $enumFQCN::cases();
         $case = $cases[array_rand($cases)];
 
-        $provider = new EnumCasesProvider($case, ...$cases);
+        $provider = new EnumCaseProvider($case, ...$cases);
 
         $this->assertSame($case, $provider->instance);
         $this->assertNotEquals($case, $provider->differentInstance());
@@ -107,7 +107,7 @@ final class EnumCasesProviderTest extends TestCase
     {
         $this->expectException(ReflectionException::class);
 
-        iterator_to_array(EnumCasesProvider::cases(stdClass::class));
+        iterator_to_array(EnumCaseProvider::cases(stdClass::class));
     }
 
     #[Test]
@@ -116,11 +116,11 @@ final class EnumCasesProviderTest extends TestCase
     {
         $expected = $enumFQCN::cases();
 
-        $cases = iterator_to_array(EnumCasesProvider::cases($enumFQCN));
+        $cases = iterator_to_array(EnumCaseProvider::cases($enumFQCN));
 
         $this->assertCount(count($expected), $cases);
         collect($cases)->each(function (array $case) use ($expected): void {
-            $this->assertInstanceOf(EnumCasesProvider::class, $case[0]);
+            $this->assertInstanceOf(EnumCaseProvider::class, $case[0]);
             $this->assertContains($case[0]->instance, $expected);
         });
     }
@@ -131,11 +131,11 @@ final class EnumCasesProviderTest extends TestCase
     {
         $expected = $enumFQCN::cases();
 
-        $cases = iterator_to_array(EnumCasesProvider::options(...$expected));
+        $cases = iterator_to_array(EnumCaseProvider::options(...$expected));
 
         $this->assertCount(count($expected), $cases);
         collect($cases)->each(function (array $case) use ($expected): void {
-            $this->assertInstanceOf(EnumCasesProvider::class, $case[0]);
+            $this->assertInstanceOf(EnumCaseProvider::class, $case[0]);
             $this->assertContains($case[0]->instance, $expected);
         });
     }
