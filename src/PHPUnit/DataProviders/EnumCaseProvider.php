@@ -13,7 +13,7 @@ use function array_search;
 use function count;
 
 /**
- * @template TValue
+ * @template TValue of UnitEnum
  */
 final class EnumCaseProvider
 {
@@ -35,7 +35,7 @@ final class EnumCaseProvider
 
     /**
      * @param TValue $instance
-     * @param array<int, TValue> $options
+     * @param array<int, TValue> ...$options
      */
     public function __construct(
         public readonly UnitEnum $instance,
@@ -66,18 +66,21 @@ final class EnumCaseProvider
 
     /**
      * @param class-string<TValue> $enumFQCN
-     * @return iterable<array<self<TValue>>
+     * @return iterable<array<self<TValue>>>
      */
     public static function cases(string $enumFQCN): iterable
     {
         foreach (new ReflectionEnum($enumFQCN)->getCases() as $case) {
-            yield "$enumFQCN::$case->name" => [new self($case->getValue(), ...$enumFQCN::cases())];
+            // @phpstan-ignore generator.valueType
+            yield "$enumFQCN::$case->name" => [
+                new self($case->getValue(), ...$enumFQCN::cases()),
+            ];
         }
     }
 
     /**
      * @param TValue ...$options
-     * @return iterable<array<self<TValue>>
+     * @return iterable<array<self<TValue>>>
      */
     public static function options(UnitEnum ...$options): iterable
     {
