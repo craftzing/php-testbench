@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\Saloon\DataProviders;
 
 use LogicException;
+use Saloon\Exceptions\Request\ClientException;
+use Saloon\Exceptions\Request\Statuses\ForbiddenException;
+use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
+use Saloon\Exceptions\Request\Statuses\NotFoundException;
 use Saloon\Http\Connector;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\PendingRequest;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final readonly class FakeResponse
 {
     public function __construct(
         private MockResponse $response,
+        public string $exceptionFQCN = '',
     ) {}
 
     /**
@@ -28,22 +32,34 @@ final readonly class FakeResponse
 
     public static function badRequest(): self
     {
-        return new self(MockResponse::make(['message' => 'Bad request'], SymfonyResponse::HTTP_BAD_REQUEST));
+        return new self(
+            MockResponse::make(['message' => 'Bad request'], SymfonyResponse::HTTP_BAD_REQUEST),
+            ClientException::class,
+        );
     }
 
     public static function forbidden(): self
     {
-        return new self(MockResponse::make(['message' => 'Forbidden'], SymfonyResponse::HTTP_FORBIDDEN));
+        return new self(
+            MockResponse::make(['message' => 'Forbidden'], SymfonyResponse::HTTP_FORBIDDEN),
+            ForbiddenException::class,
+        );
     }
 
     public static function notFound(): self
     {
-        return new self(MockResponse::make(['message' => 'Not found'], SymfonyResponse::HTTP_NOT_FOUND));
+        return new self(
+            MockResponse::make(['message' => 'Not found'], SymfonyResponse::HTTP_NOT_FOUND),
+            NotFoundException::class,
+        );
     }
 
     public static function serverError(): self
     {
-        return new self(MockResponse::make(['message' => 'Server error'], Response::HTTP_INTERNAL_SERVER_ERROR));
+        return new self(
+            MockResponse::make(['message' => 'Server error'], SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR),
+            InternalServerErrorException::class,
+        );
     }
 
     public function __invoke(string $requestFQCN, ?Connector $connector = null): void
