@@ -24,7 +24,7 @@ use function json_encode;
 /**
  * @codeCoverageIgnore
  */
-final class FakeResponseProviderTest extends TestCase
+final class FakeResponseTest extends TestCase
 {
     public static function responses(): iterable
     {
@@ -37,7 +37,7 @@ final class FakeResponseProviderTest extends TestCase
     public function itCanFakeResponsesForGivenConnectors(string|array $response, int $status): void
     {
         $connector = new FakeConnector();
-        FakeResponseProvider::make($response, $status)->__invoke(FakeRequest::class, $connector);
+        FakeResponse::make($response, $status)->__invoke(FakeRequest::class, $connector);
 
         $result = $connector->send(new FakeRequest());
 
@@ -50,7 +50,7 @@ final class FakeResponseProviderTest extends TestCase
     public function itShouldNotFakeResponsesForOtherThanGivenConnectors(string|array $response, int $status): void
     {
         $connector = new FakeConnector();
-        FakeResponseProvider::make($response, $status)->__invoke(FakeRequest::class, $connector);
+        FakeResponse::make($response, $status)->__invoke(FakeRequest::class, $connector);
 
         $this->expectException(FatalRequestException::class);
 
@@ -61,7 +61,7 @@ final class FakeResponseProviderTest extends TestCase
     #[DataProvider('responses')]
     public function itCanFakeResponsesForAllConnectors(string|array $response, int $status): void
     {
-        FakeResponseProvider::make($response, $status)->__invoke(FakeRequest::class);
+        FakeResponse::make($response, $status)->__invoke(FakeRequest::class);
 
         $firstResult = new FakeConnector()->send(new FakeRequest());
         $lastResult = new FakeConnector()->send(new FakeRequest());
@@ -77,7 +77,7 @@ final class FakeResponseProviderTest extends TestCase
     #[TestWith([null], 'Without given connector instance')]
     public function itShouldFailRequestsWithoutResponseMock(?Connector $connector): void
     {
-        FakeResponseProvider::make(['ok'])->__invoke(FakeRequest::class, $connector);
+        FakeResponse::make(['ok'])->__invoke(FakeRequest::class, $connector);
 
         $this->expectException(LogicException::class);
 
@@ -93,13 +93,13 @@ final class FakeResponseProviderTest extends TestCase
     #[Test]
     public function itCanProvideCommonErrors(): void
     {
-        $cases = iterator_to_array(FakeResponseProvider::commonErrors());
+        $cases = iterator_to_array(FakeResponse::commonErrors());
 
         $this->assertEquals([
-            'Bad request' => [FakeResponseProvider::badRequest()],
-            'Forbidden' => [FakeResponseProvider::forbidden()],
-            'Not found' => [FakeResponseProvider::notFound()],
-            'Server error' => [FakeResponseProvider::serverError()],
+            'Bad request' => [FakeResponse::badRequest()],
+            'Forbidden' => [FakeResponse::forbidden()],
+            'Not found' => [FakeResponse::notFound()],
+            'Server error' => [FakeResponse::serverError()],
         ], $cases);
     }
 

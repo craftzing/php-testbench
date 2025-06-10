@@ -7,7 +7,7 @@ namespace Craftzing\TestBench\Laravel\Constraint\Events;
 use Craftzing\TestBench\Laravel\Doubles\Events\DummyEvent;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
-use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraintProvider;
+use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use LogicException;
@@ -64,8 +64,8 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itImplementsTheQuantableInterface(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itImplementsTheQuantableInterface(QuantableConstraint $quantise): void
     {
         WasDispatched::spy();
         $eventConstraints = [new IsIdentical('event')];
@@ -105,8 +105,8 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenDispatched(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenDispatched(QuantableConstraint $quantise): void
     {
         WasDispatched::spy();
         $event = 'some.event';
@@ -145,8 +145,8 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
-    public function itFailsWhenDispatchedButNotGivenTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenDispatchedButNotGivenTimes(QuantableConstraint $quantise): void
     {
         WasDispatched::spy();
         $event = 'some.event';
@@ -159,8 +159,8 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenDispatchedGivenTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenDispatchedGivenTimes(QuantableConstraint $quantise): void
     {
         WasDispatched::spy();
         $event = 'some.event';
@@ -171,9 +171,9 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
     public function itFailsWhenDispatchedWithGivenEventConstrainsButNotGivenTimes(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');
@@ -188,9 +188,9 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'atLeastOnce')]
+    #[DataProviderExternal(QuantableConstraint::class, 'atLeastOnce')]
     public function itFailsWhenDispatchedGivenTimesButNotWithGivenEventConstrains(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');
@@ -205,9 +205,9 @@ final class WasDispatchedTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenDispatchedGivenTimesWithGivenEventConstraints(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');

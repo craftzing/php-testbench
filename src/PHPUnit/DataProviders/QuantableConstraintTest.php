@@ -19,7 +19,7 @@ use function iterator_count;
 /**
  * @codeCoverageIgnore
  */
-final class QuantableConstraintProviderTest extends TestCase
+final class QuantableConstraintTest extends TestCase
 {
     private Generator $faker {
         get => Factory::create();
@@ -31,7 +31,7 @@ final class QuantableConstraintProviderTest extends TestCase
         $method = $this->faker->word();
         $times = $this->faker->randomNumber();
 
-        $instance = new QuantableConstraintProvider($method, $times);
+        $instance = new QuantableConstraint($method, $times);
 
         $this->assertSame($method, $instance->method);
         $this->assertSame($times, $instance->times);
@@ -45,7 +45,7 @@ final class QuantableConstraintProviderTest extends TestCase
         $times = $this->faker->randomNumber();
         $expected = $this->faker->randomNumber();
 
-        $instance = new QuantableConstraintProvider($method, $times, $expected);
+        $instance = new QuantableConstraint($method, $times, $expected);
 
         $this->assertSame($method, $instance->method);
         $this->assertSame($times, $instance->times);
@@ -59,7 +59,7 @@ final class QuantableConstraintProviderTest extends TestCase
     public function itCanBeInvokedOnConstraints(string $method, int $times): void
     {
         $constraint = $this->constraint();
-        $instance = new QuantableConstraintProvider($method, $times);
+        $instance = new QuantableConstraint($method, $times);
 
         $instance($constraint);
 
@@ -73,7 +73,7 @@ final class QuantableConstraintProviderTest extends TestCase
     public function itCanApplyGivenTimesToCallbacks(): void
     {
         $times = $this->faker->randomNumber(2);
-        $instance = new QuantableConstraintProvider('method', $times);
+        $instance = new QuantableConstraint('method', $times);
         $collector = new Collection();
 
         $instance->applyTo($collector->add(...));
@@ -84,7 +84,7 @@ final class QuantableConstraintProviderTest extends TestCase
     #[Test]
     public function itCanConstructCases(): void
     {
-        $cases = QuantableConstraintProvider::cases();
+        $cases = QuantableConstraint::cases();
 
         $this->assertIsIterable($cases);
         $this->assertSame(3, iterator_count($cases));
@@ -93,7 +93,7 @@ final class QuantableConstraintProviderTest extends TestCase
     #[Test]
     public function itCanConstructAtLeastOnceCases(): void
     {
-        $cases = QuantableConstraintProvider::atLeastOnce();
+        $cases = QuantableConstraint::atLeastOnce();
 
         $this->assertIsIterable($cases);
         $this->assertSame(2, iterator_count($cases));
@@ -102,7 +102,7 @@ final class QuantableConstraintProviderTest extends TestCase
     #[Test]
     public function itCanConstructTooFewOrTooManyTimesCases(): void
     {
-        $cases = QuantableConstraintProvider::tooFewOrTooManyTimes();
+        $cases = QuantableConstraint::tooFewOrTooManyTimes();
 
         $this->assertIsIterable($cases);
         $this->assertSame(2, iterator_count($cases));

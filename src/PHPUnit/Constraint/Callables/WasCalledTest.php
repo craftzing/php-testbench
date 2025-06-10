@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
-use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraintProvider;
+use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
@@ -38,8 +38,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itImplementsTheQuantableInterface(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itImplementsTheQuantableInterface(QuantableConstraint $quantise): void
     {
         $assertInvocation = function (): void {};
         $instance = new WasCalled($assertInvocation);
@@ -70,8 +70,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'atLeastOnce')]
-    public function itPassesWhenCalled(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'atLeastOnce')]
+    public function itPassesWhenCalled(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
 
@@ -109,8 +109,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
-    public function itFailsWhenNotCalledExpectedTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenNotCalledExpectedTimes(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
         $quantise->applyTo($callable(...));
@@ -122,8 +122,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenCalledExpectedTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenCalledExpectedTimes(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
 
@@ -133,8 +133,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
-    public function itFailsWhenNotCalledExpectedTimesWithExpectedArguments(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenNotCalledExpectedTimesWithExpectedArguments(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
         $quantise->applyTo(fn () => $callable('first', 'last'));
@@ -149,8 +149,8 @@ final class WasCalledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenCalledExpectedTimesWithExpectedArguments(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenCalledExpectedTimesWithExpectedArguments(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
 

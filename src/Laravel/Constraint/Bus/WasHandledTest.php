@@ -6,7 +6,7 @@ namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
-use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraintProvider;
+use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
@@ -64,8 +64,8 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itImplementsTheQuantableInterface(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itImplementsTheQuantableInterface(QuantableConstraint $quantise): void
     {
         $instance = new WasHandled();
 
@@ -108,8 +108,8 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenHandled(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenHandled(QuantableConstraint $quantise): void
     {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
@@ -148,8 +148,8 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
-    public function itFailsWhenHandledButNotGivenTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
+    public function itFailsWhenHandledButNotGivenTimes(QuantableConstraint $quantise): void
     {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
@@ -162,8 +162,8 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
-    public function itPassesWhenHandledGivenTimes(QuantableConstraintProvider $quantise): void
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
+    public function itPassesWhenHandledGivenTimes(QuantableConstraint $quantise): void
     {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
@@ -174,9 +174,9 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'tooFewOrTooManyTimes')]
+    #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
     public function itFailsWhenHandledWithGivenCommandConstrainsButNotGivenTimes(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
@@ -191,9 +191,9 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'atLeastOnce')]
+    #[DataProviderExternal(QuantableConstraint::class, 'atLeastOnce')]
     public function itFailsWhenHandledGivenTimesButNotWithGivenCommandConstrains(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
@@ -210,9 +210,9 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(QuantableConstraintProvider::class, 'cases')]
+    #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenHandledGivenTimesWithGivenCommandConstraints(
-        QuantableConstraintProvider $quantise,
+        QuantableConstraint $quantise,
     ): void {
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();

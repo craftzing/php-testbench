@@ -12,7 +12,7 @@ use Saloon\Http\PendingRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-final readonly class FakeResponseProvider
+final readonly class FakeResponse
 {
     public function __construct(
         private MockResponse $response,

@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 use function random_int;
 
-final readonly class QuantableConstraintProvider
+final readonly class QuantableConstraint
 {
     public int $expected;
 
