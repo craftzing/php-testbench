@@ -7,12 +7,14 @@ namespace Craftzing\TestBench\Saloon\DataProviders;
 use Craftzing\TestBench\Saloon\Doubles\FakeConnector;
 use Craftzing\TestBench\Saloon\Doubles\FakeRequest;
 use LogicException;
-use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
+use PHPUnit\Framework\TestCase;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Http\Connector;
+use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
 use Saloon\Http\Response as SaloonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +28,12 @@ use function json_encode;
  */
 final class FakeResponseTest extends TestCase
 {
+    #[Before]
+    public function destroyGlobalMockClient(): void
+    {
+        MockClient::destroyGlobal();
+    }
+
     public static function responses(): iterable
     {
         yield 'Array' => [['message' => 'ok'], Response::HTTP_NO_CONTENT];
