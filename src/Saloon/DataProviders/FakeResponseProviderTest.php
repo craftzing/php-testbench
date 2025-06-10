@@ -18,6 +18,7 @@ use Saloon\Http\Response as SaloonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 use function is_array;
+use function iterator_to_array;
 use function json_encode;
 
 /**
@@ -87,6 +88,19 @@ final class FakeResponseProviderTest extends TestCase
                 return 'not-faked';
             }
         });
+    }
+
+    #[Test]
+    public function itCanProvideCommonErrors(): void
+    {
+        $cases = iterator_to_array(FakeResponseProvider::commonErrors());
+
+        $this->assertEquals([
+            'Bad request' => [FakeResponseProvider::badRequest()],
+            'Forbidden' => [FakeResponseProvider::forbidden()],
+            'Not found' => [FakeResponseProvider::notFound()],
+            'Server error' => [FakeResponseProvider::serverError()],
+        ], $cases);
     }
 
     private function assertBody(string|array $body, SaloonResponse $response): void
