@@ -18,6 +18,9 @@ final readonly class FakeResponseProvider
         private MockResponse $response,
     ) {}
 
+    /**
+     * @param string|array<mixed> $response
+     */
     public static function make(string|array $response, int $status = SymfonyResponse::HTTP_OK): self
     {
         return new self(MockResponse::make($response, $status));
