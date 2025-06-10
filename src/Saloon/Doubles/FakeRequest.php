@@ -11,10 +11,11 @@ final class FakeRequest extends Request
 {
     public function __construct(
         protected Method $method = Method::GET,
+        private readonly string $endpoint = '/fake',
     ) {}
 
     public function resolveEndpoint(): string
     {
-        return '/fake';
+        return $this->endpoint;
     }
 }
