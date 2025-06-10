@@ -89,7 +89,7 @@ final class WasSent extends Constraint implements Quantable
             fn (Request $request): bool => $this->matchesRequestConstraints(
                 $other,
                 $request,
-                // When the request was se t exactly once, we should add all nested expectation failures to the
+                // When the request was sent exactly once, we should add all nested expectation failures to the
                 // failure description in order to provide as much context as possible. We should not to this
                 // for requests that were sent more than once, as that would pollute the failure output...
                 count($matchingSentRequests) === 1,
