@@ -37,10 +37,10 @@ final class WasHandled extends Constraint implements Quantable
 
     public function __construct(
         public readonly ?int $times = null,
-        Constraint ...$commandConstraints,
+        Constraint ...$constraints,
     ) {
         $this->bus = Bus::getFacadeRoot();
-        $this->objectConstraints = $commandConstraints;
+        $this->objectConstraints = $constraints;
     }
 
     public function times(int $count): self
@@ -58,9 +58,9 @@ final class WasHandled extends Constraint implements Quantable
         return new self(1, ...$this->objectConstraints);
     }
 
-    public function withCommandConstraints(Constraint ...$commandConstraints): self
+    public function withConstraints(Constraint ...$constraints): self
     {
-        return new self($this->times, ...$commandConstraints);
+        return new self($this->times, ...$constraints);
     }
 
     #[Override]

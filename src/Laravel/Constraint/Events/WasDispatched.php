@@ -27,10 +27,10 @@ final class WasDispatched extends Constraint implements Quantable
 
     public function __construct(
         public readonly ?int $times = null,
-        Constraint ...$eventConstraints,
+        Constraint ...$constraints,
     ) {
         $this->eventFake = $this->resolveEventFake();
-        $this->objectConstraints = $eventConstraints;
+        $this->objectConstraints = $constraints;
     }
 
     public function times(int $count): self
@@ -48,9 +48,9 @@ final class WasDispatched extends Constraint implements Quantable
         return new self(1, ...$this->objectConstraints);
     }
 
-    public function withEventConstraints(Constraint ...$eventConstraints): self
+    public function withConstraints(Constraint ...$constraints): self
     {
-        return new self($this->times, ...$eventConstraints);
+        return new self($this->times, ...$constraints);
     }
 
     #[Override]

@@ -57,7 +57,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $eventConstraints = [new IsIdentical('event')];
 
-        $instance = new WasDispatched()->withEventConstraints(...$eventConstraints);
+        $instance = new WasDispatched()->withConstraints(...$eventConstraints);
 
         $this->assertNull($instance->times);
         $this->assertSame($eventConstraints, $instance->objectConstraints);
@@ -69,7 +69,7 @@ final class WasDispatchedTest extends TestCase
     {
         WasDispatched::spy();
         $eventConstraints = [new IsIdentical('event')];
-        $instance = new WasDispatched()->withEventConstraints(...$eventConstraints);
+        $instance = new WasDispatched()->withConstraints(...$eventConstraints);
 
         $quantisedInstance = $quantise($instance);
 
@@ -126,7 +126,7 @@ final class WasDispatchedTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage('event was dispatched with given event constraints.');
 
-        $this->assertThat($event, new WasDispatched()->withEventConstraints(
+        $this->assertThat($event, new WasDispatched()->withConstraints(
             new Callback(fn () => false),
         ));
     }
@@ -139,7 +139,7 @@ final class WasDispatchedTest extends TestCase
 
         Event::dispatch($event);
 
-        $this->assertThat($event, new WasDispatched()->withEventConstraints(
+        $this->assertThat($event, new WasDispatched()->withConstraints(
             new Callback(fn () => true),
         ));
     }
@@ -182,7 +182,7 @@ final class WasDispatchedTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("event was dispatched $quantise->expected time(s)");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withEventConstraints(
+        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
             new Callback(fn () => true),
         ));
     }
@@ -199,7 +199,7 @@ final class WasDispatchedTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("event was dispatched $quantise->expected time(s) with given event constraints.");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withEventConstraints(
+        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
             new Callback(fn () => false),
         ));
     }
@@ -214,7 +214,7 @@ final class WasDispatchedTest extends TestCase
 
         $quantise->applyTo(fn () => Event::dispatch($event));
 
-        $this->assertThat($event, $quantise(new WasDispatched()->withEventConstraints(
+        $this->assertThat($event, $quantise(new WasDispatched()->withConstraints(
             new Callback(fn () => true),
         )));
     }

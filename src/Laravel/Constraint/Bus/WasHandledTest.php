@@ -129,7 +129,7 @@ final class WasHandledTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage('command was handled with given command constraints.');
 
-        $this->assertThat($command::class, new WasHandled()->withCommandConstraints(
+        $this->assertThat($command::class, new WasHandled()->withConstraints(
             new Callback(fn () => false),
         ));
     }
@@ -142,7 +142,7 @@ final class WasHandledTest extends TestCase
 
         Bus::dispatch($command);
 
-        $this->assertThat($command::class, new WasHandled()->withCommandConstraints(
+        $this->assertThat($command::class, new WasHandled()->withConstraints(
             new Callback(fn () => true),
         ));
     }
@@ -185,7 +185,7 @@ final class WasHandledTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("command was handled $quantise->expected time(s)");
 
-        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withCommandConstraints(
+        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(
             new Callback(fn () => true),
         ));
     }
@@ -204,7 +204,7 @@ final class WasHandledTest extends TestCase
             "command was handled $quantise->expected time(s) with given command constraints.",
         );
 
-        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withCommandConstraints(
+        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(
             new Callback(fn () => false),
         ));
     }
@@ -219,7 +219,7 @@ final class WasHandledTest extends TestCase
 
         $quantise->applyTo(fn () => Bus::dispatch($command));
 
-        $this->assertThat($command, $quantise(new WasHandled()->withCommandConstraints(
+        $this->assertThat($command, $quantise(new WasHandled()->withConstraints(
             new Callback(fn () => true),
         )));
     }
