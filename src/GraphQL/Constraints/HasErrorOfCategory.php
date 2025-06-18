@@ -30,6 +30,11 @@ final class HasErrorOfCategory extends Constraint
         return new self('authorization');
     }
 
+    public static function validation(): self
+    {
+        return new self('validation');
+    }
+
     public function path(string $path): self
     {
         return new self($this->category, $path);

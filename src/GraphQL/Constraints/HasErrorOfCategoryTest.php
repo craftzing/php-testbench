@@ -32,6 +32,14 @@ final class HasErrorOfCategoryTest extends TestCase
     }
 
     #[Test]
+    public function itCanConstructForValidationErrors(): void
+    {
+        $instance = HasErrorOfCategory::validation();
+
+        $this->assertEquals(new HasErrorOfCategory('validation'), $instance);
+    }
+
+    #[Test]
     public function itCanSpecifyDifferentPaths(): void
     {
         $path = 'some.different.path';
