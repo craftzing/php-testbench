@@ -41,7 +41,7 @@ final class ModelComparatorTest extends TestCase
 
     #[Test]
     #[DataProvider('accepts')]
-    public function itShouldOnlyAcceptExpectedAndActualModels(mixed $expected, mixed $actual, bool $accepted): void
+    public function itOnlyAcceptExpectedAndActualModels(mixed $expected, mixed $actual, bool $accepted): void
     {
         $instance = new ModelComparator();
 
@@ -85,7 +85,7 @@ final class ModelComparatorTest extends TestCase
 
     #[Test]
     #[DataProvider('notEqual')]
-    public function itShouldFailWhenNotEqual(mixed $expected, mixed $actual, string $exceptionFQCN): void
+    public function itFailsWhenNotEqual(mixed $expected, mixed $actual, string $exceptionFQCN): void
     {
         $instance = new ModelComparator();
 
@@ -109,7 +109,7 @@ final class ModelComparatorTest extends TestCase
 
     #[Test]
     #[DataProvider('isEqual')]
-    public function itShouldPassWhenEqual(Model $expected, Model $actual): void
+    public function itPassesWhenEqual(Model $expected, Model $actual): void
     {
         $instance = new ModelComparator();
 
