@@ -76,7 +76,7 @@ final class ModelComparatorTest extends TestCase
             ComparisonFailure::class,
         ];
 
-        yield 'Expected and actual have different tables' => [
+        yield 'Expected and actual have different connections' => [
             $expected = self::model('model', 'default1'),
             self::model('model', 'default2', $expected->getKey()),
             ComparisonFailure::class,
