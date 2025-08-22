@@ -7,6 +7,7 @@ namespace Craftzing\TestBench\PHPUnit\Doubles;
 use Craftzing\TestBench\PHPUnit\AssertsConstraints;
 
 use function call_user_func_array;
+use function func_get_args;
 use function is_callable;
 
 final class SpyCallable
@@ -22,8 +23,9 @@ final class SpyCallable
         public readonly mixed $return = null,
     ) {}
 
-    public function __invoke(mixed ...$arguments): mixed
+    public function __invoke(): mixed
     {
+        $arguments = func_get_args();
         $this->invocations[] = new CallableInvocation(...$arguments);
 
         if (is_callable($this->return)) {
