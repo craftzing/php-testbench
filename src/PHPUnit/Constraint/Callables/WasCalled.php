@@ -11,6 +11,7 @@ use Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use Override;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -25,6 +26,17 @@ final class WasCalled extends Constraint implements Quantable
         public readonly ?Closure $assertInvocation = null,
         public readonly ?int $times = null,
     ) {}
+
+    public function withSame(mixed ...$expected): self
+    {
+        return new self(function (mixed ...$actual) use ($expected): void {
+            Assert::assertCount(count($expected), $actual);
+
+            foreach ($actual as $key => $value) {
+                Assert::assertSame($expected[$key], $value);
+            }
+        }, $this->times);
+    }
 
     public function times(int $count): self
     {

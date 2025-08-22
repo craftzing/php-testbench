@@ -78,13 +78,13 @@ final class WasHandled extends Constraint implements Quantable
             default => $other,
         };
         $handler = $this->handler($command);
-        $assertInvocation = match ($this->givenOrDerivedObjectConstraints($other)) {
-            [] => null,
-            default => $this->assertHandlerWasInvokedWithCommandConstraints(...),
-        };
 
         try {
-            Assert::assertThat($handler, new WasCalled($assertInvocation, $this->times));
+            $handler->assert(new WasCalled(function (object $handled) use ($command): void {
+                foreach ($this->givenOrDerivedObjectConstraints($command) as $constraint) {
+                    Assert::assertThat($handled, $constraint);
+                }
+            }, $this->times));
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
 
@@ -105,13 +105,6 @@ final class WasHandled extends Constraint implements Quantable
         }
 
         return $handler;
-    }
-
-    private function assertHandlerWasInvokedWithCommandConstraints(object $command): void
-    {
-        foreach ($this->givenOrDerivedObjectConstraints($command) as $constraint) {
-            Assert::assertThat($command, $constraint);
-        }
     }
 
     public function toString(): string

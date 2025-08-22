@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
+use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
+use Craftzing\TestBench\PHPUnit\Constraint\Spy;
 use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Support\Facades\Bus;
@@ -269,7 +271,7 @@ final class WasHandledTest extends TestCase
     }
 
     #[Test]
-    public function itFailsWhenNotHandledWithDerivedCommandConstraints(): void
+    public function itFailsWhenHandledButNotWithDerivedCommandConstraints(): void
     {
         $command = new stdClass();
         WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
@@ -292,5 +294,35 @@ final class WasHandledTest extends TestCase
         Bus::dispatch($command);
 
         $this->assertThat($command, new WasHandled());
+    }
+
+    #[Test]
+    public function itDerivesConstraintsFromExpectedCommandsAndMatchesItAgainstActualCommands(): void
+    {
+        $expected = $this->command(['id' => 'expected']);
+        $actual = $this->command(['id' => 'actual']);
+        $constraint = Spy::passing();
+        $deriveConstraints = new DeriveConstraintsFromObjectUsingFakes([$constraint]);
+        WasHandled::deriveConstraintsFromObjectUsing($deriveConstraints);
+        WasHandled::using(fn (stdClass $command): string => 'handled', $this->app);
+        Bus::dispatch($actual);
+
+        $this->assertThat($expected, new WasHandled());
+
+        $deriveConstraints->invoke->assert(new WasCalled()->withSame($expected));
+        $deriveConstraints->invoke->assert(new WasCalled()->never()->withSame($actual));
+        $constraint->matches->assert(new WasCalled()->withSame($actual));
+        $constraint->matches->assert(new WasCalled()->never()->withSame($expected));
+    }
+
+    private function command(array $properties): stdClass
+    {
+        $command = new stdClass();
+
+        foreach ($properties as $property => $value) {
+            $command->{$property} = $value;
+        }
+
+        return $command;
     }
 }
