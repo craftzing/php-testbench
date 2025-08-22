@@ -16,6 +16,9 @@ use stdClass;
 
 use function compact;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class ModelComparatorTest extends TestCase
 {
     public static function accepts(): iterable
