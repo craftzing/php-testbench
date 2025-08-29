@@ -54,7 +54,7 @@ abstract class ImmutableFactory
      * @param array<string, mixed> $attributes
      * @return TClass
      */
-    abstract protected function instance(array $attributes): mixed;
+    abstract protected function instance(array $attributes): object;
 
     private function resolveValue(mixed $value): mixed
     {
