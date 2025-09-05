@@ -6,11 +6,14 @@ namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
 use LogicException;
 use ReflectionEnum;
+use ReflectionEnumUnitCase;
 use UnitEnum;
 use ValueError;
 
 use function array_filter;
+use function array_map;
 use function array_rand;
+use function array_reduce;
 use function count;
 use function in_array;
 
@@ -77,5 +80,23 @@ final readonly class EnumCase
         foreach ($options as $case) {
             yield "$case->name" => [new self($case, ...$options)];
         }
+    }
+
+    /**
+     * @param class-string<TValue> $enumFQCN
+     * @return iterable<array<self<TValue>>>
+     */
+    public static function except(string $enumFQCN, UnitEnum ...$except): iterable
+    {
+        $options = array_map(function (ReflectionEnumUnitCase $reflection) use ($except): ?UnitEnum {
+            $case = $reflection->getValue();
+
+            return match (in_array($case, $except, true)) {
+                true => null,
+                false => $case,
+            };
+        }, new ReflectionEnum($enumFQCN)->getCases());
+
+        yield from self::options(...array_filter($options));
     }
 }

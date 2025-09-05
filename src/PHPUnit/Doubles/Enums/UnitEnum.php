@@ -9,4 +9,5 @@ enum UnitEnum
     case One;
     case Two;
     case Three;
+    case Four;
 }

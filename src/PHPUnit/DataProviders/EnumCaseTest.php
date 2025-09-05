@@ -164,4 +164,20 @@ final class EnumCaseTest extends TestCase
             $this->assertContains($case[0]->instance, $expected);
         });
     }
+
+    #[Test]
+    #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
+    public function itCanProvideFromEnumFQCNsExceptSomeCases(string $enumFQCN): void
+    {
+        $options = $enumFQCN::cases();
+        [$keep, $except] = collect($options)->shuffle()->split(2);
+
+        $cases = iterator_to_array(EnumCase::except($enumFQCN, ...$except));
+
+        $this->assertCount(count($keep), $cases);
+        collect($cases)->each(function (array $case) use ($keep): void {
+            $this->assertInstanceOf(EnumCase::class, $case[0]);
+            $this->assertContains($case[0]->instance, $keep);
+        });
+    }
 }
