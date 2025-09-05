@@ -10,7 +10,7 @@ use ValueError;
 
 use function array_rand;
 use function array_search;
-use function count;
+use function in_array;
 
 /**
  * @template TValue of UnitEnum
@@ -33,15 +33,13 @@ final class EnumCase
         }
     }
 
-    /**
-     * @param TValue $instance
-     * @param array<int, TValue> ...$options
-     */
     public function __construct(
+        /* @var TValue */
         public readonly UnitEnum $instance,
+        /* @param array<int, TValue> ...$options */
         UnitEnum ...$options,
     ) {
-        count($options) >= 2 or throw new ValueError('At least 2 options should should be given.');
+        in_array($instance, $options, true) or throw new ValueError('Options should contain the given instance.');
 
         foreach ($options as $option) {
             $option::class === $instance::class or throw new ValueError(

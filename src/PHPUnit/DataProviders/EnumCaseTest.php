@@ -9,6 +9,7 @@ use Craftzing\TestBench\PHPUnit\Doubles\Enums\StringBackedEnum;
 use Craftzing\TestBench\PHPUnit\Doubles\Enums\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
+use Illuminate\Support\Arr;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -48,16 +49,14 @@ final class EnumCaseTest extends TestCase
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
-    public function itCannotConstructWithoutAtLeastTwoOptions(string $enumFQCN): void
+    public function itCannotConstructWhenInstanceIsNotInOptions(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
+        $options = $enumFQCN::cases();
+        $case = Arr::pull($options, array_rand($options));
 
         $this->expectException(ValueError::class);
 
-        new EnumCase(
-            $this->faker->randomElement($cases),
-            $this->faker->randomElement($cases),
-        );
+        new EnumCase($case, ...$options);
     }
 
     #[Test]
@@ -79,12 +78,24 @@ final class EnumCaseTest extends TestCase
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
-    public function itCanConstructWithOptions(string $enumFQCN): void
+    public function itCanConstructWithSingleOption(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $cases[array_rand($cases)];
+        $options = $enumFQCN::cases();
+        $case = $options[array_rand($options)];
 
-        $provider = new EnumCase($case, ...$cases);
+        $provider = new EnumCase($case, $case);
+
+        $this->assertSame($case, $provider->instance);
+    }
+
+    #[Test]
+    #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
+    public function itCanConstructWithMultipleOptions(string $enumFQCN): void
+    {
+        $options = $enumFQCN::cases();
+        $case = $options[array_rand($options)];
+
+        $provider = new EnumCase($case, ...$options);
 
         $this->assertSame($case, $provider->instance);
     }
