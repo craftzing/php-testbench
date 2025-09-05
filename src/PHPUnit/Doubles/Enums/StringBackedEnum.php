@@ -9,4 +9,5 @@ enum StringBackedEnum: string
     case One = 'One';
     case Two = 'Two';
     case Three = 'Three';
+    case Four = 'Four';
 }
