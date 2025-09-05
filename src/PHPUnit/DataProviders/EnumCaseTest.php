@@ -9,6 +9,8 @@ use Craftzing\TestBench\PHPUnit\Doubles\Enums\StringBackedEnum;
 use Craftzing\TestBench\PHPUnit\Doubles\Enums\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
+use Illuminate\Support\Arr;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -48,58 +50,81 @@ final class EnumCaseTest extends TestCase
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
-    public function itCannotConstructWithoutAtLeastTwoOptions(string $enumFQCN): void
+    public function itCannotConstructWhenInstanceIsNotInOptions(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
+        $options = $enumFQCN::cases();
+        $case = Arr::pull($options, array_rand($options));
 
         $this->expectException(ValueError::class);
 
-        new EnumCase(
-            $this->faker->randomElement($cases),
-            $this->faker->randomElement($cases),
-        );
+        new EnumCase($case, ...$options);
     }
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
     public function itCannotConstructWhenOptionsHaveDifferentTypeComparedToGivenInstance(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $this->faker->randomElement($cases);
+        $options = $enumFQCN::cases();
+        $instance = $this->faker->randomElement($options);
         $differentEnumFQCN = $this->faker->randomElement(array_filter(
             self::ENUM_FQCNS,
-            fn (string $enumFQCN): bool => $enumFQCN !== $case::class,
+            fn (string $enumFQCN): bool => $enumFQCN !== $instance::class,
         ));
-        $differentEnumCase = $this->faker->randomElement($differentEnumFQCN::cases());
+        $differentEnumInstance = $this->faker->randomElement($differentEnumFQCN::cases());
 
         $this->expectException(ValueError::class);
 
-        new EnumCase($case, $differentEnumCase, $differentEnumCase);
+        new EnumCase($instance, $differentEnumInstance, $differentEnumInstance);
     }
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
-    public function itCanConstructWithOptions(string $enumFQCN): void
+    public function itCanConstructWithSingleOption(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $cases[array_rand($cases)];
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
 
-        $provider = new EnumCase($case, ...$cases);
+        $provider = new EnumCase($instance, $instance);
 
-        $this->assertSame($case, $provider->instance);
+        $this->assertSame($instance, $provider->instance);
+    }
+
+    #[Test]
+    #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
+    public function itCanConstructWithMultipleOptions(string $enumFQCN): void
+    {
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
+
+        $provider = new EnumCase($instance, ...$options);
+
+        $this->assertSame($instance, $provider->instance);
     }
 
     #[Test]
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
     public function itCanReturnDifferentInstances(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $cases[array_rand($cases)];
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
+        $provider = new EnumCase($instance, ...$options);
 
-        $provider = new EnumCase($case, ...$cases);
+        $differentInstance = $provider->differentInstance();
 
-        $this->assertSame($case, $provider->instance);
-        $this->assertNotEquals($case, $provider->differentInstance());
+        $this->assertNotEquals($instance, $differentInstance);
+    }
+
+    #[Test]
+    #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
+    public function itCannotReturnDifferentInstancesWithASingleOption(string $enumFQCN): void
+    {
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
+        $provider = new EnumCase($instance, $instance);
+
+        $this->expectException(LogicException::class);
+
+        $provider->differentInstance();
     }
 
     #[Test]

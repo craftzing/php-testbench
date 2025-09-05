@@ -4,44 +4,33 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
+use LogicException;
 use ReflectionEnum;
 use UnitEnum;
 use ValueError;
 
+use function array_filter;
 use function array_rand;
-use function array_search;
 use function count;
+use function in_array;
 
 /**
  * @template TValue of UnitEnum
  */
-final class EnumCase
+final readonly class EnumCase
 {
     /**
      * @var array<int, TValue>
      */
-    private readonly array $options;
+    private array $options;
 
-    private int|string $instanceKeyInOptions {
-        get {
-            $key = array_search($this->instance, $this->options, true);
-
-            return match ($key) {
-                false => '',
-                default => $key,
-            };
-        }
-    }
-
-    /**
-     * @param TValue $instance
-     * @param array<int, TValue> ...$options
-     */
     public function __construct(
-        public readonly UnitEnum $instance,
+        /* @var TValue */
+        public UnitEnum $instance,
+        /* @param array<int, TValue> ...$options */
         UnitEnum ...$options,
     ) {
-        count($options) >= 2 or throw new ValueError('At least 2 options should should be given.');
+        in_array($instance, $options, true) or throw new ValueError('Options should contain the given instance.');
 
         foreach ($options as $option) {
             $option::class === $instance::class or throw new ValueError(
@@ -57,9 +46,10 @@ final class EnumCase
      */
     public function differentInstance(): UnitEnum
     {
-        $differentOptions = $this->options;
-
-        unset($differentOptions[$this->instanceKeyInOptions]);
+        count($this->options) > 1 or throw new LogicException(
+            self::class . ' was configured with a single option and can therefore not return a different instance.',
+        );
+        $differentOptions = array_filter($this->options, fn (UnitEnum $option): bool => $option !== $this->instance);
 
         return $differentOptions[array_rand($differentOptions)];
     }
