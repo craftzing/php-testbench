@@ -9,35 +9,24 @@ use ReflectionEnum;
 use UnitEnum;
 use ValueError;
 
+use function array_filter;
 use function array_rand;
-use function array_search;
 use function count;
 use function in_array;
 
 /**
  * @template TValue of UnitEnum
  */
-final class EnumCase
+final readonly class EnumCase
 {
     /**
      * @var array<int, TValue>
      */
-    private readonly array $options;
-
-    private int|string $instanceKeyInOptions {
-        get {
-            $key = array_search($this->instance, $this->options, true);
-
-            return match ($key) {
-                false => '',
-                default => $key,
-            };
-        }
-    }
+    private array $options;
 
     public function __construct(
         /* @var TValue */
-        public readonly UnitEnum $instance,
+        public UnitEnum $instance,
         /* @param array<int, TValue> ...$options */
         UnitEnum ...$options,
     ) {
@@ -60,10 +49,7 @@ final class EnumCase
         count($this->options) > 1 or throw new LogicException(
             self::class . ' was configured with a single option and can therefore not return a different instance.',
         );
-
-        $differentOptions = $this->options;
-
-        unset($differentOptions[$this->instanceKeyInOptions]);
+        $differentOptions = array_filter($this->options, fn (UnitEnum $option): bool => $option !== $this->instance);
 
         return $differentOptions[array_rand($differentOptions)];
     }
