@@ -10,6 +10,7 @@ use Craftzing\TestBench\PHPUnit\Doubles\Enums\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Arr;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -104,13 +105,26 @@ final class EnumCaseTest extends TestCase
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
     public function itCanReturnDifferentInstances(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $cases[array_rand($cases)];
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
+        $provider = new EnumCase($instance, ...$options);
 
-        $provider = new EnumCase($case, ...$cases);
+        $differentInstance = $provider->differentInstance();
 
-        $this->assertSame($case, $provider->instance);
-        $this->assertNotEquals($case, $provider->differentInstance());
+        $this->assertNotEquals($instance, $differentInstance);
+    }
+
+    #[Test]
+    #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
+    public function itCannotReturnDifferentInstancesWithASingleOption(string $enumFQCN): void
+    {
+        $options = $enumFQCN::cases();
+        $instance = $options[array_rand($options)];
+        $provider = new EnumCase($instance, $instance);
+
+        $this->expectException(LogicException::class);
+
+        $provider->differentInstance();
     }
 
     #[Test]

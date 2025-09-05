@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
+use LogicException;
 use ReflectionEnum;
 use UnitEnum;
 use ValueError;
 
 use function array_rand;
 use function array_search;
+use function count;
 use function in_array;
 
 /**
@@ -55,6 +57,10 @@ final class EnumCase
      */
     public function differentInstance(): UnitEnum
     {
+        count($this->options) > 1 or throw new LogicException(
+            self::class . ' was configured with a single option and can therefore not return a different instance.',
+        );
+
         $differentOptions = $this->options;
 
         unset($differentOptions[$this->instanceKeyInOptions]);
