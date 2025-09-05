@@ -64,17 +64,17 @@ final class EnumCaseTest extends TestCase
     #[DataProvider('enumFQCNs')] /** @param class-string<UnitEnumInterface> $enumFQCN */
     public function itCannotConstructWhenOptionsHaveDifferentTypeComparedToGivenInstance(string $enumFQCN): void
     {
-        $cases = $enumFQCN::cases();
-        $case = $this->faker->randomElement($cases);
+        $options = $enumFQCN::cases();
+        $instance = $this->faker->randomElement($options);
         $differentEnumFQCN = $this->faker->randomElement(array_filter(
             self::ENUM_FQCNS,
-            fn (string $enumFQCN): bool => $enumFQCN !== $case::class,
+            fn (string $enumFQCN): bool => $enumFQCN !== $instance::class,
         ));
-        $differentEnumCase = $this->faker->randomElement($differentEnumFQCN::cases());
+        $differentEnumInstance = $this->faker->randomElement($differentEnumFQCN::cases());
 
         $this->expectException(ValueError::class);
 
-        new EnumCase($case, $differentEnumCase, $differentEnumCase);
+        new EnumCase($instance, $differentEnumInstance, $differentEnumInstance);
     }
 
     #[Test]
@@ -82,11 +82,11 @@ final class EnumCaseTest extends TestCase
     public function itCanConstructWithSingleOption(string $enumFQCN): void
     {
         $options = $enumFQCN::cases();
-        $case = $options[array_rand($options)];
+        $instance = $options[array_rand($options)];
 
-        $provider = new EnumCase($case, $case);
+        $provider = new EnumCase($instance, $instance);
 
-        $this->assertSame($case, $provider->instance);
+        $this->assertSame($instance, $provider->instance);
     }
 
     #[Test]
@@ -94,11 +94,11 @@ final class EnumCaseTest extends TestCase
     public function itCanConstructWithMultipleOptions(string $enumFQCN): void
     {
         $options = $enumFQCN::cases();
-        $case = $options[array_rand($options)];
+        $instance = $options[array_rand($options)];
 
-        $provider = new EnumCase($case, ...$options);
+        $provider = new EnumCase($instance, ...$options);
 
-        $this->assertSame($case, $provider->instance);
+        $this->assertSame($instance, $provider->instance);
     }
 
     #[Test]
