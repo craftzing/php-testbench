@@ -13,6 +13,9 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
 use stdClass;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class HasHandlerTest extends TestCase
 {
     #[Test]
