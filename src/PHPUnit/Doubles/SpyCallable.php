@@ -17,7 +17,7 @@ final class SpyCallable
     /**
      * @var array<int, CallableInvocation>
      */
-    private(set) public array $invocations = [];
+    public private(set) array $invocations = [];
 
     public function __construct(
         public readonly mixed $return = null,

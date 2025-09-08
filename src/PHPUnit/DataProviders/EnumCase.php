@@ -13,7 +13,6 @@ use ValueError;
 use function array_filter;
 use function array_map;
 use function array_rand;
-use function array_reduce;
 use function count;
 use function in_array;
 
