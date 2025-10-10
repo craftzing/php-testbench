@@ -19,7 +19,7 @@ jobs:
       - name: Run php-cs-fixer inside the container
         run: |
           docker run --rm \
-            -v ${{ github.workspace }}:/app \
+            -v ${{ github.working-directory }}:/app \
             -w /app \
             ghcr.io/craftzing/docker-images/php:8.4 \
             bash -c "
