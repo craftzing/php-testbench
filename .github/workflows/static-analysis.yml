@@ -23,6 +23,6 @@ jobs:
         with:
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
       - name: Commit CS fixes
-        uses: craftzing/git-auto-commit-action@v5
+        uses: craftzing/git-auto-commit-action@778341a
         with:
           commit_message: Fix code style violations
