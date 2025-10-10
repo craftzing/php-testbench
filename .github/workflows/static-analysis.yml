@@ -19,7 +19,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Run PHP CS fixer
-        uses: ./.github/actions/php-cs-fixer.yml
+        uses: ./.github/actions/php-cs-fixer
         with:
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
       - name: Commit CS fixes
