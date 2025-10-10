@@ -1,0 +1,32 @@
+name: PHP CS Fixer
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull a Craftzing owned image
+        run: docker pull ghcr.io/craftzing/docker-images/php:8.4
+
+      - name: Run php-cs-fixer inside the container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            ghcr.io/craftzing/docker-images/php:8.4 \
+            bash -c "
+              VERSION=3.88.2 && \
+              wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v\$VERSION/php-cs-fixer.phar -O php-cs-fixer && \
+              chmod a+x php-cs-fixer && \
+              mv php-cs-fixer /usr/local/bin/php-cs-fixer && \
+              php-cs-fixer --version && \
+              php-cs-fixer fix --allow-risky=yes
+            "
