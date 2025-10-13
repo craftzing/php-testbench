@@ -8,7 +8,7 @@ use ReflectionClass;
 use ReflectionProperty;
 
 /**
- * @template TClass of object
+ * @template TClass
  */
 final readonly class InstanceFactory
 {

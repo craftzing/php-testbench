@@ -77,7 +77,6 @@ final readonly class EnumCase
     public static function options(UnitEnum ...$options): iterable
     {
         foreach ($options as $case) {
-            // @phpstan-ignore generator.valueType
             yield "$case->name" => [new self($case, ...$options)];
         }
     }
