@@ -19,10 +19,12 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Run PHP CS fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
+        uses: ./.github/actions/php-cs-fixer
         with:
+          workspace: ${{ github.workspace }}
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit CS fixes
-        uses: craftzing/git-auto-commit-action@v5
+        uses: craftzing/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0
         with:
           commit_message: Fix code style violations
