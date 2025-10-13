@@ -31,6 +31,7 @@ abstract class ImmutableFactory
     /**
      * @param array<string, mixed> $state
      * @return static<TClass>
+     * @phpstan-return static
      */
     public function state(array $state): static
     {
@@ -39,6 +40,7 @@ abstract class ImmutableFactory
 
     /**
      * @return static<TClass>
+     * @phpstan-return static
      */
     public function times(int $count): static
     {
@@ -87,7 +89,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<int, TClass>
+     * @return array<int, array<string, mixed>>
      */
     public function rawMany(array $attributes = []): array
     {
