@@ -13,7 +13,7 @@ use function is_iterable;
 use function iterator_to_array;
 
 /**
- * @template TClass
+ * @template TClass of object
  */
 abstract class ImmutableFactory
 {
@@ -30,19 +30,25 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $state
-     * @return static<TClass>
+     * @return static
      */
     public function state(array $state): static
     {
-        return new static($this->faker, [...$this->state, ...$state], $this->count);
+        /** @var static<TClass> $next */
+        $next = new static($this->faker, [...$this->state, ...$state], $this->count);
+
+        return $next;
     }
 
     /**
-     * @return static<TClass>
+     * @return static
      */
     public function times(int $count): static
     {
-        return new static($this->faker, $this->state, $count);
+        /** @var static<TClass> $next */
+        $next = new static($this->faker, $this->state, $count);
+
+        return $next;
     }
 
     /**
@@ -66,10 +72,9 @@ abstract class ImmutableFactory
             return $value;
         }
 
-        return match ($value->count > 1) {
-            true => $value->makeMany(),
-            default => $value->makeOne(),
-        };
+        return $value->count > 1
+            ? $value->makeMany()
+            : $value->makeOne();
     }
 
     /**
@@ -87,7 +92,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<int, TClass>
+     * @return list<array<string, mixed>>
      */
     public function rawMany(array $attributes = []): array
     {
@@ -107,14 +112,14 @@ abstract class ImmutableFactory
      * @param array<string, mixed> $attributes
      * @return TClass
      */
-    public function makeOne(array $attributes = []): mixed
+    public function makeOne(array $attributes = []): object
     {
         return $this->instance($this->raw($attributes));
     }
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<TClass>
+     * @return list<TClass>
      */
     public function makeMany(array $attributes = []): array
     {
@@ -127,6 +132,6 @@ abstract class ImmutableFactory
      */
     public function makeCollection(array $attributes = []): Collection
     {
-        return Collection::times($this->count, fn (): mixed => $this->makeOne($attributes));
+        return Collection::times($this->count, fn (): object => $this->makeOne($attributes));
     }
 }
