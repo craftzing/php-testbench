@@ -1,32 +1,34 @@
 name: PHP CS Fixer
+description: Run PHP CS Fixer in a Docker container
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
+inputs:
+  workspace:
+    description: 'The workspace directory to mount in the container'
+    required: true
+  args:
+    description: 'Additional arguments to pass to php-cs-fixer'
+    required: false
+    default: '--allow-risky=yes'
 
-jobs:
-  php-cs-fixer:
-    runs-on: ubuntu-latest
+runs:
+  using: composite
+  steps:
+    - name: Pull a Craftzing owned image
+      shell: bash
+      run: docker pull ghcr.io/craftzing/docker-images/php:8.4
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Pull a Craftzing owned image
-        run: docker pull ghcr.io/craftzing/docker-images/php:8.4
-
-      - name: Run php-cs-fixer inside the container
-        run: |
-          docker run --rm \
-            -v "${{ inputs.workspace }}:/app" \
-            -w /app \
-            ghcr.io/craftzing/docker-images/php:8.4 \
-            bash -c "
-              VERSION=3.88.2 && \
-              wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v\$VERSION/php-cs-fixer.phar -O php-cs-fixer && \
-              chmod a+x php-cs-fixer && \
-              mv php-cs-fixer /usr/local/bin/php-cs-fixer && \
-              php-cs-fixer --version && \
-              php-cs-fixer fix --allow-risky=yes
-            "
+    - name: Run php-cs-fixer inside the container
+      shell: bash
+      run: |
+        docker run --rm \
+          -v "${{ inputs.workspace }}:/app" \
+          -w /app \
+          ghcr.io/craftzing/docker-images/php:8.4 \
+          bash -c "
+            VERSION=3.88.2 && \
+            wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v\$VERSION/php-cs-fixer.phar -O php-cs-fixer && \
+            chmod a+x php-cs-fixer && \
+            mv php-cs-fixer /usr/local/bin/php-cs-fixer && \
+            php-cs-fixer --version && \
+            php-cs-fixer fix ${{ inputs.args }}
+          "
