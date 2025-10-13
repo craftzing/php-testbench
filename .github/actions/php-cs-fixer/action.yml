@@ -9,10 +9,17 @@ inputs:
     description: 'Additional arguments to pass to php-cs-fixer'
     required: false
     default: '--allow-risky=yes'
+  github-token:
+    description: 'GitHub token for authenticating with GHCR'
+    required: true
 
 runs:
   using: composite
   steps:
+    - name: Login to GitHub Container Registry
+      shell: bash
+      run: echo "${{ inputs.github-token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
     - name: Pull a Craftzing owned image
       shell: bash
       run: docker pull ghcr.io/craftzing/docker-images/php:8.4

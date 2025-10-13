@@ -23,6 +23,7 @@ jobs:
         with:
           workspace: ${{ github.workspace }}
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit CS fixes
         uses: craftzing/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0
         with:
