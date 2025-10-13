@@ -13,7 +13,7 @@ use function is_iterable;
 use function iterator_to_array;
 
 /**
- * @template TClass
+ * @template TClass of object
  */
 abstract class ImmutableFactory
 {
