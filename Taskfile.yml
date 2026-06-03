@@ -1,0 +1,61 @@
+# https://taskfile.dev
+version: '3.50'
+
+vars:
+  PHP_VERSIONS: ['8.4', '8.5']
+  DEFAULT_PHP_VERSION: '8.5'
+
+tasks:
+  default:
+    desc: 'List all available tasks'
+    silent: true
+    cmd: task --list
+
+  up:
+    desc: 'Up the PHP container(s) and install all Composer dependencies'
+    cmds:
+      - docker compose up --detach
+      - docker compose exec php-{{ .DEFAULT_PHP_VERSION }} composer install
+
+  down:
+    desc: 'Shutdown the PHP container(s)'
+    cmds:
+      - docker compose down
+
+  php:
+    desc: 'Open an interactive shell into one of the `php` services (see docker-compose.yml)'
+    summary: |
+      Open an interactive shell into one of the `php` services (see docker-compose.yml).
+      
+      usage:
+        task php version=<version>
+    requires:
+      vars:
+        - name: version
+          enum:
+            ref: .PHP_VERSIONS
+    cmds:
+      - docker compose up --detach
+      - docker compose exec php-{{ .version }} sh
+
+  test:
+    desc: 'Run the testsuite on all or one of the supported PHP versions'
+    summary: |
+      Run the testsuite on all or one of the supported PHP versions.
+      
+      usage:
+        task test
+        task test version=<version>
+    vars:
+      versions: |-
+        {{- if .version -}}
+          {{ .version }}
+        {{- else -}}
+          {{ join "," .PHP_VERSIONS }}
+        {{- end -}}
+    cmds:
+      - docker compose up --detach
+      - for:
+          var: versions
+          split: ','
+        cmd: docker compose exec php-{{ .ITEM }} composer phpunit

@@ -12,4 +12,4 @@
 *.md export-ignore
 *.yml export-ignore
 .php-cs-fixer.dist.php export-ignore
-Makefile export-ignore
+Taskfile.yml export-ignore
