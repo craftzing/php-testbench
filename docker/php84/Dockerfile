@@ -5,6 +5,6 @@ WORKDIR /code
 USER root
 COPY docker/setup.sh .
 RUN chmod u+x /code/setup.sh && /code/setup.sh && rm /code/setup.sh
-COPY --from=composer:2.8 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.10 /usr/bin/composer /usr/local/bin/composer
 
 USER app
