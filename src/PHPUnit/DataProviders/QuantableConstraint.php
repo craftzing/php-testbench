@@ -53,7 +53,7 @@ final readonly class QuantableConstraint
      */
     public static function atLeastOnce(): iterable
     {
-        yield 'Multiple times' => [new self('times', random_int(2, 10))];
+        yield 'Multiple times' => [new self('times', random_int(2, max: 10))];
         yield 'Once' => [new self('once', 1)];
     }
 

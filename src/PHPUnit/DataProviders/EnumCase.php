@@ -34,7 +34,7 @@ final readonly class EnumCase
         public UnitEnum $instance,
         UnitEnum ...$options,
     ) {
-        in_array($instance, $options, true) or throw new ValueError('Options should contain the given instance.');
+        in_array($instance, $options, strict: true) or throw new ValueError('Options should contain the given instance.');
 
         foreach ($options as $option) {
             $option::class === $instance::class or throw new ValueError(
@@ -92,7 +92,7 @@ final readonly class EnumCase
         $options = array_map(static function (ReflectionEnumUnitCase $reflection) use ($except): ?UnitEnum {
             $case = $reflection->getValue();
 
-            return match (in_array($case, $except, true)) {
+            return match (in_array($case, $except, strict: true)) {
                 true => null,
                 false => $case,
             };
