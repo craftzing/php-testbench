@@ -15,5 +15,27 @@ jobs:
           extensions: -pdo_mysql, -mysqli
       - run: composer update --prefer-stable --prefer-dist --no-interaction
       - run: composer mago:lint
+        id: lint
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: composer mago:format -- --dry-run
+        id: format
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Check status'
+        if: steps.lint.outcome == 'failure' || steps.format.outcome == 'failure'
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+        run: |
+            if [ "$LINT_OUTCOME" == "failure" ]; then
+              echo "::error title=Mago linter detected issues::"
+            fi
+            
+            if [ "$FORMAT_OUTCOME" == "failure" ]; then
+            echo "::error title=Mago formatter detected issues::"
+            fi
+            
+            exit 1

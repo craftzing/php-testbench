@@ -66,6 +66,7 @@
     "scripts": {
         "mago": "vendor/bin/mago",
         "mago:lint": "vendor/bin/mago --colors always lint --minimum-fail-level warning",
+        "mago:format": "vendor/bin/mago --colors always format",
         "cs:check": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run",
         "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose",
         "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --ansi",
