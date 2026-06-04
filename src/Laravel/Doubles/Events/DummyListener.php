@@ -9,13 +9,6 @@ namespace Craftzing\TestBench\Laravel\Doubles\Events;
  */
 final readonly class DummyListener
 {
-    public function __invoke(mixed ...$arguments): void
-    {
-        //
-    }
-
-    public function handle(): void
-    {
-        //
-    }
+    public function __invoke(mixed ...$arguments): void {}
+    public function handle(): void {}
 }
