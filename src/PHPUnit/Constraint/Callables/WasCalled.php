@@ -56,9 +56,11 @@ final class WasCalled extends Constraint implements Quantable
     #[Override]
     protected function matches(mixed $other): bool
     {
-        $other instanceof SpyCallable or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for instances of ' . SpyCallable::class,
-        );
+        if (!$other instanceof SpyCallable) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for instances of ' . SpyCallable::class,
+            );
+        }
 
         $matchingInvocations = array_filter($other->invocations, $this->matchesInvocationAssertions(...));
 

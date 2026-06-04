@@ -32,4 +32,3 @@ final readonly class InstanceFactory
         return $instance;
     }
 }
-

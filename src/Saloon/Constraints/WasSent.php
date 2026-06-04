@@ -35,9 +35,10 @@ final class WasSent extends Constraint implements Quantable
         public readonly ?int $times = null,
         Constraint ...$constraints,
     ) {
-        $this->client = $connector->getMockClient() ?? MockClient::getGlobal() ?? throw new LogicException(
-            'Missing either a global or connector specific ' . MockClient::class . '.',
-        );
+        $this->client =
+            $connector->getMockClient() ?? MockClient::getGlobal() ?? throw new LogicException(
+                'Missing either a global or connector specific ' . MockClient::class . '.',
+            );
         $this->objectConstraints = $constraints;
     }
 
@@ -72,21 +73,25 @@ final class WasSent extends Constraint implements Quantable
             ),
         };
 
-        $matchingSentRequests = array_reduce($this->client->getRecordedResponses(), static function (
-            array $matchingSentRequests,
-            Response $response,
-        ) use ($requestName): array {
-            $request = $response->getPendingRequest()->getRequest();
+        $matchingSentRequests = array_reduce(
+            $this->client->getRecordedResponses(),
+            static function (
+                array $matchingSentRequests,
+                Response $response,
+            ) use ($requestName): array {
+                $request = $response->getPendingRequest()->getRequest();
 
-            if ($request::class === $requestName) {
-                $matchingSentRequests[] = $request;
-            }
+                if ($request::class === $requestName) {
+                    $matchingSentRequests[] = $request;
+                }
 
-            return $matchingSentRequests;
-        }, []);
+                return $matchingSentRequests;
+            },
+            [],
+        );
         $sentRequestsMatchingConstraints = array_filter(
             $matchingSentRequests,
-            fn (Request $request): bool => $this->matchesRequestConstraints(
+            fn(Request $request): bool => $this->matchesRequestConstraints(
                 $other,
                 $request,
                 // When the request was sent exactly once, we should add all nested expectation failures to the

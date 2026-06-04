@@ -34,9 +34,9 @@ final class HasListener extends Constraint
         },
         public string $method = self::DEFAULT_METHOD {
             set(string $method) {
-                method_exists($this->listener, $method) or throw new InvalidArgumentException(
-                    "Method {$this->listener}::{$method} does not exist.",
-                );
+                if (method_exists($this->listener, $method) === false) {
+                    throw new InvalidArgumentException("Method {$this->listener}::{$method} does not exist.");
+                }
 
                 $this->method = $method;
             }
@@ -68,9 +68,11 @@ final class HasListener extends Constraint
     #[Override]
     protected function matches(mixed $other): bool
     {
-        is_string($other) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
-        );
+        if (is_string($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
+            );
+        }
 
         try {
             Event::assertListening($other, match ($this->method) {

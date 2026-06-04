@@ -120,7 +120,7 @@ final class HasListenerTest extends TestCase
             HasListener::class . ' can only be evaluated for strings',
         );
 
-       $this->assertThat(new DummyEvent(), new HasListener(DummyListener::class));
+        $this->assertThat(new DummyEvent(), new HasListener(DummyListener::class));
     }
 
     #[Test]

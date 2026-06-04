@@ -45,9 +45,7 @@ final class PropertyValue extends Constraint
 
     public function toString(): string
     {
-        $comparesTo = Str::of($this->constraint::class)
-            ->classBasename()
-            ->snake(' ');
+        $comparesTo = Str::of($this->constraint::class)->classBasename()->snake(' ');
 
         return "`{$this->name}` property value {$comparesTo}";
     }

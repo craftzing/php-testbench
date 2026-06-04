@@ -64,9 +64,11 @@ final class HasErrorOnPath extends Constraint
             default => $this->resolveResponse($other),
         };
 
-        is_array($response) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for iterable values, got ' . gettype($other) . '.',
-        );
+        if (is_array($response) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for iterable values, got ' . gettype($other) . '.',
+            );
+        }
 
         foreach ($response['errors'] ?? [] as $error) {
             $path = implode('.', $error['path'] ?? '');

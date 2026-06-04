@@ -18,8 +18,6 @@ final readonly class DeriveConstraintsFromObjectUsingReflection
      */
     public function __invoke(object $object): array
     {
-        return array_map(static fn (ReflectionProperty $property): PropertyValue => (
-            new PropertyValue($property->name, new IsEqual($property->getValue($object)))
-        ), new ReflectionClass($object)->getProperties(ReflectionProperty::IS_PUBLIC));
+        return array_map(static fn(ReflectionProperty $property): PropertyValue => new PropertyValue($property->name, new IsEqual($property->getValue($object))), new ReflectionClass($object)->getProperties(ReflectionProperty::IS_PUBLIC));
     }
 }

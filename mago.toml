@@ -14,6 +14,14 @@ literal-separator = true
 
 [formatter]
 preset = "psr-12"
+print-width = 9999 # Horizontal limits are considered a guideline, not a requirement
+space-around-assignment-in-declare = false
+inline-empty-constructor-braces = true
+trailing-comma = true
+preserve-breaking-argument-list = true
+preserve-breaking-parameter-list = true
+preserve-breaking-array-like = true
+preserve-breaking-attribute-list = true
 
 [linter.rules]
 no-boolean-flag-parameter = { enabled = false }

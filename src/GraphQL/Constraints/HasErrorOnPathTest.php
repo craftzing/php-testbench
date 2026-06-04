@@ -194,9 +194,8 @@ final class HasErrorOnPathTest extends TestCase
     #[Test]
     public function itFailsWhenResponseCouldNotBeResolvedForSubject(): void
     {
-        HasErrorOnPath::resolveResponseUsing(static fn (Arrayable $subject): array => $subject->toArray());
-        $response = new readonly class
-        {
+        HasErrorOnPath::resolveResponseUsing(static fn(Arrayable $subject): array => $subject->toArray());
+        $response = new readonly class {
             public function toArray(): array
             {
                 return [];
@@ -212,12 +211,11 @@ final class HasErrorOnPathTest extends TestCase
     #[Test]
     public function itPassesResponseCouldBeResolvedForSubject(): void
     {
-        HasErrorOnPath::resolveResponseUsing(static fn (Arrayable $subject): array => $subject->toArray());
+        HasErrorOnPath::resolveResponseUsing(static fn(Arrayable $subject): array => $subject->toArray());
         $category = Factory::create()->word();
         $path = 'somePath';
 
-        $response = new readonly class ($path, $category) implements Arrayable
-        {
+        $response = new readonly class($path, $category) implements Arrayable {
             public function __construct(
                 private string $path,
                 private string $category,

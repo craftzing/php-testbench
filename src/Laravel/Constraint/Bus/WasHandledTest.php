@@ -36,10 +36,9 @@ final class WasHandledTest extends TestCase
 
     public static function callableHandlers(): iterable
     {
-        yield 'Closure' => [static fn (stdClass $object): string => 'handled'];
+        yield 'Closure' => [static fn(stdClass $object): string => 'handled'];
         yield 'Invokable class' => [
-            new readonly class
-            {
+            new readonly class {
                 public function __invoke(stdClass $command): string
                 {
                     return 'handled';
@@ -101,7 +100,7 @@ final class WasHandledTest extends TestCase
     #[Test]
     public function itFailsWhenNotHandled(): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage('command was handled.');
@@ -113,10 +112,10 @@ final class WasHandledTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenHandled(QuantableConstraint $quantise): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
 
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->assertThat($command::class, $quantise(new WasHandled()));
     }
@@ -124,7 +123,7 @@ final class WasHandledTest extends TestCase
     #[Test]
     public function itFailsWhenHandledButNotWithGivenCommandConstraints(): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
         Bus::dispatch($command);
 
@@ -132,20 +131,20 @@ final class WasHandledTest extends TestCase
         $this->expectExceptionMessage('command was handled with given command constraints.');
 
         $this->assertThat($command::class, new WasHandled()->withConstraints(
-            new Callback(static fn () => false),
+            new Callback(static fn() => false),
         ));
     }
 
     #[Test]
     public function itPassesWhenHandledWithGivenCommandConstraints(): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
 
         Bus::dispatch($command);
 
         $this->assertThat($command::class, new WasHandled()->withConstraints(
-            new Callback(static fn () => true),
+            new Callback(static fn() => true),
         ));
     }
 
@@ -153,9 +152,9 @@ final class WasHandledTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
     public function itFailsWhenHandledButNotGivenTimes(QuantableConstraint $quantise): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("command was handled {$quantise->expected} time(s).");
@@ -167,10 +166,10 @@ final class WasHandledTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenHandledGivenTimes(QuantableConstraint $quantise): void
     {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
 
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->assertThat($command::class, $quantise(new WasHandled()));
     }
@@ -180,16 +179,18 @@ final class WasHandledTest extends TestCase
     public function itFailsWhenHandledWithGivenCommandConstrainsButNotGivenTimes(
         QuantableConstraint $quantise,
     ): void {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("command was handled {$quantise->expected} time(s)");
 
-        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(
-            new Callback(static fn () => true),
-        ));
+        $this->assertThat($command, new WasHandled()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => true),
+            ));
     }
 
     #[Test]
@@ -197,18 +198,20 @@ final class WasHandledTest extends TestCase
     public function itFailsWhenHandledGivenTimesButNotWithGivenCommandConstrains(
         QuantableConstraint $quantise,
     ): void {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
             "command was handled {$quantise->expected} time(s) with given command constraints.",
         );
 
-        $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(
-            new Callback(static fn () => false),
-        ));
+        $this->assertThat($command, new WasHandled()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => false),
+            ));
     }
 
     #[Test]
@@ -216,21 +219,23 @@ final class WasHandledTest extends TestCase
     public function itPassesWhenHandledGivenTimesWithGivenCommandConstraints(
         QuantableConstraint $quantise,
     ): void {
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         $command = new stdClass();
 
-        $quantise->applyTo(static fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
-        $this->assertThat($command, $quantise(new WasHandled()->withConstraints(
-            new Callback(static fn () => true),
-        )));
+        $this->assertThat(
+            $command,
+            $quantise(new WasHandled()->withConstraints(
+                new Callback(static fn() => true),
+            )),
+        );
     }
 
     #[Test]
     public function itCannotDeriveCommandConstraintsFromCommandStrings(): void
     {
-        $command = new readonly class
-        {
+        $command = new readonly class {
             public function __construct(
                 public string $first = 'first',
             ) {}
@@ -244,8 +249,7 @@ final class WasHandledTest extends TestCase
     #[Test]
     public function itCanDeriveCommandConstraintsFromCommandObjects(): void
     {
-        $command = new readonly class
-        {
+        $command = new readonly class {
             public function __construct(
                 public string $first = 'first',
             ) {}
@@ -274,7 +278,7 @@ final class WasHandledTest extends TestCase
     public function itFailsWhenHandledButNotWithDerivedCommandConstraints(): void
     {
         $command = new stdClass();
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         WasHandled::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::failingConstraints());
         Bus::dispatch($command);
 
@@ -288,7 +292,7 @@ final class WasHandledTest extends TestCase
     public function itPassesWhenDispatchedWithDerivedCommandConstraints(): void
     {
         $command = new stdClass();
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         WasHandled::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::passingConstraints());
 
         Bus::dispatch($command);
@@ -304,15 +308,23 @@ final class WasHandledTest extends TestCase
         $constraint = Spy::passing();
         $deriveConstraints = new DeriveConstraintsFromObjectUsingFakes([$constraint]);
         WasHandled::deriveConstraintsFromObjectUsing($deriveConstraints);
-        WasHandled::using(static fn (stdClass $command): string => 'handled', $this->app);
+        WasHandled::using(static fn(stdClass $command): string => 'handled', $this->app);
         Bus::dispatch($actual);
 
         $this->assertThat($expected, new WasHandled());
 
         $deriveConstraints->invoke->assert(new WasCalled()->withSame($expected));
-        $deriveConstraints->invoke->assert(new WasCalled()->never()->withSame($actual));
+        $deriveConstraints->invoke->assert(
+            new WasCalled()
+                ->never()
+                ->withSame($actual),
+        );
         $constraint->matches->assert(new WasCalled()->withSame($actual));
-        $constraint->matches->assert(new WasCalled()->never()->withSame($expected));
+        $constraint->matches->assert(
+            new WasCalled()
+                ->never()
+                ->withSame($expected),
+        );
     }
 
     private function command(array $properties): stdClass

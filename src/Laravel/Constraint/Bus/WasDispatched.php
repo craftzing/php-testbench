@@ -68,7 +68,7 @@ final class WasDispatched extends Constraint implements Quantable
         $matchingDispatchedCommands = $this->busFake->dispatched($commandName);
 
         $dispatchedEventsMatchingConstraints = $matchingDispatchedCommands->filter(
-            fn (object $dispatchedCommand): bool => $this->matchesCommandConstraints(
+            fn(object $dispatchedCommand): bool => $this->matchesCommandConstraints(
                 $other,
                 $dispatchedCommand,
                 // When the command was dispatched exactly once, we should add all nested expectation failures to the

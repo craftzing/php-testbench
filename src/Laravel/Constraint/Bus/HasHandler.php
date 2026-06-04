@@ -30,12 +30,18 @@ final class HasHandler extends Constraint
 
     protected function matches(mixed $other): bool
     {
-        is_string($other) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
-        );
-        class_exists($other) or throw new InvalidArgumentException(
-            self::class . " can only be evaluated for existing classes, got {$other}.",
-        );
+        if (is_string($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
+            );
+        }
+
+        if (class_exists($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . " can only be evaluated for existing classes, got {$other}.",
+            );
+        }
+
         $message = new ReflectionClass($other)->newInstanceWithoutConstructor();
         $actualHandler = $this->bus->getCommandHandler($message);
 

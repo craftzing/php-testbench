@@ -98,7 +98,7 @@ final class WasHandled extends Constraint implements Quantable
     {
         $handler = $this->bus->getCommandHandler($command);
 
-        if (! $handler instanceof SpyCallable) {
+        if (!$handler instanceof SpyCallable) {
             throw new LogicException(
                 'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::using() first.',
             );

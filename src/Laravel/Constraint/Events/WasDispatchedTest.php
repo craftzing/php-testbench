@@ -111,7 +111,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $event = 'some.event';
 
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
         $this->assertThat($event, $quantise(new WasDispatched()));
     }
@@ -127,7 +127,7 @@ final class WasDispatchedTest extends TestCase
         $this->expectExceptionMessage('event was dispatched with given event constraints.');
 
         $this->assertThat($event, new WasDispatched()->withConstraints(
-            new Callback(static fn () => false),
+            new Callback(static fn() => false),
         ));
     }
 
@@ -140,7 +140,7 @@ final class WasDispatchedTest extends TestCase
         Event::dispatch($event);
 
         $this->assertThat($event, new WasDispatched()->withConstraints(
-            new Callback(static fn () => true),
+            new Callback(static fn() => true),
         ));
     }
 
@@ -150,7 +150,7 @@ final class WasDispatchedTest extends TestCase
     {
         WasDispatched::spy();
         $event = 'some.event';
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s).");
@@ -165,7 +165,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $event = 'some.event';
 
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
         $this->assertThat($event, $quantise(new WasDispatched()));
     }
@@ -177,14 +177,16 @@ final class WasDispatchedTest extends TestCase
     ): void {
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s)");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
-            new Callback(static fn () => true),
-        ));
+        $this->assertThat($event, new WasDispatched()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => true),
+            ));
     }
 
     #[Test]
@@ -194,14 +196,16 @@ final class WasDispatchedTest extends TestCase
     ): void {
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s) with given event constraints.");
 
-        $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
-            new Callback(static fn () => false),
-        ));
+        $this->assertThat($event, new WasDispatched()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => false),
+            ));
     }
 
     #[Test]
@@ -212,11 +216,14 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $event = new DummyEvent('first', 'last');
 
-        $quantise->applyTo(static fn () => Event::dispatch($event));
+        $quantise->applyTo(static fn() => Event::dispatch($event));
 
-        $this->assertThat($event, $quantise(new WasDispatched()->withConstraints(
-            new Callback(static fn () => true),
-        )));
+        $this->assertThat(
+            $event,
+            $quantise(new WasDispatched()->withConstraints(
+                new Callback(static fn() => true),
+            )),
+        );
     }
 
     #[Test]

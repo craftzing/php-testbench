@@ -29,13 +29,15 @@ final class ModelComparator extends Comparator
         $expected instanceof Model or throw self::notInstanceOfModel('expected', $expected);
         $actual instanceof Model or throw self::notInstanceOfModel('actual', $actual);
 
-        $actual->is($expected) or throw new ComparisonFailure(
-            $expected,
-            $actual,
-            $this->serializeModelForException($expected),
-            $this->serializeModelForException($actual),
-            'Failed asserting that two Eloquent models are equal.',
-        );
+        if ($actual->isNot($expected)) {
+            throw new ComparisonFailure(
+                $expected,
+                $actual,
+                $this->serializeModelForException($expected),
+                $this->serializeModelForException($actual),
+                'Failed asserting that two Eloquent models are equal.',
+            );
+        }
     }
 
     private static function notInstanceOfModel(string $argumentName, mixed $value): AssertionError

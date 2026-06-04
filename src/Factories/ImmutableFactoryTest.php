@@ -25,8 +25,7 @@ final class ImmutableFactoryTest extends TestCase
     use Conditionable;
 
     private ImmutableFactory $instance {
-        get => $this->instance ??= new class extends ImmutableFactory
-        {
+        get => $this->instance ??= new class extends ImmutableFactory {
             public function definition(): array
             {
                 return [
@@ -164,9 +163,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanReturnRawAttributesWithState(array $attributes, array $state, array $expected): void
     {
-        $result = $this->instance
-            ->state($state)
-            ->raw($attributes);
+        $result = $this->instance->state($state)->raw($attributes);
 
         collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
             $this->assertSame($value, $result[$attribute]);
@@ -178,10 +175,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanReturnManyRawAttributesWithState(array $attributes, array $state, array $expected): void
     {
-        $results = $this->instance
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->rawMany($attributes);
+        $results = $this->instance->times(random_int(1, 10))->state($state)->rawMany($attributes);
 
         collect($results)->each(function (array $result) use ($expected): void {
             collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
@@ -195,10 +189,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanReturnRawAttributesCollectionsWithState(array $attributes, array $state, array $expected): void
     {
-        $results = $this->instance
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->rawCollection($attributes);
+        $results = $this->instance->times(random_int(1, 10))->state($state)->rawCollection($attributes);
 
         $results->each(function (array $result) use ($expected): void {
             collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
@@ -212,9 +203,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanMakeOneWithState(array $attributes, array $state, array $expected): void
     {
-        $result = $this->instance
-            ->state($state)
-            ->makeOne($attributes);
+        $result = $this->instance->state($state)->makeOne($attributes);
 
         $this->assertInstanceOf(stdClass::class, $result);
         collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
@@ -227,10 +216,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanMakeManyWithState(array $attributes, array $state, array $expected): void
     {
-        $results = $this->instance
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->makeMany($attributes);
+        $results = $this->instance->times(random_int(1, 10))->state($state)->makeMany($attributes);
 
         $this->assertContainsOnlyInstancesOf(stdClass::class, $results);
         collect($results)->each(function (stdClass $result) use ($expected): void {
@@ -245,10 +231,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanMakeCollectionsWithState(array $attributes, array $state, array $expected): void
     {
-        $results = $this->instance
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->makeCollection($attributes);
+        $results = $this->instance->times(random_int(1, 10))->state($state)->makeCollection($attributes);
 
         $this->assertContainsOnlyInstancesOf(stdClass::class, $results);
         $results->each(function (stdClass $result) use ($expected): void {
@@ -262,7 +245,7 @@ final class ImmutableFactoryTest extends TestCase
     public static function nestedFactories(): iterable
     {
         yield [
-            static fn (ImmutableFactory $instance): ImmutableFactory => $instance->state([
+            static fn(ImmutableFactory $instance): ImmutableFactory => $instance->state([
                 'nested' => $instance->state([
                     'deeplyNested' => $instance->state(['resolved' => true]),
                 ]),

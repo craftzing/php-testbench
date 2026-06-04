@@ -65,7 +65,7 @@ abstract class ImmutableFactory
             return array_map($this->resolveValue(...), iterator_to_array($value));
         }
 
-        if (! $value instanceof self) {
+        if (!$value instanceof self) {
             return $value;
         }
 
@@ -103,7 +103,7 @@ abstract class ImmutableFactory
      */
     public function rawCollection(array $attributes = []): Collection
     {
-        return Collection::times($this->count, fn (): array => $this->raw($attributes));
+        return Collection::times($this->count, fn(): array => $this->raw($attributes));
     }
 
     /**
@@ -130,6 +130,6 @@ abstract class ImmutableFactory
      */
     public function makeCollection(array $attributes = []): Collection
     {
-        return Collection::times($this->count, fn (): mixed => $this->makeOne($attributes));
+        return Collection::times($this->count, fn(): mixed => $this->makeOne($attributes));
     }
 }

@@ -23,14 +23,14 @@ final readonly class DeriveConstraintsFromObjectUsingFakes implements DeriveCons
     public static function failingConstraints(): self
     {
         return new self([
-            new Callback(static fn () => false),
+            new Callback(static fn() => false),
         ]);
     }
 
     public static function passingConstraints(): self
     {
         return new self([
-            new Callback(static fn () => true),
+            new Callback(static fn() => true),
         ]);
     }
 

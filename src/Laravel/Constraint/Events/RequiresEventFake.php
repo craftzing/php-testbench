@@ -22,9 +22,11 @@ trait RequiresEventFake
 
     private function resolveEventFake(): EventFake
     {
-        Event::isFake() or throw new LogicException(
-            'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::spy() first.',
-        );
+        if (Event::isFake() === false) {
+            throw new LogicException(
+                'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::spy() first.',
+            );
+        }
 
         return Event::getFacadeRoot();
     }

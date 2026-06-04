@@ -12,6 +12,6 @@ final class ServiceProvider extends IlluminateServiceProvider
 {
     public function boot(): void
     {
-        HasErrorOnPath::resolveResponseUsing(static fn (TestResponse $response): array => $response->json());
+        HasErrorOnPath::resolveResponseUsing(static fn(TestResponse $response): array => $response->json());
     }
 }

@@ -137,15 +137,18 @@ final class WasCalledTest extends TestCase
     public function itFailsWhenNotCalledExpectedTimesWithExpectedArguments(QuantableConstraint $quantise): void
     {
         $callable = new SpyCallable();
-        $quantise->applyTo(static fn () => $callable('first', 'last'));
+        $quantise->applyTo(static fn() => $callable('first', 'last'));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage("was called {$quantise->expected} time(s) with given invocation assertions.");
 
-        $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
-            $this->assertSame('first', $first);
-            $this->assertSame('last', $last);
-        })->times($quantise->expected));
+        $this->assertThat(
+            $callable,
+            new WasCalled(function (string $first, string $last): void {
+                $this->assertSame('first', $first);
+                $this->assertSame('last', $last);
+            })->times($quantise->expected),
+        );
     }
 
     #[Test]
@@ -154,7 +157,7 @@ final class WasCalledTest extends TestCase
     {
         $callable = new SpyCallable();
 
-        $quantise->applyTo(static fn () => $callable('first', 'last'));
+        $quantise->applyTo(static fn() => $callable('first', 'last'));
 
         $this->assertThat($callable, $quantise(new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);

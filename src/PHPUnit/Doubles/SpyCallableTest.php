@@ -35,7 +35,7 @@ final class SpyCallableTest extends TestCase
         yield 'Array' => [['foo']];
         yield 'Zero' => [0];
         yield 'Integer' => [PHP_INT_MAX];
-        yield 'Callable' => [static fn (): null => null];
+        yield 'Callable' => [static fn(): null => null];
         yield 'Class' => [new stdClass()];
     }
 
@@ -66,8 +66,7 @@ final class SpyCallableTest extends TestCase
     #[Test]
     public function itCanAssertConstraints(): void
     {
-        $constraint = new class extends Constraint
-        {
+        $constraint = new class extends Constraint {
             public function toString(): string
             {
                 return 'was constrained';
