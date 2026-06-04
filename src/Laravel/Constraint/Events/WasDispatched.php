@@ -116,7 +116,7 @@ final class WasDispatched extends Constraint implements Quantable
         $message = parent::failureDescription($other);
 
         if ($this->times !== null) {
-            $message .= " $this->times time(s)";
+            $message .= " {$this->times} time(s)";
         }
 
         $message .= match (true) {

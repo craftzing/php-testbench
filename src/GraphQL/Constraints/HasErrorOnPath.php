@@ -102,6 +102,6 @@ final class HasErrorOnPath extends Constraint
 
     public function toString(): string
     {
-        return "has error on `$this->path` of category `$this->category`";
+        return "has error on `{$this->path}` of category `{$this->category}`";
     }
 }

@@ -41,7 +41,7 @@ final class ModelComparator extends Comparator
     private static function notInstanceOfModel(string $argumentName, mixed $value): AssertionError
     {
         return new AssertionError(
-            "Argument $argumentName must be an instance of " . Model::class . ', received ' . gettype($value) . '.',
+            "Argument {$argumentName} must be an instance of " . Model::class . ', received ' . gettype($value) . '.',
         );
     }
 

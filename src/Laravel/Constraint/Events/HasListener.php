@@ -27,7 +27,7 @@ final class HasListener extends Constraint
     public function __construct(
         public string $listener {
             set(string $listener) {
-                class_exists($listener) or throw new InvalidArgumentException("$listener is not an existing class.");
+                class_exists($listener) or throw new InvalidArgumentException("{$listener} is not an existing class.");
 
                 $this->listener = $listener;
             }
@@ -35,7 +35,7 @@ final class HasListener extends Constraint
         public string $method = self::DEFAULT_METHOD {
             set(string $method) {
                 method_exists($this->listener, $method) or throw new InvalidArgumentException(
-                    "Method $this->listener::$method does not exist.",
+                    "Method {$this->listener}::{$method} does not exist.",
                 );
 
                 $this->method = $method;

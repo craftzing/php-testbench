@@ -34,19 +34,19 @@ final class HasHandler extends Constraint
             self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
         );
         class_exists($other) or throw new InvalidArgumentException(
-            self::class . " can only be evaluated for existing classes, got $other.",
+            self::class . " can only be evaluated for existing classes, got {$other}.",
         );
         $message = new ReflectionClass($other)->newInstanceWithoutConstructor();
         $actualHandler = $this->bus->getCommandHandler($message);
 
         if ($actualHandler === false) {
-            $this->additionalFailureDescriptions[] = "$other has no handler mapped to it.";
+            $this->additionalFailureDescriptions[] = "{$other} has no handler mapped to it.";
 
             return false;
         }
 
         if ($actualHandler::class !== $this->handlerClassFQN) {
-            $this->additionalFailureDescriptions[] = "$other has a different handler mapped to it.";
+            $this->additionalFailureDescriptions[] = "{$other} has a different handler mapped to it.";
 
             return false;
         }

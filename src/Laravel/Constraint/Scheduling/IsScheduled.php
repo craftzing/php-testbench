@@ -62,6 +62,6 @@ final class IsScheduled extends Constraint
 
     public function toString(): string
     {
-        return "is scheduled $this->frequency";
+        return "is scheduled {$this->frequency}";
     }
 }

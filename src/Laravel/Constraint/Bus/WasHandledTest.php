@@ -158,7 +158,7 @@ final class WasHandledTest extends TestCase
         $quantise->applyTo(static fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was handled $quantise->expected time(s).");
+        $this->expectExceptionMessage("command was handled {$quantise->expected} time(s).");
 
         $this->assertThat($command::class, new WasHandled()->times($quantise->expected));
     }
@@ -185,7 +185,7 @@ final class WasHandledTest extends TestCase
         $quantise->applyTo(static fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was handled $quantise->expected time(s)");
+        $this->expectExceptionMessage("command was handled {$quantise->expected} time(s)");
 
         $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(
             new Callback(static fn () => true),
@@ -203,7 +203,7 @@ final class WasHandledTest extends TestCase
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
-            "command was handled $quantise->expected time(s) with given command constraints.",
+            "command was handled {$quantise->expected} time(s) with given command constraints.",
         );
 
         $this->assertThat($command, new WasHandled()->times($quantise->expected)->withConstraints(

@@ -86,7 +86,7 @@ final class WasCalled extends Constraint implements Quantable
         $message = 'was called';
 
         if ($this->times !== null) {
-            $message .= " $this->times time(s)";
+            $message .= " {$this->times} time(s)";
         }
 
         if ($this->assertInvocation !== null) {

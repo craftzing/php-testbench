@@ -153,7 +153,7 @@ final class WasDispatchedTest extends TestCase
         $quantise->applyTo(static fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s).");
+        $this->expectExceptionMessage("command was dispatched {$quantise->expected} time(s).");
 
         $this->assertThat($command::class, new WasDispatched()->times($quantise->expected));
     }
@@ -180,7 +180,7 @@ final class WasDispatchedTest extends TestCase
         $quantise->applyTo(static fn () => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s)");
+        $this->expectExceptionMessage("command was dispatched {$quantise->expected} time(s)");
 
         $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withConstraints(
             new Callback(static fn () => true),
@@ -198,7 +198,7 @@ final class WasDispatchedTest extends TestCase
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
-            "command was dispatched $quantise->expected time(s) with given command constraints.",
+            "command was dispatched {$quantise->expected} time(s) with given command constraints.",
         );
 
         $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withConstraints(

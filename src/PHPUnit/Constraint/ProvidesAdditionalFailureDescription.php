@@ -18,7 +18,7 @@ trait ProvidesAdditionalFailureDescription
     protected function additionalFailureDescription(mixed $other): string
     {
         return new Collection($this->additionalFailureDescriptions)
-            ->map(static fn (string $description): string => "\n* $description\n")
+            ->map(static fn (string $description): string => "\n* {$description}\n")
             ->implode('');
     }
 }

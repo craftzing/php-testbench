@@ -66,7 +66,7 @@ final readonly class EnumCase
     {
         foreach (new ReflectionEnum($enumFQCN)->getCases() as $case) {
             // @phpstan-ignore generator.valueType
-            yield "$enumFQCN::$case->name" => [
+            yield "{$enumFQCN}::{$case->name}" => [
                 new self($case->getValue(), ...$enumFQCN::cases()),
             ];
         }
@@ -79,7 +79,7 @@ final readonly class EnumCase
     public static function options(UnitEnum ...$options): iterable
     {
         foreach ($options as $case) {
-            yield "$case->name" => [new self($case, ...$options)];
+            yield "{$case->name}" => [new self($case, ...$options)];
         }
     }
 

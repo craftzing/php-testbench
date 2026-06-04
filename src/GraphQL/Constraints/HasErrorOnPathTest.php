@@ -85,7 +85,7 @@ final class HasErrorOnPathTest extends TestCase
         $response = ['data' => 'ok'];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
@@ -130,7 +130,7 @@ final class HasErrorOnPathTest extends TestCase
         ];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
@@ -152,7 +152,7 @@ final class HasErrorOnPathTest extends TestCase
         ];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }

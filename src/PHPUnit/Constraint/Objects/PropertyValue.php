@@ -49,6 +49,6 @@ final class PropertyValue extends Constraint
             ->classBasename()
             ->snake(' ');
 
-        return "`$this->name` property value $comparesTo";
+        return "`{$this->name}` property value {$comparesTo}";
     }
 }

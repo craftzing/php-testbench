@@ -186,7 +186,7 @@ final class WasSentTest extends TestCase
         $quantise->applyTo(static fn () => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s).");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s).");
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected));
     }
@@ -210,7 +210,7 @@ final class WasSentTest extends TestCase
         $quantise->applyTo(static fn () => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s)");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s)");
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected)->withConstraints(
             new Callback(static fn () => true),
@@ -225,7 +225,7 @@ final class WasSentTest extends TestCase
         $quantise->applyTo(static fn () => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s) with given constraints.");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s) with given constraints.");
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected)->withConstraints(
             new Callback(static fn () => false),

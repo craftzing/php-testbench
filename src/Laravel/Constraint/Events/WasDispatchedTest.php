@@ -153,7 +153,7 @@ final class WasDispatchedTest extends TestCase
         $quantise->applyTo(static fn () => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s).");
+        $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s).");
 
         $this->assertThat($event, new WasDispatched()->times($quantise->expected));
     }
@@ -180,7 +180,7 @@ final class WasDispatchedTest extends TestCase
         $quantise->applyTo(static fn () => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s)");
+        $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s)");
 
         $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
             new Callback(static fn () => true),
@@ -197,7 +197,7 @@ final class WasDispatchedTest extends TestCase
         $quantise->applyTo(static fn () => Event::dispatch($event));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("event was dispatched $quantise->expected time(s) with given event constraints.");
+        $this->expectExceptionMessage("event was dispatched {$quantise->expected} time(s) with given event constraints.");
 
         $this->assertThat($event, new WasDispatched()->times($quantise->expected)->withConstraints(
             new Callback(static fn () => false),
