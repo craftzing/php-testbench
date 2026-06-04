@@ -31,3 +31,10 @@ no-boolean-flag-parameter = { enabled = false }
 too-many-methods = { exclude = ["src/**/*Test.php"] }
 literal-named-argument = { exclude = ["src/**/*Test.php"] }
 prefer-test-attribute = { enabled = true }
+
+[analyzer]
+excludes = ["src/**/*Test.php"]
+ignore = [
+    "mixed-argument",
+    "mixed-assignment",
+]
