@@ -22,4 +22,4 @@ jobs:
           coverage: pcov
           extensions: -pdo_mysql, -mysqli
       - run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
-      - run: composer coverage:summary
+      - run: composer test:coverage

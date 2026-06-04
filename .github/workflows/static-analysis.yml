@@ -16,13 +16,13 @@ jobs:
       - run: composer update --prefer-stable --prefer-dist --no-interaction
       # Mago is installed through Composer, but the package is just a thin wrapper. By checking the version, we force
       # the wrapper to download the binary before running actual checks in order not to pollute the check output...
-      - run: vendor/bin/mago --version
-      - run: composer mago:lint
+      - run: composer mago -- --version
+      - run: composer lint:check
         id: lint
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: composer mago:format -- --dry-run
+      - run: composer format:check
         id: format
         continue-on-error: true
         env:
@@ -34,11 +34,11 @@ jobs:
           FORMAT_OUTCOME: ${{ steps.format.outcome }}
         run: |
           if [ "$LINT_OUTCOME" == "failure" ]; then
-            echo "::error::Mago linter detected issues."
+            echo "::error title=lint:check::One or more issues detected."
           fi
           
           if [ "$FORMAT_OUTCOME" == "failure" ]; then
-            echo "::error::Mago formatter detected issues."
+            echo "::error title=format:check::One or more files need formatting."
           fi
           
           exit 1

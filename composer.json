@@ -64,20 +64,23 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "mago": "vendor/bin/mago",
-        "mago:lint": "vendor/bin/mago --colors always lint --minimum-fail-level warning --reporting-format rich",
-        "mago:format": "vendor/bin/mago --colors always format",
-        "cs:check": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run",
-        "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose",
-        "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --ansi",
+        "mago": "vendor/bin/mago --colors=always",
         "phpunit": "vendor/bin/phpunit --colors=always --display-phpunit-deprecations --display-deprecations",
-        "test": [
-            "@composer cs:check",
-            "@composer phpstan",
-            "@composer phpunit"
+        "lint:check": "@composer mago -- lint --minimum-fail-level=warning --reporting-format=rich",
+        "lint:fix": "@composer mago -- lint --fix",
+        "format:check": "@composer mago -- format --dry-run",
+        "format:fix": "@composer mago -- format",
+        "static-analysis:check": [
+            "@composer lint:check",
+            "@composer format:check"
         ],
-        "coverage:summary": "@composer phpunit -- --coverage-text",
-        "coverage:report": "@composer phpunit -- --coverage-html=.reports/coverage"
+        "static-analysis:fix": [
+            "@composer lint:fix",
+            "@composer format:fix"
+        ],
+        "test": "@composer phpunit",
+        "test:coverage": "@composer phpunit -- --coverage-text",
+        "test:report": "@composer phpunit -- --coverage-html=.reports/coverage"
     },
     "extra": {
         "branch-alias": {
