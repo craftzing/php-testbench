@@ -20,5 +20,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
+          extensions: -pdo_mysql, -mysqli
       - run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
       - run: composer coverage:summary
