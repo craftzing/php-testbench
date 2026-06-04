@@ -72,7 +72,7 @@ final class WasSent extends Constraint implements Quantable
             ),
         };
 
-        $matchingSentRequests = array_reduce($this->client->getRecordedResponses(), function (
+        $matchingSentRequests = array_reduce($this->client->getRecordedResponses(), static function (
             array $matchingSentRequests,
             Response $response,
         ) use ($requestName): array {

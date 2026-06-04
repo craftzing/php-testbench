@@ -89,7 +89,7 @@ final readonly class EnumCase
      */
     public static function except(string $enumFQCN, UnitEnum ...$except): iterable
     {
-        $options = array_map(function (ReflectionEnumUnitCase $reflection) use ($except): ?UnitEnum {
+        $options = array_map(static function (ReflectionEnumUnitCase $reflection) use ($except): ?UnitEnum {
             $case = $reflection->getValue();
 
             return match (in_array($case, $except, true)) {

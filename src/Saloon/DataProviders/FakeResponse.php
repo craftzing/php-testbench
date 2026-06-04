@@ -76,7 +76,7 @@ final readonly class FakeResponse
 
         $client->addResponses([
             $requestFQCN => $this->response,
-            '*' => function (PendingRequest $pendingRequest): void {
+            '*' => static function (PendingRequest $pendingRequest): void {
                 throw new LogicException("Missing response mock for {$pendingRequest->getUrl()}.");
             },
         ]);

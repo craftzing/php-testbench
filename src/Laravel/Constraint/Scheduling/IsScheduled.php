@@ -40,7 +40,7 @@ final class IsScheduled extends Constraint
         );
 
         $matchingScheduledTask = new Collection($this->schedule->events())
-            ->first(fn (Event $event): bool => $event->description === $other);
+            ->first(static fn (Event $event): bool => $event->description === $other);
 
         if ($matchingScheduledTask === null) {
             $this->additionalFailureDescriptions[] = 'Not scheduled.';

@@ -262,13 +262,13 @@ final class ImmutableFactoryTest extends TestCase
     public static function nestedFactories(): iterable
     {
         yield [
-            fn (ImmutableFactory $instance): ImmutableFactory => $instance->state([
+            static fn (ImmutableFactory $instance): ImmutableFactory => $instance->state([
                 'nested' => $instance->state([
                     'deeplyNested' => $instance->state(['resolved' => true]),
                 ]),
                 'nestedArray' => $instance->times(2)->state(['resolvedTimes' => true]),
             ]),
-            function (stdClass $result): void {
+            static function (stdClass $result): void {
                 self::assertObjectHasProperty('nested', $result);
                 self::assertInstanceOf(stdClass::class, $result->nested);
                 self::assertObjectHasProperty('deeplyNested', $result->nested);
@@ -277,7 +277,7 @@ final class ImmutableFactoryTest extends TestCase
                 self::assertObjectHasProperty('nestedArray', $result);
                 self::assertContainsOnlyInstancesOf(stdClass::class, $result->nestedArray);
                 self::assertCount(2, $result->nestedArray);
-                collect($result->nestedArray)->each(function (stdClass $item): void {
+                collect($result->nestedArray)->each(static function (stdClass $item): void {
                     self::assertObjectHasProperty('resolvedTimes', $item);
                     self::assertTrue($item->resolvedTimes);
                 });
@@ -312,7 +312,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $results = $instance->rawMany();
 
-        collect($results)->each(function (array $result) use ($assert): void {
+        collect($results)->each(static function (array $result) use ($assert): void {
             $assert((object) $result);
         });
     }
@@ -331,7 +331,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $results = $instance->rawCollection();
 
-        $results->each(function (array $result) use ($assert): void {
+        $results->each(static function (array $result) use ($assert): void {
             $assert((object) $result);
         });
     }

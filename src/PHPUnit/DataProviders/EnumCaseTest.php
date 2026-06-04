@@ -68,7 +68,7 @@ final class EnumCaseTest extends TestCase
         $instance = $this->faker->randomElement($options);
         $differentEnumFQCN = $this->faker->randomElement(array_filter(
             self::ENUM_FQCNS,
-            fn (string $enumFQCN): bool => $enumFQCN !== $instance::class,
+            static fn (string $enumFQCN): bool => $enumFQCN !== $instance::class,
         ));
         $differentEnumInstance = $this->faker->randomElement($differentEnumFQCN::cases());
 

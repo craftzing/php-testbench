@@ -10,7 +10,7 @@ trait WithoutBusMiddleware
 {
     public function setUpWithoutBusMiddleware(): void
     {
-        $this->afterApplicationCreated(function (): void {
+        $this->afterApplicationCreated(static function (): void {
             Bus::pipeThrough([]);
         });
     }

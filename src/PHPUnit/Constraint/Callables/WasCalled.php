@@ -29,7 +29,7 @@ final class WasCalled extends Constraint implements Quantable
 
     public function withSame(mixed ...$expected): self
     {
-        return new self(function (mixed ...$actual) use ($expected): void {
+        return new self(static function (mixed ...$actual) use ($expected): void {
             Assert::assertCount(count($expected), $actual);
 
             foreach ($actual as $key => $value) {
