@@ -5,30 +5,15 @@ on:
     branches: ['main']
 
 jobs:
-  phpstan:
+  mago:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # https://github.com/shivammathur/setup-php/releases/tag/2.37.1
         with:
-          php-version: 8.4
+          php-version: 8.5
           extensions: -pdo_mysql, -mysqli
       - run: composer update --prefer-stable --prefer-dist --no-interaction
-      - run: composer phpstan
-
-  php-cs-fixer:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: 'Run PHP CS fixer'
-        uses: ./.github/actions/php-cs-fixer
-        with:
-          workspace: ${{ github.workspace }}
-          args: --config=.php-cs-fixer.dist.php --allow-risky=yes
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: 'Commit CS fixes'
-        uses: craftzing/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0
-        with:
-          commit_message: Fix code style violations
+      - run: composer mago:lint
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
