@@ -123,7 +123,7 @@ final class ModelComparatorTest extends TestCase
 
     private static function model(string $table, string $connection, string $id = ''): Model
     {
-        $id ??= new Randomizer()->getInt(1, 10000000000);
+        $id ??= new Randomizer()->getInt(1, 10_000_000_000);
         $model = new class(compact('id')) extends Model  {
             protected $fillable = ['id'];
             protected $keyType = 'string';
