@@ -1,12 +1,15 @@
-name: Static analysis
-on: [push]
+name: static-analysis
+on:
+  pull_request:
+  push:
+    branches: ['main']
 
 jobs:
   phpstan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # https://github.com/shivammathur/setup-php/releases/tag/2.37.1
         with:
           php-version: 8.4
       - run: composer update --prefer-stable --prefer-dist --no-interaction
@@ -15,7 +18,7 @@ jobs:
   php-cs-fixer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
         with:
           ref: ${{ github.head_ref }}
       - name: Run PHP CS fixer
