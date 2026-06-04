@@ -35,7 +35,7 @@ final class WasSent extends Constraint implements Quantable
         public readonly ?int $times = null,
         Constraint ...$constraints,
     ) {
-        $this->client = $connector->getMockClient() ?: MockClient::getGlobal() ?: throw new LogicException(
+        $this->client = $connector->getMockClient() ?? MockClient::getGlobal() ?? throw new LogicException(
             'Missing either a global or connector specific ' . MockClient::class . '.',
         );
         $this->objectConstraints = $constraints;

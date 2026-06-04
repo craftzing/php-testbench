@@ -30,7 +30,7 @@ trait DerivesConstraintsFromObjects
             return [];
         }
 
-        return (self::$deriveConstraintsFromObject ?: new DeriveConstraintsFromObjectUsingReflection())($expected);
+        return (self::$deriveConstraintsFromObject ?? new DeriveConstraintsFromObjectUsingReflection())($expected);
     }
 
     public static function deriveConstraintsFromObjectUsing(

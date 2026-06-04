@@ -67,11 +67,11 @@ final readonly class FakeResponse
         $client = match ($connector) {
             // When not given a connector instance, we should use the global
             // MockClient to fake responses for all connectors...
-            null => MockClient::getGlobal() ?: MockClient::global(),
+            null => MockClient::getGlobal() ?? MockClient::global(),
 
             // When given a connector instance, we should use its specific MockClient
             // to only fake responses for that specific connector instance...
-            default => $connector->getMockClient() ?: new MockClient(),
+            default => $connector->getMockClient() ?? new MockClient(),
         };
 
         $client->addResponses([
