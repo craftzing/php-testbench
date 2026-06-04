@@ -14,6 +14,7 @@ use function iterator_to_array;
 
 /**
  * @template TClass of object
+ * @mago-expect lint:too-many-methods
  */
 abstract class ImmutableFactory
 {

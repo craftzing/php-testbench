@@ -14,3 +14,7 @@ literal-separator = true
 
 [formatter]
 preset = "psr-12"
+
+[linter.rules]
+no-boolean-flag-parameter = { enabled = false }
+too-many-methods = { exclude = ["src/**/*Test.php"] }
