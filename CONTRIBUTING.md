@@ -14,9 +14,17 @@ Make sure to follow these rules when creating a pull request:
 - We follow [Semantic Versioning](http://semver.org/), so please send pull requests to the correct branch
 - Update the [CHANGELOG.md](CHANGELOG.md) file with any changes/additions/... and follow the [changelog standards](http://keepachangelog.com/)
 
-## 🧪 Running tests
+# 🏃‍➡️ Running locally
 
-You can run the test suite with the following command:
-```bash
-vendor/bin/phpunit
+This project is fully Dockerized, meaning [Docker](https://docs.docker.com) (or [Orbstack](https://orbstack.dev) for macOS users) is the only requirement
+to run this project locally. Using Docker Compose, we set up a container for each supported PHP version.
+
+> [!TIP]
+> While you can run Docker Compose commands directly, we highly recommend to use our predefined tasks using
+> [Task](https://taskfile.dev). All docs will always refer to these tasks, but if you prefer not to install
+> Task, you can inspect [Taskfile.yml](./Taskfile.yml) to see which Docker Compose commands are used under the hood.
+
+To explore all available tasks, run:
+```shell
+task
 ```

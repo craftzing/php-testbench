@@ -26,10 +26,12 @@ final readonly class EnumCase
      */
     private array $options;
 
+    /**
+     * @param TValue $instance
+     * @param TValue ...$options
+     */
     public function __construct(
-        /* @var TValue */
         public UnitEnum $instance,
-        /* @param array<int, TValue> ...$options */
         UnitEnum ...$options,
     ) {
         in_array($instance, $options, true) or throw new ValueError('Options should contain the given instance.');
@@ -58,7 +60,7 @@ final readonly class EnumCase
 
     /**
      * @param class-string<TValue> $enumFQCN
-     * @return iterable<array<self<TValue>>>
+     * @return iterable<array{self<TValue>}>
      */
     public static function cases(string $enumFQCN): iterable
     {
@@ -72,7 +74,7 @@ final readonly class EnumCase
 
     /**
      * @param TValue ...$options
-     * @return iterable<array<self<TValue>>>
+     * @return iterable<array{self<TValue>}>
      */
     public static function options(UnitEnum ...$options): iterable
     {
@@ -83,7 +85,7 @@ final readonly class EnumCase
 
     /**
      * @param class-string<TValue> $enumFQCN
-     * @return iterable<array<self<TValue>>>
+     * @return iterable<array{self<TValue>}>
      */
     public static function except(string $enumFQCN, UnitEnum ...$except): iterable
     {

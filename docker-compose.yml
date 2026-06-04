@@ -1,9 +1,19 @@
 services:
-  php84:
+  php-8.4:
     build:
       context: .
       dockerfile: docker/php84/Dockerfile
     container_name: php-testbench.craftzing.php84
+    restart: unless-stopped
+    tty: true
+    working_dir: /code
+    volumes:
+      - ./:/code:delegated
+  php-8.5:
+    build:
+      context: .
+      dockerfile: docker/php85/Dockerfile
+    container_name: php-testbench.craftzing.php85
     restart: unless-stopped
     tty: true
     working_dir: /code
