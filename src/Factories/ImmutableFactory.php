@@ -13,7 +13,7 @@ use function is_iterable;
 use function iterator_to_array;
 
 /**
- * @template TClass
+ * @template TClass of object
  */
 abstract class ImmutableFactory
 {
@@ -34,6 +34,7 @@ abstract class ImmutableFactory
      */
     public function state(array $state): static
     {
+        // @phpstan-ignore-next-line return.type
         return new static($this->faker, [...$this->state, ...$state], $this->count);
     }
 
@@ -42,6 +43,7 @@ abstract class ImmutableFactory
      */
     public function times(int $count): static
     {
+        // @phpstan-ignore-next-line return.type
         return new static($this->faker, $this->state, $count);
     }
 
@@ -87,7 +89,7 @@ abstract class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<int, TClass>
+     * @return array<int, array<string, mixed>>
      */
     public function rawMany(array $attributes = []): array
     {
