@@ -1,7 +1,7 @@
 ![Laravel Abilities banner](/art/banner-light.jpg#gh-light-mode-only)
 ![Laravel Abilities banner](/art/banner-dark.jpg#gh-dark-mode-only)
 
-[![tests](https://github.com/craftzing/php-testbench/actions/workflows/tests.yml/badge.svg)](https://github.com/craftzing/php-testbench/actions/workflows/tests.yml)
+[![test](https://github.com/craftzing/php-testbench/actions/workflows/test.yml/badge.svg)](https://github.com/craftzing/php-testbench/actions/workflows/test.yml)
 [![static-analysis](https://github.com/craftzing/php-testbench/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/craftzing/php-testbench/actions/workflows/static-analysis.yml)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat&color=4D6CB8)](https://github.com/craftzing/php-testbench/blob/master/LICENSE)
 
