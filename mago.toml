@@ -24,6 +24,6 @@ preserve-breaking-array-like = true
 preserve-breaking-attribute-list = true
 
 [linter.rules]
-#no-boolean-flag-parameter = { enabled = false }
-#too-many-methods = { exclude = ["src/**/*Test.php"] }
-#literal-named-argument = { exclude = ["src/**/*Test.php"] }
+no-boolean-flag-parameter = { enabled = false }
+too-many-methods = { exclude = ["src/**/*Test.php"] }
+literal-named-argument = { exclude = ["src/**/*Test.php"] }

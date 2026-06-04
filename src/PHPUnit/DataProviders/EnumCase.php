@@ -35,8 +35,7 @@ final readonly class EnumCase
         UnitEnum ...$options,
     ) {
         if (in_array($instance, $options, strict: true) === false) {
-            throw new
-            ValueError('Options should contain the given instance.');
+            throw new ValueError('Options should contain the given instance.');
         }
 
         foreach ($options as $option) {
