@@ -33,9 +33,11 @@ final class HasErrorOnPath extends Constraint
     {
         if ($resolveResponseUsing === null) {
             self::$responseResolvers = [];
-        } else {
-            self::$responseResolvers[] = $resolveResponseUsing;
+
+            return;
         }
+
+        self::$responseResolvers[] = $resolveResponseUsing;
     }
 
     public function authentication(): self
