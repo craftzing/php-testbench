@@ -70,10 +70,11 @@
         "lint:fix": "@composer mago -- lint --fix",
         "format:check": "@composer mago -- format --dry-run",
         "format:fix": "@composer mago -- format",
-        "analyse:check": "@composer mago -- analyse",
+        "analyse:check": "@composer mago -- analyse --minimum-fail-level=warning --reporting-format=rich",
         "static-analysis:check": [
             "@composer lint:check",
-            "@composer format:check"
+            "@composer format:check",
+            "@composer analyse:check"
         ],
         "static-analysis:fix": [
             "@composer lint:fix",

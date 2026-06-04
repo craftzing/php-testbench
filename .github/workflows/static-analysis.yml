@@ -27,18 +27,31 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 'Report issues detected by Mago'
-        if: steps.lint.outcome == 'failure' || steps.format.outcome == 'failure'
+      - run: composer analyse:check
+        id: analyse
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Fail upon detected issues'
+        if: |
+          steps.lint.outcome == 'failure' || 
+          steps.format.outcome == 'failure' || 
+          steps.analyse.outcome == 'failure'
         env:
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          ANALYSE_OUTCOME: ${{ steps.analyse.outcome }}
         run: |
           if [ "$LINT_OUTCOME" == "failure" ]; then
-            echo "::error title=lint:check::One or more issues detected."
+            echo "::error title=Lint::Linter detected issues."
           fi
           
           if [ "$FORMAT_OUTCOME" == "failure" ]; then
-            echo "::error title=format:check::One or more files need formatting."
+            echo "::error title=Format::Formatter detected files needing formatting."
+          fi
+          
+          if [ "$ANALYSE_OUTCOME" == "failure" ]; then
+            echo "::error title=Analyse::Analyzer detected issues."
           fi
           
           exit 1
