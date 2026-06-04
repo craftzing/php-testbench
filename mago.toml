@@ -1,0 +1,16 @@
+#:schema https://mago.carthage.software/1.29.0/schema.json
+# For full documentation, see https://mago.carthage.software/tools/overview
+version = "1"
+php-version = "8.4.0"
+
+[source]
+workspace = "."
+paths = ["src"]
+includes = ["vendor"]
+excludes = []
+
+[source.glob]
+literal-separator = true
+
+[formatter]
+preset = "psr-12"
