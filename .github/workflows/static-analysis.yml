@@ -24,3 +24,18 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Report issues detected by Mago'
+        if: steps.lint.outcome == 'failure' || steps.format.outcome == 'failure'
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+        run: |
+          if [ "$LINT_OUTCOME" == "failure" ]; then
+            echo "::error title=Mago linter detected issues::"
+          fi
+          
+          if [ "$FORMAT_OUTCOME" == "failure" ]; then
+            echo "::error title=Mago formatter detected issues::"
+          fi
+          
+          exit 1
