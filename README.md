@@ -17,9 +17,15 @@ projects.
 
 # 🏁 Getting started
 
+This package requires:
+- [PHP](https://www.php.net/supported-versions.php) 8.4 or 8.5
+
+Depending on which features you want to use, other dependencies (marked as suggestions during composer install) may be 
+required. Compatibility for each of dependency versions are highlighted in the according docs for those features.
+
 > [!IMPORTANT]
-> This package has not been released yet. However, as it merely contains testing utilities, it can safely be installed
-> as a dev dependency. Make sure to add the following configuration to your composer.json:
+> This package is not distributed through a package registry and has to be installed from the source repository.
+> Make sure to add the following configuration to your composer.json:
 > ```json
 > "repositories": [
 >     {
@@ -28,9 +34,6 @@ projects.
 >     }
 > ],
 > ```
-
-This package requires:
-- [PHP](https://www.php.net/supported-versions.php) 8.4
 
 You can install this package using [Composer](https://getcomposer.org) by running the following command:
 ```shell
@@ -48,7 +51,7 @@ Have an idea for a feature? Wanna improve the docs? Found a bug? Check out our [
 # 💙 Thanks to...
 
 - [The entire Craftzing team](https://craftzing.com)
-- [All current and future contributors](https://github.com/creaftzing/laravel-abilities/graphs/contributors)
+- [All current and future contributors](https://github.com/creaftzing/php-testbench/graphs/contributors)
 
 # 👮 Security
 
