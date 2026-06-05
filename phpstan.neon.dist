@@ -1,9 +1,0 @@
-parameters:
-	level: 6
-	paths:
-		- src
-	excludePaths:
-		- ./*/*Test.php
-		- ./*/Testing/*
-	ignoreErrors:
-		- '#is used zero times and is not analysed\.$#'

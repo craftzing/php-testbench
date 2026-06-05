@@ -11,5 +11,4 @@
 *.dist export-ignore
 *.md export-ignore
 *.yml export-ignore
-.php-cs-fixer.dist.php export-ignore
 Taskfile.yml export-ignore
