@@ -35,7 +35,6 @@ abstract class ImmutableFactory
      */
     public function state(array $state): static
     {
-        // @phpstan-ignore-next-line return.type
         return new static($this->faker, [...$this->state, ...$state], $this->count);
     }
 
@@ -44,7 +43,6 @@ abstract class ImmutableFactory
      */
     public function times(int $count): static
     {
-        // @phpstan-ignore-next-line return.type
         return new static($this->faker, $this->state, $count);
     }
 
