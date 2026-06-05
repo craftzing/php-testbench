@@ -6,21 +6,18 @@ namespace Craftzing\TestBench\PHPUnit\Constraint\Objects;
 
 use PHPUnit\Framework\Constraint\Constraint;
 
+use function is_object;
 use function is_string;
 
 trait DerivesConstraintsFromObjects
 {
     private static ?DeriveConstraintsFromObject $deriveConstraintsFromObject = null;
 
-    /**
-     * @var array<Constraint>
-     */
+    /** @var array<Constraint> */
     public readonly array $objectConstraints;
 
-    /**
-     * @return array<Constraint>
-     */
-    public function givenOrDerivedObjectConstraints(string|object $expected): array
+    /** @return array<Constraint> */
+    public function givenOrDerivedObjectConstraints(mixed $expected): array
     {
         if ($this->objectConstraints !== []) {
             return $this->objectConstraints;
@@ -30,7 +27,11 @@ trait DerivesConstraintsFromObjects
             return [];
         }
 
-        return ( self::$deriveConstraintsFromObject ?? new DeriveConstraintsFromObjectUsingReflection() )($expected);
+        if (is_object($expected)) {
+            return ( self::$deriveConstraintsFromObject ?? new DeriveConstraintsFromObjectUsingReflection() )($expected);
+        }
+
+        return [];
     }
 
     public static function deriveConstraintsFromObjectUsing(

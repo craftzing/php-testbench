@@ -50,12 +50,13 @@ final class HasListener extends Constraint
         return new self($listener::class);
     }
 
-    /**
-     * @param array{object|class-string, string} $listen
-     */
+    /** @param array{object|class-string, string} $listen */
     public static function method(array $listen): self
     {
-        is_callable($listen) or throw new InvalidArgumentException('The given listener method is not callable.');
+        if (!is_callable($listen)) {
+            throw new InvalidArgumentException('The given listener method is not callable.');
+        }
+
         [$listener, $method] = $listen;
 
         if (is_object($listener)) {

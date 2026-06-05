@@ -129,7 +129,6 @@ final class WasSent extends Constraint implements Quantable
         return 'was sent';
     }
 
-    /** @param string|object $other */
     protected function failureDescription(mixed $other): string
     {
         $message = parent::failureDescription($other);
