@@ -16,6 +16,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use function array_filter;
 use function count;
 use function is_callable;
+use function spl_object_id;
 
 final class WasCalled extends Constraint implements Quantable
 {
@@ -78,6 +79,22 @@ final class WasCalled extends Constraint implements Quantable
         }
 
         return true;
+    }
+
+    protected function failureDescription(mixed $other): string
+    {
+        if (!$other instanceof SpyCallable) {
+            return parent::failureDescription($other);
+        }
+
+        $message = $other::class . '#' . spl_object_id($other);
+
+        if ($this->times !== null) {
+            $totalInvocations = count($other->invocations);
+            $message .= " (with {$totalInvocations} total invocations)";
+        }
+
+        return "{$message} {$this->toString()}";
     }
 
     public function toString(): string

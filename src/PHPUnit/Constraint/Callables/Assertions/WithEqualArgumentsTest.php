@@ -20,18 +20,20 @@ final class WithEqualArgumentsTest extends TestCase
         $instance = new WithEqualArguments('first', 'last');
 
         $this->expectException(ExpectationFailedException::class);
+        $this->expectExceptionMessage('was invoked with a different amount of arguments');
 
         $instance->__invoke(...$actual);
     }
 
     #[Test]
-    #[TestWith(['first different', 'last'])]
-    #[TestWith(['first', 'last different'])]
-    public function itFailsWhenInvokedWithDifferentArguments(string ...$actual): void
+    #[TestWith([1, 'first different', 'last'])]
+    #[TestWith([2, 'first', 'last different'])]
+    public function itFailsWhenInvokedWithDifferentArguments(int $argument, string ...$actual): void
     {
         $instance = new WithEqualArguments('first', 'last');
 
         $this->expectException(ExpectationFailedException::class);
+        $this->expectExceptionMessage("Argument #{$argument} passed to callable does not match expected value");
 
         $instance->__invoke(...$actual);
     }
@@ -42,6 +44,7 @@ final class WithEqualArgumentsTest extends TestCase
         $instance = new WithEqualArguments('first', 'last');
 
         $this->expectException(ExpectationFailedException::class);
+        $this->expectExceptionMessage('Argument #1 passed to callable does not match expected value');
 
         $instance->__invoke('last', 'first');
     }

@@ -20,10 +20,21 @@ final readonly class WithSameArguments
 
     public function __invoke(mixed ...$actual): void
     {
-        Assert::assertCount(count($this->expected), $actual);
+        Assert::assertCount(
+            count($this->expected),
+            $actual,
+            'Callable was invoked with a different amount of arguments.',
+        );
 
         foreach ($actual as $key => $value) {
-            Assert::assertSame($this->expected[$key], $value);
+            // @mago-expect analyzer:invalid-operand
+            $argumentNumber = $key + 1;
+
+            Assert::assertSame(
+                $this->expected[$key],
+                $value,
+                "Argument #{$argumentNumber} passed to callable does not match expected value.",
+            );
         }
     }
 }
