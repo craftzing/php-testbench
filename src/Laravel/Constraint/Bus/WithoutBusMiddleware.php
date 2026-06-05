@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Bus;
 
 trait WithoutBusMiddleware
 {
-    abstract public function afterApplicationCreated(callable $callback): void;
+    abstract public function afterApplicationCreated(callable $callback);
 
     public function setUpWithoutBusMiddleware(): void
     {
