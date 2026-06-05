@@ -22,28 +22,28 @@ final class WasCalled extends Constraint implements Quantable
     use ProvidesAdditionalFailureDescription;
 
     /** @var callable|null */
-    public readonly mixed $assertInvocation;
+    public readonly mixed $withArguments;
 
     public function __construct(
-        ?callable $assertInvocation = null,
+        ?callable $withArguments = null,
         public readonly ?int $times = null,
     ) {
-        $this->assertInvocation = $assertInvocation;
+        $this->withArguments = $withArguments;
     }
 
     public function times(int $count): self
     {
-        return new self($this->assertInvocation, $count);
+        return new self($this->withArguments, $count);
     }
 
     public function never(): self
     {
-        return new self($this->assertInvocation, 0);
+        return new self($this->withArguments, 0);
     }
 
     public function once(): self
     {
-        return new self($this->assertInvocation, 1);
+        return new self($this->withArguments, 1);
     }
 
     #[Override]
@@ -55,7 +55,7 @@ final class WasCalled extends Constraint implements Quantable
             );
         }
 
-        $matchingInvocations = array_filter($other->invocations, $this->matchesInvocationAssertions(...));
+        $matchingInvocations = array_filter($other->invocations, $this->wasInvokedWithExpectedArguments(...));
 
         return match ($this->times) {
             null => $matchingInvocations !== [],
@@ -63,14 +63,14 @@ final class WasCalled extends Constraint implements Quantable
         };
     }
 
-    private function matchesInvocationAssertions(CallableInvocation $invocation): bool
+    private function wasInvokedWithExpectedArguments(CallableInvocation $invocation): bool
     {
-        if (!is_callable($this->assertInvocation)) {
-            return false;
+        if (!is_callable($this->withArguments)) {
+            return true;
         }
 
         try {
-            ( $this->assertInvocation )(...$invocation->arguments);
+            ( $this->withArguments )(...$invocation->arguments);
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
 
@@ -88,8 +88,8 @@ final class WasCalled extends Constraint implements Quantable
             $message .= " {$this->times} time(s)";
         }
 
-        if ($this->assertInvocation !== null) {
-            $message .= ' with given invocation assertions';
+        if ($this->withArguments !== null) {
+            $message .= ' with given arguments';
         }
 
         return $message;

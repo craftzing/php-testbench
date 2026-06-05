@@ -64,7 +64,7 @@ final class QuantableConstraintTest extends TestCase
 
         $instance($constraint);
 
-        $constraint->spy->assert(new WasCalled(new WithSameArguments($constraint))->once());
+        $constraint->spy->assert(new WasCalled(new WithSameArguments($instance->method, $instance->times))->once());
     }
 
     #[Test]

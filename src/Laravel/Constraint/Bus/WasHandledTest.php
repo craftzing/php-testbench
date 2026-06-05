@@ -315,8 +315,8 @@ final class WasHandledTest extends TestCase
         $this->assertThat($expected, new WasHandled());
 
         $deriveConstraints->invoke->assert(new WasCalled(new WithSameArguments($expected)));
-        $deriveConstraints->invoke->assert(new WasCalled(new WithSameArguments($expected))->never());
-        $constraint->matches->assert(new WasCalled(new WithSameArguments($expected)));
+        $deriveConstraints->invoke->assert(new WasCalled(new WithSameArguments($actual))->never());
+        $constraint->matches->assert(new WasCalled(new WithSameArguments($actual)));
         $constraint->matches->assert(new WasCalled(new WithSameArguments($expected))->never());
     }
 

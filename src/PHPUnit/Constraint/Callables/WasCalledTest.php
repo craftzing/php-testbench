@@ -22,7 +22,7 @@ final class WasCalledTest extends TestCase
     {
         $instance = new WasCalled();
 
-        $this->assertNull($instance->assertInvocation);
+        $this->assertNull($instance->withArguments);
         $this->assertNull($instance->times);
     }
 
@@ -33,7 +33,7 @@ final class WasCalledTest extends TestCase
 
         $instance = new WasCalled($assertInvocation);
 
-        $this->assertSame($assertInvocation, $instance->assertInvocation);
+        $this->assertSame($assertInvocation, $instance->withArguments);
         $this->assertNull($instance->times);
     }
 
@@ -47,9 +47,9 @@ final class WasCalledTest extends TestCase
         $quantisedInstance = $quantise($instance);
 
         $this->assertNull($instance->times);
-        $this->assertSame($assertInvocation, $instance->assertInvocation);
+        $this->assertSame($assertInvocation, $instance->withArguments);
         $this->assertSame($quantise->times, $quantisedInstance->times);
-        $this->assertSame($assertInvocation, $quantisedInstance->assertInvocation);
+        $this->assertSame($assertInvocation, $quantisedInstance->withArguments);
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class WasCalledTest extends TestCase
         $callable('last', 'first');
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage('was called with given invocation assertions.');
+        $this->expectExceptionMessage('was called with given arguments.');
 
         $this->assertThat($callable, new WasCalled(function (string $first, string $last): void {
             $this->assertSame('first', $first);
@@ -140,7 +140,7 @@ final class WasCalledTest extends TestCase
         $quantise->applyTo(static fn() => $callable('first', 'last'));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was called {$quantise->expected} time(s) with given invocation assertions.");
+        $this->expectExceptionMessage("was called {$quantise->expected} time(s) with given arguments.");
 
         $this->assertThat(
             $callable,
