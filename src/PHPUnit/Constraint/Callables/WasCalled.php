@@ -4,53 +4,47 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
-use Closure;
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use Override;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 
 use function array_filter;
 use function count;
+use function is_callable;
+use function spl_object_id;
 
 final class WasCalled extends Constraint implements Quantable
 {
     use ProvidesAdditionalFailureDescription;
 
+    /** @var callable|null */
+    public readonly mixed $withArguments;
+
     public function __construct(
-        public readonly ?Closure $assertInvocation = null,
+        ?callable $withArguments = null,
         public readonly ?int $times = null,
-    ) {}
-
-    public function withSame(mixed ...$expected): self
-    {
-        return new self(static function (mixed ...$actual) use ($expected): void {
-            Assert::assertCount(count($expected), $actual);
-
-            foreach ($actual as $key => $value) {
-                Assert::assertSame($expected[$key], $value);
-            }
-        }, $this->times);
+    ) {
+        $this->withArguments = $withArguments;
     }
 
     public function times(int $count): self
     {
-        return new self($this->assertInvocation, $count);
+        return new self($this->withArguments, $count);
     }
 
     public function never(): self
     {
-        return new self($this->assertInvocation, 0);
+        return new self($this->withArguments, 0);
     }
 
     public function once(): self
     {
-        return new self($this->assertInvocation, 1);
+        return new self($this->withArguments, 1);
     }
 
     #[Override]
@@ -62,7 +56,7 @@ final class WasCalled extends Constraint implements Quantable
             );
         }
 
-        $matchingInvocations = array_filter($other->invocations, $this->matchesInvocationAssertions(...));
+        $matchingInvocations = array_filter($other->invocations, $this->wasInvokedWithExpectedArguments(...));
 
         return match ($this->times) {
             null => $matchingInvocations !== [],
@@ -70,11 +64,14 @@ final class WasCalled extends Constraint implements Quantable
         };
     }
 
-    private function matchesInvocationAssertions(CallableInvocation $invocation): bool
+    private function wasInvokedWithExpectedArguments(CallableInvocation $invocation): bool
     {
+        if (!is_callable($this->withArguments)) {
+            return true;
+        }
+
         try {
-            // @mago-expect analyzer:invalid-method-access
-            $this->assertInvocation?->__invoke(...$invocation->arguments);
+            ( $this->withArguments )(...$invocation->arguments);
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
 
@@ -82,6 +79,22 @@ final class WasCalled extends Constraint implements Quantable
         }
 
         return true;
+    }
+
+    protected function failureDescription(mixed $other): string
+    {
+        if (!$other instanceof SpyCallable) {
+            return parent::failureDescription($other);
+        }
+
+        $message = $other::class . '#' . spl_object_id($other);
+
+        if ($this->times !== null) {
+            $totalInvocations = count($other->invocations);
+            $message .= " (with {$totalInvocations} total invocations)";
+        }
+
+        return "{$message} {$this->toString()}";
     }
 
     public function toString(): string
@@ -92,8 +105,8 @@ final class WasCalled extends Constraint implements Quantable
             $message .= " {$this->times} time(s)";
         }
 
-        if ($this->assertInvocation !== null) {
-            $message .= ' with given invocation assertions';
+        if ($this->withArguments !== null) {
+            $message .= ' with given arguments';
         }
 
         return $message;
