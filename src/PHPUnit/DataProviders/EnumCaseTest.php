@@ -10,11 +10,11 @@ use Craftzing\TestBench\PHPUnit\Doubles\Enums\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use stdClass;
 use UnitEnum as UnitEnumInterface;
 use ValueError;
@@ -130,7 +130,7 @@ final class EnumCaseTest extends TestCase
     #[Test]
     public function itCannotProvideFromNonEnumFQCNs(): void
     {
-        $this->expectException(ReflectionException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         iterator_to_array(EnumCase::cases(stdClass::class));
     }
