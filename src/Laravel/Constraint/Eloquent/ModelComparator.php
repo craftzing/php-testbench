@@ -26,22 +26,29 @@ final class ModelComparator extends Comparator
         bool $canonicalize = false,
         bool $ignoreCase = false,
     ): void {
-        $expected instanceof Model or throw self::notInstanceOfModel('expected', $expected);
-        $actual instanceof Model or throw self::notInstanceOfModel('actual', $actual);
+        if (!$expected instanceof Model) {
+            throw self::notInstanceOfModel('expected', $expected);
+        }
 
-        $actual->is($expected) or throw new ComparisonFailure(
-            $expected,
-            $actual,
-            $this->serializeModelForException($expected),
-            $this->serializeModelForException($actual),
-            'Failed asserting that two Eloquent models are equal.',
-        );
+        if (!$actual instanceof Model) {
+            throw self::notInstanceOfModel('actual', $actual);
+        }
+
+        if ($actual->isNot($expected)) {
+            throw new ComparisonFailure(
+                $expected,
+                $actual,
+                $this->serializeModelForException($expected),
+                $this->serializeModelForException($actual),
+                'Failed asserting that two Eloquent models are equal.',
+            );
+        }
     }
 
     private static function notInstanceOfModel(string $argumentName, mixed $value): AssertionError
     {
         return new AssertionError(
-            "Argument $argumentName must be an instance of " . Model::class . ', received ' . gettype($value) . '.',
+            "Argument {$argumentName} must be an instance of " . Model::class . ', received ' . gettype($value) . '.',
         );
     }
 
@@ -55,6 +62,6 @@ final class ModelComparator extends Comparator
             'table' => $properties['table'],
             'primaryKey' => $properties['primaryKey'],
             'attributes' => $properties['attributes'],
-        ], JSON_PRETTY_PRINT);
+        ], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
     }
 }

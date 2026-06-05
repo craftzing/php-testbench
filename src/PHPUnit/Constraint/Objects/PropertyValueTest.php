@@ -60,7 +60,7 @@ final class PropertyValueTest extends TestCase
     #[Test]
     public function itFailsWhenPropertiesDontMatchGivenConstraints(): void
     {
-        $constraint = new Callback(fn (): bool => false);
+        $constraint = new Callback(static fn(): bool => false);
         $object = $this->objectWithIdProperty();
 
         $this->expectException(ExpectationFailedException::class);
@@ -71,7 +71,7 @@ final class PropertyValueTest extends TestCase
     #[Test]
     public function itPassesWhenPropertiesMatchGivenConstraints(): void
     {
-        $constraint = new Callback(fn (): bool => true);
+        $constraint = new Callback(static fn(): bool => true);
         $object = $this->objectWithIdProperty();
 
         $this->assertThat($object, new PropertyValue('id', $constraint));
@@ -82,8 +82,7 @@ final class PropertyValueTest extends TestCase
      */
     private function objectWithIdProperty(): object
     {
-        return new class
-        {
+        return new class {
             public function __construct(
                 public string $id = 'SomeId',
             ) {}

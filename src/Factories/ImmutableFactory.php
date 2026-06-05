@@ -14,6 +14,7 @@ use function iterator_to_array;
 
 /**
  * @template TClass of object
+ * @mago-expect lint:too-many-methods
  */
 abstract class ImmutableFactory
 {
@@ -34,7 +35,6 @@ abstract class ImmutableFactory
      */
     public function state(array $state): static
     {
-        // @phpstan-ignore-next-line return.type
         return new static($this->faker, [...$this->state, ...$state], $this->count);
     }
 
@@ -43,7 +43,6 @@ abstract class ImmutableFactory
      */
     public function times(int $count): static
     {
-        // @phpstan-ignore-next-line return.type
         return new static($this->faker, $this->state, $count);
     }
 
@@ -64,7 +63,7 @@ abstract class ImmutableFactory
             return array_map($this->resolveValue(...), iterator_to_array($value));
         }
 
-        if (! $value instanceof self) {
+        if (!$value instanceof self) {
             return $value;
         }
 
@@ -102,7 +101,7 @@ abstract class ImmutableFactory
      */
     public function rawCollection(array $attributes = []): Collection
     {
-        return Collection::times($this->count, fn (): array => $this->raw($attributes));
+        return Collection::times($this->count, fn(): array => $this->raw($attributes));
     }
 
     /**
@@ -129,6 +128,6 @@ abstract class ImmutableFactory
      */
     public function makeCollection(array $attributes = []): Collection
     {
-        return Collection::times($this->count, fn (): mixed => $this->makeOne($attributes));
+        return Collection::times($this->count, fn(): mixed => $this->makeOne($attributes));
     }
 }

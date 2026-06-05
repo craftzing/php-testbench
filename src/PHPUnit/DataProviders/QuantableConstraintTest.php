@@ -63,10 +63,11 @@ final class QuantableConstraintTest extends TestCase
 
         $instance($constraint);
 
-        $constraint->spy->assert(new WasCalled(function (string $method, int $times) use ($instance): void {
-            $this->assertSame($instance->method, $method);
-            $this->assertSame($instance->times, $times);
-        })->once());
+        $constraint->spy->assert(
+            new WasCalled()
+                ->withSame($instance->method, $instance->times)
+                ->once(),
+        );
     }
 
     #[Test]
@@ -110,8 +111,7 @@ final class QuantableConstraintTest extends TestCase
 
     private function constraint(): object
     {
-        return new class implements Quantable
-        {
+        return new class implements Quantable {
             public function __construct(
                 public SpyCallable $spy = new SpyCallable(),
             ) {}

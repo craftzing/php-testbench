@@ -35,12 +35,13 @@ final class IsScheduled extends Constraint
     #[Override]
     protected function matches(mixed $other): bool
     {
-        is_string($other) && class_exists($other) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for classnames of scheduled tasks.',
-        );
+        if (is_string($other) === false || class_exists($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for classnames of scheduled tasks.',
+            );
+        }
 
-        $matchingScheduledTask = new Collection($this->schedule->events())
-            ->first(fn (Event $event): bool => $event->description === $other);
+        $matchingScheduledTask = new Collection($this->schedule->events())->first(static fn(Event $event): bool => $event->description === $other);
 
         if ($matchingScheduledTask === null) {
             $this->additionalFailureDescriptions[] = 'Not scheduled.';
@@ -62,6 +63,6 @@ final class IsScheduled extends Constraint
 
     public function toString(): string
     {
-        return "is scheduled $this->frequency";
+        return "is scheduled {$this->frequency}";
     }
 }

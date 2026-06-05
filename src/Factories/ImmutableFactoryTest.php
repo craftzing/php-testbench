@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function array_keys;
 use function collect;
 use function count;
 use function mt_rand;
@@ -25,8 +26,7 @@ final class ImmutableFactoryTest extends TestCase
     use Conditionable;
 
     private ImmutableFactory $instance {
-        get => $this->instance ??= new class extends ImmutableFactory
-        {
+        get => $this->instance ??= new class extends ImmutableFactory {
             public function definition(): array
             {
                 return [
@@ -164,9 +164,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanReturnRawAttributesWithState(array $attributes, array $state, array $expected): void
     {
-        $result = $this->instance
-            ->state($state)
-            ->raw($attributes);
+        $result = $this->instance->state($state)->raw($attributes);
 
         collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
             $this->assertSame($value, $result[$attribute]);
@@ -212,9 +210,7 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanMakeOneWithState(array $attributes, array $state, array $expected): void
     {
-        $result = $this->instance
-            ->state($state)
-            ->makeOne($attributes);
+        $result = $this->instance->state($state)->makeOne($attributes);
 
         $this->assertInstanceOf(stdClass::class, $result);
         collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
@@ -262,13 +258,13 @@ final class ImmutableFactoryTest extends TestCase
     public static function nestedFactories(): iterable
     {
         yield [
-            fn (ImmutableFactory $instance): ImmutableFactory => $instance->state([
+            static fn(ImmutableFactory $instance): ImmutableFactory => $instance->state([
                 'nested' => $instance->state([
                     'deeplyNested' => $instance->state(['resolved' => true]),
                 ]),
                 'nestedArray' => $instance->times(2)->state(['resolvedTimes' => true]),
             ]),
-            function (stdClass $result): void {
+            static function (stdClass $result): void {
                 self::assertObjectHasProperty('nested', $result);
                 self::assertInstanceOf(stdClass::class, $result->nested);
                 self::assertObjectHasProperty('deeplyNested', $result->nested);
@@ -277,7 +273,7 @@ final class ImmutableFactoryTest extends TestCase
                 self::assertObjectHasProperty('nestedArray', $result);
                 self::assertContainsOnlyInstancesOf(stdClass::class, $result->nestedArray);
                 self::assertCount(2, $result->nestedArray);
-                collect($result->nestedArray)->each(function (stdClass $item): void {
+                collect($result->nestedArray)->each(static function (stdClass $item): void {
                     self::assertObjectHasProperty('resolvedTimes', $item);
                     self::assertTrue($item->resolvedTimes);
                 });
@@ -312,7 +308,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $results = $instance->rawMany();
 
-        collect($results)->each(function (array $result) use ($assert): void {
+        collect($results)->each(static function (array $result) use ($assert): void {
             $assert((object) $result);
         });
     }
@@ -331,7 +327,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $results = $instance->rawCollection();
 
-        $results->each(function (array $result) use ($assert): void {
+        $results->each(static function (array $result) use ($assert): void {
             $assert((object) $result);
         });
     }
@@ -368,7 +364,7 @@ final class ImmutableFactoryTest extends TestCase
 
     /**
      * @param callable(ImmutableFactory): ImmutableFactory $resolveInstance
-     * @param callable(stdClass): void $assert
+     * @param callable(stdClass, int): mixed $assert
      */
     #[Test]
     #[DataProvider('nestedFactories')]
@@ -397,14 +393,14 @@ final class ImmutableFactoryTest extends TestCase
 
     private function assertHasPropertyForEachDefinition(stdClass $result): void
     {
-        foreach ($this->instance->definition() as $attribute => $value) {
+        foreach (array_keys($this->instance->definition()) as $attribute) {
             self::assertObjectHasProperty($attribute, $result);
         }
     }
 
     private function assertHasArrayKeyForEachDefinition(array $result): void
     {
-        foreach ($this->instance->definition() as $attribute => $value) {
+        foreach (array_keys($this->instance->definition()) as $attribute) {
             self::assertArrayHasKey($attribute, $result);
         }
     }

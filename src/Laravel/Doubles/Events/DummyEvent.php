@@ -9,9 +9,7 @@ namespace Craftzing\TestBench\Laravel\Doubles\Events;
  */
 final readonly class DummyEvent
 {
-    /**
-     * @var array<int, mixed>
-     */
+    /** @var array<array-key, mixed> */
     public array $arguments;
 
     public function __construct(mixed ...$arguments)

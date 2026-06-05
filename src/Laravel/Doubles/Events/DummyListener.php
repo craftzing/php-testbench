@@ -11,11 +11,9 @@ final readonly class DummyListener
 {
     public function __invoke(mixed ...$arguments): void
     {
-        //
     }
 
     public function handle(): void
     {
-        //
     }
 }

@@ -58,4 +58,4 @@ tasks:
       - for:
           var: versions
           split: ','
-        cmd: docker compose exec php-{{ .ITEM }} composer phpunit
+        cmd: docker compose exec php-{{ .ITEM }} composer test

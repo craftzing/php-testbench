@@ -24,14 +24,13 @@
         "fakerphp/faker": "^1.24"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.75",
+        "carthage-software/mago": "^1.29.0",
         "illuminate/collections": "^10.10|^11.0|^12.0",
         "illuminate/console": "^10.10|^11.0|^12.0",
         "illuminate/container": "^10.10|^11.0|^12.0",
         "illuminate/contracts": "^10.10|^11.0|^12.0",
         "illuminate/support": "^10.10|^11.0|^12.0",
         "orchestra/testbench": "^9.9",
-        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5",
         "saloonphp/saloon": "^3.13"
     },
@@ -63,26 +62,29 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "cs:check": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run",
-        "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose",
-        "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G --ansi",
+        "mago": "vendor/bin/mago --colors=always",
         "phpunit": "vendor/bin/phpunit --colors=always --display-phpunit-deprecations --display-deprecations",
-        "test": [
-            "@composer cs:check",
-            "@composer phpstan",
-            "@composer phpunit"
+        "lint:check": "@composer mago -- lint --minimum-fail-level=warning --reporting-format=rich",
+        "lint:fix": "@composer mago -- lint --fix",
+        "format:check": "@composer mago -- format --dry-run",
+        "format:fix": "@composer mago -- format",
+        "analyse:check": "@composer mago -- analyse --minimum-fail-level=warning --reporting-format=rich",
+        "static-analysis:check": [
+            "@composer lint:check",
+            "@composer format:check",
+            "@composer analyse:check"
         ],
-        "coverage:summary": "@composer phpunit -- --coverage-text",
-        "coverage:report": "@composer phpunit -- --coverage-html=.reports/coverage"
+        "static-analysis:fix": [
+            "@composer lint:fix",
+            "@composer format:fix"
+        ],
+        "test": "@composer phpunit",
+        "test:coverage": "@composer phpunit -- --coverage-text",
+        "test:report": "@composer phpunit -- --coverage-html=.reports/coverage"
     },
     "extra": {
         "branch-alias": {
             "dev-main": "1.0.x-dev"
-        },
-        "laravel": {
-            "providers": [
-                "Craftzing\\TestBench\\Laravel\\ServiceProvider"
-            ]
         }
     }
 }

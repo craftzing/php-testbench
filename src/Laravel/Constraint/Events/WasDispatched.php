@@ -70,7 +70,7 @@ final class WasDispatched extends Constraint implements Quantable
 
         $dispatchedEventsMatchingConstraints = array_filter(
             $matchingDispatchedEvents,
-            fn (array $dispatchedEvent): bool => $this->matchesEventConstraints(
+            fn(array $dispatchedEvent): bool => $this->matchesEventConstraints(
                 $other,
                 $dispatchedEvent[0],
                 // When the event was dispatched exactly once, we should add all nested expectation failures to the
@@ -116,7 +116,7 @@ final class WasDispatched extends Constraint implements Quantable
         $message = parent::failureDescription($other);
 
         if ($this->times !== null) {
-            $message .= " $this->times time(s)";
+            $message .= " {$this->times} time(s)";
         }
 
         $message .= match (true) {

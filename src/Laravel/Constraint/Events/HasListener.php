@@ -27,16 +27,16 @@ final class HasListener extends Constraint
     public function __construct(
         public string $listener {
             set(string $listener) {
-                class_exists($listener) or throw new InvalidArgumentException("$listener is not an existing class.");
+                class_exists($listener) or throw new InvalidArgumentException("{$listener} is not an existing class.");
 
                 $this->listener = $listener;
             }
         },
         public string $method = self::DEFAULT_METHOD {
             set(string $method) {
-                method_exists($this->listener, $method) or throw new InvalidArgumentException(
-                    "Method $this->listener::$method does not exist.",
-                );
+                if (method_exists($this->listener, $method) === false) {
+                    throw new InvalidArgumentException("Method {$this->listener}::{$method} does not exist.");
+                }
 
                 $this->method = $method;
             }
@@ -50,12 +50,13 @@ final class HasListener extends Constraint
         return new self($listener::class);
     }
 
-    /**
-     * @param array{object|class-string, string} $listen
-     */
+    /** @param array{object|class-string, string} $listen */
     public static function method(array $listen): self
     {
-        is_callable($listen) or throw new InvalidArgumentException('The given listener method is not callable.');
+        if (!is_callable($listen)) {
+            throw new InvalidArgumentException('The given listener method is not callable.');
+        }
+
         [$listener, $method] = $listen;
 
         if (is_object($listener)) {
@@ -68,9 +69,11 @@ final class HasListener extends Constraint
     #[Override]
     protected function matches(mixed $other): bool
     {
-        is_string($other) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
-        );
+        if (is_string($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
+            );
+        }
 
         try {
             Event::assertListening($other, match ($this->method) {

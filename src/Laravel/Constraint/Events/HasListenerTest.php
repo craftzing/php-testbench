@@ -36,7 +36,7 @@ final class HasListenerTest extends TestCase
         $method = 'thisIsNotTheMethodYouAreLookingFor';
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("$method does not exist.");
+        $this->expectExceptionMessage("{$method} does not exist.");
 
         new HasListener(DummyListener::class, $method);
     }
@@ -120,7 +120,7 @@ final class HasListenerTest extends TestCase
             HasListener::class . ' can only be evaluated for strings',
         );
 
-       $this->assertThat(new DummyEvent(), new HasListener(DummyListener::class));
+        $this->assertThat(new DummyEvent(), new HasListener(DummyListener::class));
     }
 
     #[Test]

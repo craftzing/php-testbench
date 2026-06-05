@@ -89,8 +89,7 @@ final class FakeResponseTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        new FakeConnector()->send(new class extends Request
-        {
+        new FakeConnector()->send(new class extends Request {
             public function resolveEndpoint(): string
             {
                 return 'not-faked';
@@ -103,19 +102,25 @@ final class FakeResponseTest extends TestCase
     {
         $cases = iterator_to_array(FakeResponse::commonErrors());
 
-        $this->assertEquals([
-            'Bad request' => [FakeResponse::badRequest()],
-            'Forbidden' => [FakeResponse::forbidden()],
-            'Not found' => [FakeResponse::notFound()],
-            'Server error' => [FakeResponse::serverError()],
-        ], $cases);
+        $this->assertEquals(
+            [
+                'Bad request' => [FakeResponse::badRequest()],
+                'Forbidden' => [FakeResponse::forbidden()],
+                'Not found' => [FakeResponse::notFound()],
+                'Server error' => [FakeResponse::serverError()],
+            ],
+            $cases,
+        );
     }
 
     private function assertBody(string|array $body, SaloonResponse $response): void
     {
-        $this->assertSame(match (is_array($body)) {
-            true => json_encode($body),
-            false => $body,
-        }, $response->body());
+        $this->assertSame(
+            match (is_array($body)) {
+                true => json_encode($body),
+                false => $body,
+            },
+            $response->body(),
+        );
     }
 }

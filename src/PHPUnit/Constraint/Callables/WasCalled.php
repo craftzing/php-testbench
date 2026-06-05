@@ -29,7 +29,7 @@ final class WasCalled extends Constraint implements Quantable
 
     public function withSame(mixed ...$expected): self
     {
-        return new self(function (mixed ...$actual) use ($expected): void {
+        return new self(static function (mixed ...$actual) use ($expected): void {
             Assert::assertCount(count($expected), $actual);
 
             foreach ($actual as $key => $value) {
@@ -56,9 +56,11 @@ final class WasCalled extends Constraint implements Quantable
     #[Override]
     protected function matches(mixed $other): bool
     {
-        $other instanceof SpyCallable or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for instances of ' . SpyCallable::class,
-        );
+        if (!$other instanceof SpyCallable) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for instances of ' . SpyCallable::class,
+            );
+        }
 
         $matchingInvocations = array_filter($other->invocations, $this->matchesInvocationAssertions(...));
 
@@ -71,6 +73,7 @@ final class WasCalled extends Constraint implements Quantable
     private function matchesInvocationAssertions(CallableInvocation $invocation): bool
     {
         try {
+            // @mago-expect analyzer:invalid-method-access
             $this->assertInvocation?->__invoke(...$invocation->arguments);
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
@@ -86,7 +89,7 @@ final class WasCalled extends Constraint implements Quantable
         $message = 'was called';
 
         if ($this->times !== null) {
-            $message .= " $this->times time(s)";
+            $message .= " {$this->times} time(s)";
         }
 
         if ($this->assertInvocation !== null) {

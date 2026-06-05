@@ -9,16 +9,14 @@ use Override;
 
 trait ProvidesAdditionalFailureDescription
 {
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     private array $additionalFailureDescriptions = [];
 
     #[Override]
     protected function additionalFailureDescription(mixed $other): string
     {
         return new Collection($this->additionalFailureDescriptions)
-            ->map(fn (string $description): string => "\n* $description\n")
+            ->map(static fn(string $description): string => "\n* {$description}\n")
             ->implode('');
     }
 }

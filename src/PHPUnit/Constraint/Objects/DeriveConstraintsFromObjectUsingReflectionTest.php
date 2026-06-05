@@ -16,8 +16,7 @@ final class DeriveConstraintsFromObjectUsingReflectionTest extends TestCase
     #[Test]
     public function itShouldNotDeriveConstraintsFromNonPublicProperties(): void
     {
-        $object = new readonly class
-        {
+        $object = new readonly class {
             public function __construct(
                 protected mixed $protected = 'protected',
                 protected mixed $private = 'private',
@@ -33,8 +32,7 @@ final class DeriveConstraintsFromObjectUsingReflectionTest extends TestCase
     public function itCanDeriveConstraintsFromPublicProperties(): void
     {
         $value = 'SomePublicValue';
-        $object = new readonly class ($value)
-        {
+        $object = new readonly class($value) {
             public function __construct(
                 public mixed $somePublicProperty,
             ) {}
@@ -42,8 +40,11 @@ final class DeriveConstraintsFromObjectUsingReflectionTest extends TestCase
 
         $results = new DeriveConstraintsFromObjectUsingReflection()->__invoke($object);
 
-        $this->assertEquals([
-            new PropertyValue('somePublicProperty', new IsEqual($value)),
-        ], $results);
+        $this->assertEquals(
+            [
+                new PropertyValue('somePublicProperty', new IsEqual($value)),
+            ],
+            $results,
+        );
     }
 }

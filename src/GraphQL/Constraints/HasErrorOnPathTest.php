@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\GraphQL\Constraints;
 
 use Faker\Factory;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -20,12 +18,6 @@ use PHPUnit\Framework\TestCase;
  */
 final class HasErrorOnPathTest extends TestCase
 {
-    #[Before]
-    public function setupHasErrorOnPath(): void
-    {
-        HasErrorOnPath::resolveResponseUsing(null);
-    }
-
     #[Test]
     public function itCanExpectErrorsOfCategoryAuthentication(): void
     {
@@ -85,7 +77,7 @@ final class HasErrorOnPathTest extends TestCase
         $response = ['data' => 'ok'];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
@@ -130,7 +122,7 @@ final class HasErrorOnPathTest extends TestCase
         ];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
@@ -152,7 +144,7 @@ final class HasErrorOnPathTest extends TestCase
         ];
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("has error on `$path` of category `$category`");
+        $this->expectExceptionMessage("has error on `{$path}` of category `{$category}`");
 
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
@@ -188,56 +180,6 @@ final class HasErrorOnPathTest extends TestCase
     #[DataProvider('responsesWithErrorOnPathOfGivenCategory')]
     public function itPassesWhenErrorOnPathIsOfGivenCategory(string $path, string $category, iterable $response): void
     {
-        $this->assertThat($response, new HasErrorOnPath($path, $category));
-    }
-
-    #[Test]
-    public function itFailsWhenResponseCouldNotBeResolvedForSubject(): void
-    {
-        HasErrorOnPath::resolveResponseUsing(fn (Arrayable $subject): array => $subject->toArray());
-        $response = new readonly class
-        {
-            public function toArray(): array
-            {
-                return [];
-            }
-        };
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(HasErrorOnPath::class . ' can only be evaluated for iterable values');
-
-        $this->assertThat($response, new HasErrorOnPath('somePath'));
-    }
-
-    #[Test]
-    public function itPassesResponseCouldBeResolvedForSubject(): void
-    {
-        HasErrorOnPath::resolveResponseUsing(fn (Arrayable $subject): array => $subject->toArray());
-        $category = Factory::create()->word();
-        $path = 'somePath';
-
-        $response = new readonly class ($path, $category) implements Arrayable
-        {
-            public function __construct(
-                private string $path,
-                private string $category,
-            ) {}
-
-            public function toArray(): array
-            {
-                return [
-                    'errors' => [
-                        [
-                            'path' => [$this->path],
-                            'extensions' => [
-                                'category' => $this->category,
-                            ],
-                        ],
-                    ],
-                ];
-            }
-        };
-
         $this->assertThat($response, new HasErrorOnPath($path, $category));
     }
 }

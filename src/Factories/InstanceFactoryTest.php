@@ -14,8 +14,7 @@ final class InstanceFactoryTest extends TestCase
     #[Test]
     public function itFailsWhenConstructingInstancesWithPropertiesThatDoNotExist(): void
     {
-        $subject = new readonly class('some-id')
-        {
+        $subject = new readonly class('some-id') {
             public function __construct(
                 public string $id,
             ) {}
@@ -34,8 +33,7 @@ final class InstanceFactoryTest extends TestCase
             'protected' => 'Protected',
             'private' => 'Private',
         ];
-        $subject = new readonly class(...$attributes)
-        {
+        $subject = new readonly class(...$attributes) {
             public function __construct(
                 public string $public,
                 protected string $protected,
@@ -63,8 +61,7 @@ final class InstanceFactoryTest extends TestCase
     #[Test]
     public function itConstructsInstancesWithUninitializedPropertiesWhenNotProvidingAttributes(): void
     {
-        $subject = new readonly class('some-id')
-        {
+        $subject = new readonly class('some-id') {
             public function __construct(
                 public string $id,
             ) {}

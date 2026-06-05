@@ -6,13 +6,14 @@ namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Illuminate\Contracts\Bus\Dispatcher;
-use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
 use PHPUnit\Framework\Constraint\Constraint;
 use ReflectionClass;
 
+use function app;
 use function class_exists;
 use function gettype;
+use function is_object;
 use function is_string;
 
 final class HasHandler extends Constraint
@@ -22,31 +23,40 @@ final class HasHandler extends Constraint
     private readonly Dispatcher $bus;
 
     public function __construct(
-        /* @var class-string */
+        /** @var class-string */
         private readonly string $handlerClassFQN,
     ) {
-        $this->bus = Bus::getFacadeRoot();
+        $this->bus = app(Dispatcher::class);
     }
 
     protected function matches(mixed $other): bool
     {
-        is_string($other) or throw new InvalidArgumentException(
-            self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
-        );
-        class_exists($other) or throw new InvalidArgumentException(
-            self::class . " can only be evaluated for existing classes, got $other.",
-        );
+        if (is_string($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . ' can only be evaluated for strings, got ' . gettype($other) . '.',
+            );
+        }
+
+        if (class_exists($other) === false) {
+            throw new InvalidArgumentException(
+                self::class . " can only be evaluated for existing classes, got {$other}.",
+            );
+        }
+
         $message = new ReflectionClass($other)->newInstanceWithoutConstructor();
+        /** @var object|string|false $actualHandler */
         $actualHandler = $this->bus->getCommandHandler($message);
 
         if ($actualHandler === false) {
-            $this->additionalFailureDescriptions[] = "$other has no handler mapped to it.";
+            $this->additionalFailureDescriptions[] = "{$other} has no handler mapped to it.";
 
             return false;
         }
 
-        if ($actualHandler::class !== $this->handlerClassFQN) {
-            $this->additionalFailureDescriptions[] = "$other has a different handler mapped to it.";
+        $actualHandlerClass = is_object($actualHandler) ? $actualHandler::class : $actualHandler;
+
+        if ($actualHandlerClass !== $this->handlerClassFQN) {
+            $this->additionalFailureDescriptions[] = "{$other} has a different handler mapped to it.";
 
             return false;
         }

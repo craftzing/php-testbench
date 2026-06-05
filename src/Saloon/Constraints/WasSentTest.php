@@ -133,7 +133,7 @@ final class WasSentTest extends TestCase
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->assertThat(FakeRequest::class, $quantise(new WasSent($connector)));
     }
@@ -162,7 +162,7 @@ final class WasSentTest extends TestCase
         $this->expectExceptionMessage('was sent with given constraints.');
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->withConstraints(
-            new Callback(fn () => false),
+            new Callback(static fn() => false),
         ));
     }
 
@@ -174,7 +174,7 @@ final class WasSentTest extends TestCase
         $connector->send(new FakeRequest());
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->withConstraints(
-            new Callback(fn () => true),
+            new Callback(static fn() => true),
         ));
     }
 
@@ -183,10 +183,10 @@ final class WasSentTest extends TestCase
     public function itFailsWhenSentButNotGivenTimes(QuantableConstraint $quantise): void
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s).");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s).");
 
         $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected));
     }
@@ -197,7 +197,7 @@ final class WasSentTest extends TestCase
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->assertThat(FakeRequest::class, $quantise(new WasSent($connector)));
     }
@@ -207,14 +207,16 @@ final class WasSentTest extends TestCase
     public function itFailsWhenSentWithGivenConstrainsButNotGivenTimes(QuantableConstraint $quantise): void
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s)");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s)");
 
-        $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected)->withConstraints(
-            new Callback(fn () => true),
-        ));
+        $this->assertThat(FakeRequest::class, new WasSent($connector)
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => true),
+            ));
     }
 
     #[Test]
@@ -222,14 +224,16 @@ final class WasSentTest extends TestCase
     public function itFailsWhenSentGivenTimesButNotWithGivenConstrains(QuantableConstraint $quantise): void
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("was sent $quantise->expected time(s) with given constraints.");
+        $this->expectExceptionMessage("was sent {$quantise->expected} time(s) with given constraints.");
 
-        $this->assertThat(FakeRequest::class, new WasSent($connector)->times($quantise->expected)->withConstraints(
-            new Callback(fn () => false),
-        ));
+        $this->assertThat(FakeRequest::class, new WasSent($connector)
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => false),
+            ));
     }
 
     #[Test]
@@ -238,11 +242,14 @@ final class WasSentTest extends TestCase
     {
         $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
-        $quantise->applyTo(fn () => $connector->send(new FakeRequest()));
+        $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
-        $this->assertThat(FakeRequest::class, $quantise(new WasSent($connector)->withConstraints(
-            new Callback(fn () => true),
-        )));
+        $this->assertThat(
+            FakeRequest::class,
+            $quantise(new WasSent($connector)->withConstraints(
+                new Callback(static fn() => true),
+            )),
+        );
     }
 
     #[Test]

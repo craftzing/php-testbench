@@ -111,7 +111,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $command = new stdClass();
 
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->assertThat($command::class, $quantise(new WasDispatched()));
     }
@@ -127,7 +127,7 @@ final class WasDispatchedTest extends TestCase
         $this->expectExceptionMessage('command was dispatched with given command constraints.');
 
         $this->assertThat($command, new WasDispatched()->withConstraints(
-            new Callback(fn () => false),
+            new Callback(static fn() => false),
         ));
     }
 
@@ -140,7 +140,7 @@ final class WasDispatchedTest extends TestCase
         Bus::dispatch($command);
 
         $this->assertThat($command, new WasDispatched()->withConstraints(
-            new Callback(fn () => true),
+            new Callback(static fn() => true),
         ));
     }
 
@@ -150,10 +150,10 @@ final class WasDispatchedTest extends TestCase
     {
         WasDispatched::spy();
         $command = new stdClass();
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s).");
+        $this->expectExceptionMessage("command was dispatched {$quantise->expected} time(s).");
 
         $this->assertThat($command::class, new WasDispatched()->times($quantise->expected));
     }
@@ -165,7 +165,7 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $command = new stdClass();
 
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->assertThat($command::class, $quantise(new WasDispatched()));
     }
@@ -177,14 +177,16 @@ final class WasDispatchedTest extends TestCase
     ): void {
         WasDispatched::spy();
         $command = new stdClass();
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage("command was dispatched $quantise->expected time(s)");
+        $this->expectExceptionMessage("command was dispatched {$quantise->expected} time(s)");
 
-        $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withConstraints(
-            new Callback(fn () => true),
-        ));
+        $this->assertThat($command, new WasDispatched()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => true),
+            ));
     }
 
     #[Test]
@@ -194,16 +196,18 @@ final class WasDispatchedTest extends TestCase
     ): void {
         WasDispatched::spy();
         $command = new stdClass();
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
-            "command was dispatched $quantise->expected time(s) with given command constraints.",
+            "command was dispatched {$quantise->expected} time(s) with given command constraints.",
         );
 
-        $this->assertThat($command, new WasDispatched()->times($quantise->expected)->withConstraints(
-            new Callback(fn () => false),
-        ));
+        $this->assertThat($command, new WasDispatched()
+            ->times($quantise->expected)
+            ->withConstraints(
+                new Callback(static fn() => false),
+            ));
     }
 
     #[Test]
@@ -214,19 +218,21 @@ final class WasDispatchedTest extends TestCase
         WasDispatched::spy();
         $command = new stdClass();
 
-        $quantise->applyTo(fn () => Bus::dispatch($command));
+        $quantise->applyTo(static fn() => Bus::dispatch($command));
 
-        $this->assertThat($command, $quantise(new WasDispatched()->withConstraints(
-            new Callback(fn () => true),
-        )));
+        $this->assertThat(
+            $command,
+            $quantise(new WasDispatched()->withConstraints(
+                new Callback(static fn() => true),
+            )),
+        );
     }
 
     #[Test]
     public function itCannotDeriveCommandConstraintsFromCommandStrings(): void
     {
         WasDispatched::spy();
-        $command = new readonly class
-        {
+        $command = new readonly class {
             public function __construct(
                 public string $first = 'first',
             ) {}
@@ -241,8 +247,7 @@ final class WasDispatchedTest extends TestCase
     public function itCanDeriveCommandConstraintsFromCommandObjects(): void
     {
         WasDispatched::spy();
-        $command = new readonly class
-        {
+        $command = new readonly class {
             public function __construct(
                 public string $first = 'first',
             ) {}

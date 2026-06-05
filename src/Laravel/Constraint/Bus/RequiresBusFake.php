@@ -24,9 +24,11 @@ trait RequiresBusFake
     {
         $bus = Bus::getFacadeRoot();
 
-        $bus instanceof BusFake or throw new LogicException(
-            'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::spy() first.',
-        );
+        if (!$bus instanceof BusFake) {
+            throw new LogicException(
+                'To use the ' . self::class . ' constraint, make sure to call ' . self::class . '::spy() first.',
+            );
+        }
 
         return $bus;
     }

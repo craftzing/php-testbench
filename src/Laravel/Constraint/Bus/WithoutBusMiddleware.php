@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Bus;
 
 trait WithoutBusMiddleware
 {
+    abstract public function afterApplicationCreated(callable $callback): void;
+
     public function setUpWithoutBusMiddleware(): void
     {
-        $this->afterApplicationCreated(function (): void {
+        $this->afterApplicationCreated(static function (): void {
             Bus::pipeThrough([]);
         });
     }

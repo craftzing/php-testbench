@@ -1,0 +1,41 @@
+#:schema https://mago.carthage.software/1.29.0/schema.json
+# For full documentation, see https://mago.carthage.software/tools/overview
+version = "1"
+php-version = "8.4.0"
+
+[source]
+workspace = "."
+paths = ["src"]
+includes = ["vendor"]
+excludes = []
+
+[source.glob]
+literal-separator = true
+
+[formatter]
+preset = "psr-12"
+print-width = 9999 # Horizontal limits are considered a guideline, not a requirement
+space-around-assignment-in-declare = false
+inline-empty-constructor-braces = true
+trailing-comma = true
+preserve-breaking-argument-list = true
+preserve-breaking-parameter-list = true
+preserve-breaking-array-like = true
+preserve-breaking-attribute-list = true
+preserve-breaking-member-access-chain = true
+
+[linter]
+integrations = ["phpunit"]
+
+[linter.rules]
+no-boolean-flag-parameter = { enabled = false }
+too-many-methods = { exclude = ["src/**/*Test.php"] }
+literal-named-argument = { exclude = ["src/**/*Test.php"] }
+prefer-test-attribute = { enabled = true }
+
+[analyzer]
+excludes = ["src/**/*Test.php"]
+ignore = [
+    "mixed-argument",
+    "mixed-assignment",
+]

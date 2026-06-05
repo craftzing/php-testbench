@@ -17,7 +17,7 @@ final class WithoutBusMiddlewareTest extends TestCase
     public function itCanRemoveBusMiddleware(): void
     {
         Bus::pipeThrough([
-            fn (mixed $command, mixed $next): mixed => throw new LogicException('This should not happen'),
+            static fn(mixed $command, mixed $next): mixed => throw new LogicException('This should not happen'),
         ]);
 
         $this->setUpWithoutBusMiddleware();

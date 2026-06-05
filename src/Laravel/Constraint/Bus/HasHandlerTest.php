@@ -36,7 +36,7 @@ final class HasHandlerTest extends TestCase
         $value = 'NotAClass';
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(HasHandler::class . " can only be evaluated for existing classes, got $value.");
+        $this->expectExceptionMessage(HasHandler::class . " can only be evaluated for existing classes, got {$value}.");
 
         $this->assertThat($value, new HasHandler('SomeHandlerClassFCN'));
     }
