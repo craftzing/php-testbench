@@ -4,38 +4,31 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
-use Closure;
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use Override;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 
 use function array_filter;
 use function count;
+use function is_callable;
 
 final class WasCalled extends Constraint implements Quantable
 {
     use ProvidesAdditionalFailureDescription;
 
+    /** @var callable|null */
+    public readonly mixed $assertInvocation;
+
     public function __construct(
-        public readonly ?Closure $assertInvocation = null,
+        ?callable $assertInvocation = null,
         public readonly ?int $times = null,
-    ) {}
-
-    public function withSame(mixed ...$expected): self
-    {
-        return new self(static function (mixed ...$actual) use ($expected): void {
-            Assert::assertCount(count($expected), $actual);
-
-            foreach ($actual as $key => $value) {
-                Assert::assertSame($expected[$key], $value);
-            }
-        }, $this->times);
+    ) {
+        $this->assertInvocation = $assertInvocation;
     }
 
     public function times(int $count): self
@@ -72,9 +65,12 @@ final class WasCalled extends Constraint implements Quantable
 
     private function matchesInvocationAssertions(CallableInvocation $invocation): bool
     {
+        if (!is_callable($this->assertInvocation)) {
+            return false;
+        }
+
         try {
-            // @mago-expect analyzer:invalid-method-access
-            $this->assertInvocation?->__invoke(...$invocation->arguments);
+            ( $this->assertInvocation )(...$invocation->arguments);
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();
 

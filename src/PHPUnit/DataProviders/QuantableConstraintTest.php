@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
+use Craftzing\TestBench\PHPUnit\Constraint\Callables\Assertions\WithSameArguments;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
@@ -63,11 +64,7 @@ final class QuantableConstraintTest extends TestCase
 
         $instance($constraint);
 
-        $constraint->spy->assert(
-            new WasCalled()
-                ->withSame($instance->method, $instance->times)
-                ->once(),
-        );
+        $constraint->spy->assert(new WasCalled(new WithSameArguments($constraint))->once());
     }
 
     #[Test]

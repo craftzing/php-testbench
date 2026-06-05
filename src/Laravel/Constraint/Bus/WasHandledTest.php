@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
+use Craftzing\TestBench\PHPUnit\Constraint\Callables\Assertions\WithSameArguments;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
@@ -313,18 +314,10 @@ final class WasHandledTest extends TestCase
 
         $this->assertThat($expected, new WasHandled());
 
-        $deriveConstraints->invoke->assert(new WasCalled()->withSame($expected));
-        $deriveConstraints->invoke->assert(
-            new WasCalled()
-                ->never()
-                ->withSame($actual),
-        );
-        $constraint->matches->assert(new WasCalled()->withSame($actual));
-        $constraint->matches->assert(
-            new WasCalled()
-                ->never()
-                ->withSame($expected),
-        );
+        $deriveConstraints->invoke->assert(new WasCalled(new WithSameArguments($expected)));
+        $deriveConstraints->invoke->assert(new WasCalled(new WithSameArguments($expected))->never());
+        $constraint->matches->assert(new WasCalled(new WithSameArguments($expected)));
+        $constraint->matches->assert(new WasCalled(new WithSameArguments($expected))->never());
     }
 
     private function command(array $properties): stdClass
