@@ -28,6 +28,7 @@ trait RequiresEventFake
             );
         }
 
+        // @mago-expect analyzer:mixed-return-statement
         return Event::getFacadeRoot();
     }
 }

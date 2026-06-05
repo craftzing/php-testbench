@@ -6,13 +6,14 @@ namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Illuminate\Contracts\Bus\Dispatcher;
-use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
 use PHPUnit\Framework\Constraint\Constraint;
 use ReflectionClass;
 
+use function app;
 use function class_exists;
 use function gettype;
+use function is_object;
 use function is_string;
 
 final class HasHandler extends Constraint
@@ -22,10 +23,10 @@ final class HasHandler extends Constraint
     private readonly Dispatcher $bus;
 
     public function __construct(
-        /* @var class-string */
+        /** @var class-string */
         private readonly string $handlerClassFQN,
     ) {
-        $this->bus = Bus::getFacadeRoot();
+        $this->bus = app(Dispatcher::class);
     }
 
     protected function matches(mixed $other): bool
@@ -43,6 +44,7 @@ final class HasHandler extends Constraint
         }
 
         $message = new ReflectionClass($other)->newInstanceWithoutConstructor();
+        /** @var object|string|false $actualHandler */
         $actualHandler = $this->bus->getCommandHandler($message);
 
         if ($actualHandler === false) {
@@ -51,7 +53,9 @@ final class HasHandler extends Constraint
             return false;
         }
 
-        if ($actualHandler::class !== $this->handlerClassFQN) {
+        $actualHandlerClass = is_object($actualHandler) ? $actualHandler::class : $actualHandler;
+
+        if ($actualHandlerClass !== $this->handlerClassFQN) {
             $this->additionalFailureDescriptions[] = "{$other} has a different handler mapped to it.";
 
             return false;

@@ -10,6 +10,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 final class Spy extends Constraint
 {
     private function __construct(
+        /** @var SpyCallable<bool> */
         public readonly SpyCallable $matches,
     ) {}
 

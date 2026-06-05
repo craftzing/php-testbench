@@ -75,10 +75,7 @@ final class WasSent extends Constraint implements Quantable
 
         $matchingSentRequests = array_reduce(
             $this->client->getRecordedResponses(),
-            static function (
-                array $matchingSentRequests,
-                Response $response,
-            ) use ($requestName): array {
+            static function (array $matchingSentRequests, Response $response) use ($requestName): array {
                 $request = $response->getPendingRequest()->getRequest();
 
                 if ($request::class === $requestName) {
@@ -132,6 +129,7 @@ final class WasSent extends Constraint implements Quantable
         return 'was sent';
     }
 
+    /** @param string|object $other */
     protected function failureDescription(mixed $other): string
     {
         $message = parent::failureDescription($other);

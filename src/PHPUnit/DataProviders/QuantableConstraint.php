@@ -7,6 +7,7 @@ namespace Craftzing\TestBench\PHPUnit\DataProviders;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Illuminate\Support\Collection;
 
+use function method_exists;
 use function random_int;
 
 final readonly class QuantableConstraint
@@ -31,6 +32,11 @@ final readonly class QuantableConstraint
      */
     public function __invoke(Quantable $constraint): Quantable
     {
+        if (!method_exists($constraint, $this->method)) {
+            throw new \InvalidArgumentException(Quantable::class . "::{$this->method}() does not exist.");
+        }
+
+        // @mago-expect analyzer:mixed-return-statement,string-member-selector
         return $constraint->{$this->method}($this->times);
     }
 
@@ -39,27 +45,21 @@ final readonly class QuantableConstraint
         Collection::times($this->times, $callback(...));
     }
 
-    /**
-     * @return iterable<array{self}>
-     */
+    /** @return iterable<list<self>> */
     public static function cases(): iterable
     {
         yield 'Never' => [new self('never', 0)];
         yield from self::atLeastOnce();
     }
 
-    /**
-     * @return iterable<array{self}>
-     */
+    /** @return iterable<list<self>> */
     public static function atLeastOnce(): iterable
     {
         yield 'Multiple times' => [new self('times', random_int(2, max: 10))];
         yield 'Once' => [new self('once', 1)];
     }
 
-    /**
-     * @return iterable<array{self}>
-     */
+    /** @return iterable<array<self>> */
     public static function tooFewOrTooManyTimes(): iterable
     {
         yield 'Too few times' => [new self('times', 2, 1)];

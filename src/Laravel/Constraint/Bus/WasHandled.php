@@ -11,7 +11,6 @@ use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Traits\ReflectsClosures;
 use InvalidArgumentException;
 use LogicException;
@@ -21,6 +20,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use ReflectionClass;
 
+use function app;
 use function class_basename;
 use function class_exists;
 use function gettype;
@@ -39,7 +39,7 @@ final class WasHandled extends Constraint implements Quantable
         public readonly ?int $times = null,
         Constraint ...$constraints,
     ) {
-        $this->bus = Bus::getFacadeRoot();
+        $this->bus = app(Dispatcher::class);
         $this->objectConstraints = $constraints;
     }
 
@@ -77,6 +77,7 @@ final class WasHandled extends Constraint implements Quantable
             $commandName => new ReflectionClass($other)->newInstanceWithoutConstructor(),
             default => $other,
         };
+        // @mago-expect analyzer:possibly-invalid-argument
         $handler = $this->handler($command);
 
         try {

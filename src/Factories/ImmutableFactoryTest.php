@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function array_keys;
 use function collect;
 use function count;
 use function mt_rand;
@@ -351,7 +352,7 @@ final class ImmutableFactoryTest extends TestCase
 
     /**
      * @param callable(ImmutableFactory): ImmutableFactory $resolveInstance
-     * @param callable(stdClass): void $assert
+     * @param callable(stdClass, int): mixed $assert
      */
     #[Test]
     #[DataProvider('nestedFactories')]
@@ -380,14 +381,14 @@ final class ImmutableFactoryTest extends TestCase
 
     private function assertHasPropertyForEachDefinition(stdClass $result): void
     {
-        foreach ($this->instance->definition() as $attribute => $value) {
+        foreach (array_keys($this->instance->definition()) as $attribute) {
             self::assertObjectHasProperty($attribute, $result);
         }
     }
 
     private function assertHasArrayKeyForEachDefinition(array $result): void
     {
-        foreach ($this->instance->definition() as $attribute => $value) {
+        foreach (array_keys($this->instance->definition()) as $attribute) {
             self::assertArrayHasKey($attribute, $result);
         }
     }

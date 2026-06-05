@@ -16,9 +16,7 @@ use function is_iterable;
 
 final class HasErrorOnPath extends Constraint
 {
-    /**
-     * @var array<callable(mixed): array<mixed>>
-     */
+    /** @var array<callable(mixed): array<array-key, mixed>> */
     private static array $responseResolvers = [];
 
     public function __construct(
@@ -26,9 +24,7 @@ final class HasErrorOnPath extends Constraint
         public readonly string $category = 'graphql',
     ) {}
 
-    /**
-     * @param (callable(mixed): array<mixed>)|null $resolveResponseUsing
-     */
+    /** @param (callable(mixed): array<array-key, mixed>)|null $resolveResponseUsing */
     public static function resolveResponseUsing(?callable $resolveResponseUsing): void
     {
         if ($resolveResponseUsing === null) {
@@ -70,7 +66,11 @@ final class HasErrorOnPath extends Constraint
             );
         }
 
-        foreach ($response['errors'] ?? [] as $error) {
+        if (!is_array($response['errors'] ?? null)) {
+            return false;
+        }
+
+        foreach ($response['errors'] as $error) {
             $path = implode('.', $error['path'] ?? '');
             $category = $error['extensions']['category'] ?? '';
 
@@ -88,9 +88,7 @@ final class HasErrorOnPath extends Constraint
         return false;
     }
 
-    /**
-     * @return array<mixed>|null
-     */
+    /** @return array<array-key, mixed>|null */
     private function resolveResponse(mixed $other): ?array
     {
         foreach (self::$responseResolvers as $resolver) {

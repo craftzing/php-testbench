@@ -73,6 +73,7 @@ final class WasCalled extends Constraint implements Quantable
     private function matchesInvocationAssertions(CallableInvocation $invocation): bool
     {
         try {
+            // @mago-expect analyzer:invalid-method-access
             $this->assertInvocation?->__invoke(...$invocation->arguments);
         } catch (ExpectationFailedException $expectationFailed) {
             $this->additionalFailureDescriptions[] = $expectationFailed->getMessage();

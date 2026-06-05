@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
+use InvalidArgumentException;
 use LogicException;
 use ReflectionEnum;
 use ReflectionEnumUnitCase;
@@ -16,14 +17,10 @@ use function array_rand;
 use function count;
 use function in_array;
 
-/**
- * @template TValue of UnitEnum
- */
+/** @template TValue of UnitEnum */
 final readonly class EnumCase
 {
-    /**
-     * @var array<int, TValue>
-     */
+    /** @var array<array-key, TValue> */
     private array $options;
 
     /**
@@ -49,9 +46,7 @@ final readonly class EnumCase
         $this->options = $options;
     }
 
-    /**
-     * @return TValue
-     */
+    /** @return TValue */
     public function differentInstance(): UnitEnum
     {
         if (count($this->options) <= 1) {
@@ -67,13 +62,18 @@ final readonly class EnumCase
 
     /**
      * @param class-string<TValue> $enumFQCN
-     * @return iterable<array{self<TValue>}>
+     * @return iterable<string, list<self<TValue>>>
      */
     public static function cases(string $enumFQCN): iterable
     {
+        if (!enum_exists($enumFQCN)) {
+            throw new InvalidArgumentException("Expected a concrete Enum class string, got: {$enumFQCN}");
+        }
+
         foreach (new ReflectionEnum($enumFQCN)->getCases() as $case) {
-            // @phpstan-ignore generator.valueType
+            // @mago-expect analyzer:invalid-yield-value-type
             yield "{$enumFQCN}::{$case->name}" => [
+                // @mago-expect analyzer:possibly-static-access-on-interface
                 new self($case->getValue(), ...$enumFQCN::cases()),
             ];
         }
@@ -81,21 +81,22 @@ final readonly class EnumCase
 
     /**
      * @param TValue ...$options
-     * @return iterable<array{self<TValue>}>
+     * @return iterable<string, list<self<TValue>>>
      */
     public static function options(UnitEnum ...$options): iterable
     {
         foreach ($options as $case) {
-            yield "{$case->name}" => [new self($case, ...$options)];
+            yield $case->name => [new self($case, ...$options)];
         }
     }
 
     /**
      * @param class-string<TValue> $enumFQCN
-     * @return iterable<array{self<TValue>}>
+     * @return iterable<string, list<self<TValue>>>
      */
     public static function except(string $enumFQCN, UnitEnum ...$except): iterable
     {
+        /** @var TValue[] $options */
         $options = array_map(static function (ReflectionEnumUnitCase $reflection) use ($except): ?UnitEnum {
             $case = $reflection->getValue();
 
