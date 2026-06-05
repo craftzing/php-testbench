@@ -3,6 +3,7 @@ version: '3.50'
 
 vars:
   PHP_VERSIONS: ['8.4', '8.5']
+  DEPENDENCY_VERSIONS: ['prefer-stable', 'prefer-lowest']
   DEFAULT_PHP_VERSION: '8.5'
 
 tasks:
@@ -28,34 +29,41 @@ tasks:
       Open an interactive shell into one of the `php` services (see docker-compose.yml).
       
       usage:
+        task php
         task php version=<version>
+        task php dependency_versions=<dependency_versions>
+        task php version=<version> dependency_versions=<dependency_versions>
+    vars:
+      version: '{{ .version | default .DEFAULT_PHP_VERSION }}'
+      dependency_versions: '{{ .dependency_versions | default "prefer-stable" }}'
     requires:
       vars:
         - name: version
           enum:
             ref: .PHP_VERSIONS
+        - name: dependency_versions
+          enum:
+            ref: .DEPENDENCY_VERSIONS
     cmds:
-      - docker compose up --detach
+      - docker compose up --detach php-{{ .version }}
+      - docker compose exec php-{{ .version }} composer update --{{ .dependency_versions }} --prefer-dist
       - docker compose exec php-{{ .version }} sh
 
   test:
-    desc: 'Run the testsuite on all or one of the supported PHP versions'
+    desc: 'Run the testsuite on all supported PHP versions'
     summary: |
-      Run the testsuite on all or one of the supported PHP versions.
+      Run the testsuite on all supported PHP versions.
       
       usage:
         task test
-        task test version=<version>
-    vars:
-      versions: |-
-        {{- if .version -}}
-          {{ .version }}
-        {{- else -}}
-          {{ join "," .PHP_VERSIONS }}
-        {{- end -}}
     cmds:
       - docker compose up --detach
       - for:
-          var: versions
-          split: ','
-        cmd: docker compose exec php-{{ .ITEM }} composer test
+          matrix:
+            PHP_VERSION:
+              ref: .PHP_VERSIONS
+            DEPENDENCY_VERSIONS:
+              ref: .DEPENDENCY_VERSIONS
+        cmd: |
+          docker compose exec php-{{ .ITEM.PHP_VERSION }} composer update --{{ .ITEM.DEPENDENCY_VERSIONS }} --prefer-dist
+          docker compose exec php-{{ .ITEM.PHP_VERSION }} composer test
