@@ -18,11 +18,13 @@ use function iterator_to_array;
  */
 abstract class ImmutableFactory
 {
+    public Generator $faker;
+
     /**
      * @param array<string, mixed> $state
      */
     final public function __construct(
-        public ?Generator $faker = null,
+        ?Generator $faker = null,
         public readonly array $state = [],
         public readonly int $count = 1,
     ) {
