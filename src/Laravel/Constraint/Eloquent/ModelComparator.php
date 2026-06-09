@@ -10,6 +10,7 @@ use SebastianBergmann\Comparator\Comparator;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use SebastianBergmann\Exporter\Exporter;
 
+use function gettype;
 use function json_encode;
 
 final class ModelComparator extends Comparator

@@ -15,6 +15,7 @@ use function array_filter;
 use function array_map;
 use function array_rand;
 use function count;
+use function enum_exists;
 use function in_array;
 
 /** @template TValue of UnitEnum */

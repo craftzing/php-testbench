@@ -15,6 +15,7 @@ use InvalidArgumentException;
 use Override;
 use PHPUnit\Framework\Constraint\Constraint;
 
+use function class_exists;
 use function is_string;
 
 final class IsScheduled extends Constraint

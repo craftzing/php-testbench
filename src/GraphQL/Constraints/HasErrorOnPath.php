@@ -12,6 +12,7 @@ use function gettype;
 use function implode;
 use function is_array;
 use function is_iterable;
+use function iterator_to_array;
 
 final class HasErrorOnPath extends Constraint
 {

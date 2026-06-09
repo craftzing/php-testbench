@@ -16,6 +16,7 @@ use function gettype;
 use function is_callable;
 use function is_object;
 use function is_string;
+use function method_exists;
 
 final class HasListener extends Constraint
 {

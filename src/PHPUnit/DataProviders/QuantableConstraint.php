@@ -6,6 +6,7 @@ namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 use function method_exists;
 use function random_int;
@@ -33,7 +34,7 @@ final readonly class QuantableConstraint
     public function __invoke(Quantable $constraint): Quantable
     {
         if (!method_exists($constraint, $this->method)) {
-            throw new \InvalidArgumentException(Quantable::class . "::{$this->method}() does not exist.");
+            throw new InvalidArgumentException(Quantable::class . "::{$this->method}() does not exist.");
         }
 
         // @mago-expect analyzer:mixed-return-statement,string-member-selector
