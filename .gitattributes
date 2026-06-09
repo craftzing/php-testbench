@@ -11,4 +11,5 @@
 *.dist export-ignore
 *.md export-ignore
 *.yml export-ignore
+mago.toml export-ignore
 Taskfile.yml export-ignore

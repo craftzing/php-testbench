@@ -1,0 +1,47 @@
+version = "1.30"
+
+[source]
+workspace = "."
+includes = ["vendor"]
+excludes = []
+
+[source.glob]
+literal-separator = true
+
+[linter]
+integrations = ["phpunit"]
+
+[linter.rules]
+no-boolean-flag-parameter = { enabled = false }
+prefer-test-attribute = { enabled = true }
+tagged-todo = { enabled = false }
+ambiguous-function-call = { enabled = true, level = "warning" }
+no-fully-qualified-global-class-like = { enabled = true, level = "warning" }
+no-fully-qualified-global-constant = { enabled = true, level = "warning" }
+no-fully-qualified-global-function = { enabled = true, level = "warning" }
+excessive-parameter-list = { constructor-threshold = 20 }
+literal-named-argument = { exclude = ["**/*Test.php", "**/Fake*.php", "**/*UsingFakes.php"] }
+no-literal-password = { exclude = ["**/*Test.php", "**/Fake*.php", "**/*UsingFakes.php"] }
+sensitive-parameter = { exclude = ["**/*Test.php", "**/Fake*.php", "**/*UsingFakes.php"] }
+single-class-per-file = { exclude = ["**/*Test.php", "**/Fake*.php", "**/*UsingFakes.php"] }
+too-many-methods = { exclude = ["**/*Test.php", "**/Fake*.php"] }
+
+[formatter]
+preset = "psr-12"
+print-width = 9999 # Horizontal limits are considered a guideline, not a requirement
+space-around-assignment-in-declare = false
+inline-empty-constructor-braces = true
+trailing-comma = true
+preserve-breaking-argument-list = true
+preserve-breaking-parameter-list = true
+preserve-breaking-array-like = true
+preserve-breaking-attribute-list = true
+preserve-breaking-member-access-chain = true
+preserve-breaking-conditional-expression = true
+
+[analyzer]
+excludes = ["**/*Test.php"]
+ignore = [
+    "mixed-argument",
+    "mixed-assignment",
+]
