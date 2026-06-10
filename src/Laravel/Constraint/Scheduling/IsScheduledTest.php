@@ -13,9 +13,6 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use stdClass;
 
-/**
- * @codeCoverageIgnore
- */
 final class IsScheduledTest extends TestCase
 {
     private Schedule $schedule {

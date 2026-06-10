@@ -26,9 +26,6 @@ use function collect;
 use function count;
 use function iterator_to_array;
 
-/**
- * @codeCoverageIgnore
- */
 final class EnumCaseTest extends TestCase
 {
     private const array ENUM_FQCNS = [

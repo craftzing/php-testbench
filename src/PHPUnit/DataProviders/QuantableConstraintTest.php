@@ -17,9 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 use function iterator_count;
 
-/**
- * @codeCoverageIgnore
- */
 final class QuantableConstraintTest extends TestCase
 {
     private Generator $faker {

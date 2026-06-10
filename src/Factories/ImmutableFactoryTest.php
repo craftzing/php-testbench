@@ -18,9 +18,6 @@ use function count;
 use function mt_rand;
 use function random_int;
 
-/**
- * @codeCoverageIgnore
- */
 final class ImmutableFactoryTest extends TestCase
 {
     use Conditionable;

@@ -13,9 +13,6 @@ use stdClass;
 
 use function call_user_func;
 
-/**
- * @codeCoverageIgnore
- */
 final class SpyCallableTest extends TestCase
 {
     #[Test]

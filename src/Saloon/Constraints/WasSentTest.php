@@ -23,9 +23,6 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\Request;
 
-/**
- * @codeCoverageIgnore
- */
 final class WasSentTest extends TestCase
 {
     #[Before]

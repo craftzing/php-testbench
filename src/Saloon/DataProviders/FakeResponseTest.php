@@ -23,9 +23,6 @@ use function is_array;
 use function iterator_to_array;
 use function json_encode;
 
-/**
- * @codeCoverageIgnore
- */
 final class FakeResponseTest extends TestCase
 {
     #[Before]

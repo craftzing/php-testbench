@@ -13,9 +13,6 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @codeCoverageIgnore
- */
 final class HasErrorOnPathTest extends TestCase
 {
     #[Test]

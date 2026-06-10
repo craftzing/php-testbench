@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Doubles\Events;
 
-/**
- * @codeCoverageIgnore
- */
 final readonly class DummyEvent
 {
     /** @var array<array-key, mixed> */
