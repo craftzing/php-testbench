@@ -54,7 +54,10 @@
     "autoload": {
         "psr-4": {
             "Craftzing\\TestBench\\": "src"
-        }
+        },
+        "files": [
+            "src/deprecated_aliases.php"
+        ]
     },
     "config": {
         "sort-packages": true
