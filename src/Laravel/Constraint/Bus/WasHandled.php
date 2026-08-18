@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DerivesConstraintsFromObjects;
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Traits\ReflectsClosures;

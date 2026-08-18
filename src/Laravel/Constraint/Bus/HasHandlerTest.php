@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
 use Orchestra\Testbench\TestCase;

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
+use Craftzing\TestBench\Doubles\Callable\CallableInvocation;
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\Constraint\ProvidesAdditionalFailureDescription;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
-use Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation;
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use Override;
 use PHPUnit\Framework\Constraint\Constraint;

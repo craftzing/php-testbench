@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Callables;
 
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Test;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint;
 
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use PHPUnit\Framework\Constraint\Constraint;
 
 final class Spy extends Constraint
