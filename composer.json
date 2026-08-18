@@ -25,13 +25,13 @@
     },
     "require-dev": {
         "carthage-software/mago": "^1.29.0",
-        "illuminate/collections": "^10.10|^11.0|^12.0",
-        "illuminate/console": "^10.10|^11.0|^12.0",
-        "illuminate/container": "^10.10|^11.0|^12.0",
-        "illuminate/contracts": "^10.10|^11.0|^12.0",
-        "illuminate/support": "^10.10|^11.0|^12.0",
-        "orchestra/testbench": "^8.0|^9.0|^10.0",
-        "phpunit/phpunit": "^11.5",
+        "illuminate/collections": "^10.10|^11.0|^12.0|^13.0",
+        "illuminate/console": "^10.10|^11.0|^12.0|^13.0",
+        "illuminate/container": "^10.10|^11.0|^12.0|^13.0",
+        "illuminate/contracts": "^10.10|^11.0|^12.0|^13.0",
+        "illuminate/support": "^10.10|^11.0|^12.0|^13.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^11.5|^12.0",
         "saloonphp/saloon": "^3.13"
     },
     "suggest": {
@@ -48,7 +48,7 @@
         "illuminate/console": "<10.10",
         "illuminate/contracts": "<10.10",
         "illuminate/support": "<10.10",
-        "phpunit/phpunit": "<11.5 || >=12.0",
+        "phpunit/phpunit": "<11.5",
         "saloonphp/saloon": "<3.0"
     },
     "autoload": {
