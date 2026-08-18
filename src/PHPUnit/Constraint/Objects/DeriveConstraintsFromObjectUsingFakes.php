@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\Constraint\Objects;
 
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use PHPUnit\Framework\Constraint\Callback;
 
 final readonly class DeriveConstraintsFromObjectUsingFakes implements DeriveConstraintsFromObject

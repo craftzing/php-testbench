@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\PHPUnit\Doubles\Enums;
+namespace Craftzing\TestBench\Doubles\Enum;
 
 enum StringBackedEnum: string
 {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Laravel\Constraint\Bus;
 
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\Assertions\WithSameArguments;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
 use Craftzing\TestBench\PHPUnit\Constraint\Spy;
 use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
 use LogicException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\PHPUnit\Doubles;
+namespace Craftzing\TestBench\Doubles\Callable;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

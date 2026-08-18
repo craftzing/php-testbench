@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\Doubles;
+namespace Craftzing\TestBench\Doubles\Callable;
 
 use LogicException;
 

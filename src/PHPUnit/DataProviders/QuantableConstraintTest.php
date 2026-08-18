@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
+use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\Assertions\WithSameArguments;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
 use Craftzing\TestBench\PHPUnit\Constraint\Quantable;
-use Craftzing\TestBench\PHPUnit\Doubles\SpyCallable;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Collection;
