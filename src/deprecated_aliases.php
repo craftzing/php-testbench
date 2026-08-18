@@ -8,6 +8,10 @@ use Craftzing\TestBench\Doubles\Enum\IntBackedEnum;
 use Craftzing\TestBench\Doubles\Enum\StringBackedEnum;
 use Craftzing\TestBench\Doubles\Enum\UnitEnum;
 
+/**
+ * @deprecated since v1.2
+ * TODO v2: Remove these aliases in favour of the new FQCNs.
+ */
 class_alias(CallableInvocation::class, 'Craftzing\TestBench\PHPUnit\Doubles\CallableInvocation');
 class_alias(SpyCallable::class, 'Craftzing\TestBench\PHPUnit\Doubles\SpyCallable');
 class_alias(StringBackedEnum::class, 'Craftzing\TestBench\PHPUnit\Doubles\Enums\StringBackedEnum');
