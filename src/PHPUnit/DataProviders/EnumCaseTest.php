@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\PHPUnit\DataProviders;
 
-use Craftzing\TestBench\PHPUnit\Doubles\Enums\IntBackedEnum;
-use Craftzing\TestBench\PHPUnit\Doubles\Enums\StringBackedEnum;
-use Craftzing\TestBench\PHPUnit\Doubles\Enums\UnitEnum;
+use Craftzing\TestBench\Doubles\Enum\IntBackedEnum;
+use Craftzing\TestBench\Doubles\Enum\StringBackedEnum;
+use Craftzing\TestBench\Doubles\Enum\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Arr;
