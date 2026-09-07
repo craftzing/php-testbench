@@ -15,6 +15,12 @@ use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\PendingRequest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
+/**
+ * @deprecated since v1.3
+ * @see \Craftzing\TestBench\Saloon\Doubles\FakeConnector
+ * @see \Craftzing\TestBench\PHPUnit\DataProviders\HttpStatusCode
+ * TODO v2: Remove in favour of the new APIs
+ */
 final readonly class FakeResponse
 {
     public function __construct(
