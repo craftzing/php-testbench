@@ -77,7 +77,8 @@ final class FakeResponseTest extends TestCase
     public function itCanCastToResponses(HttpStatusCode $httpStatusCode): void
     {
         $request = new FakeRequest();
-        $connector = self::createStub(Connector::class);
+        $pendingRequest = self::createStub(PendingRequest::class);
+        $connector = self::createConfiguredStub(Connector::class, ['createPendingRequest' => $pendingRequest]);
         $body = ['Some body'];
         $instance = new FakeResponse($request, $body, $httpStatusCode->code);
 
@@ -85,7 +86,7 @@ final class FakeResponseTest extends TestCase
 
         $this->assertSame($httpStatusCode->code, $result->status());
         $this->assertSame($body, $result->json());
-        $this->assertEquals(new PendingRequest($connector, $request), $result->getPendingRequest());
+        $this->assertEquals($pendingRequest, $result->getPendingRequest());
     }
 
     public static function toException(): iterable

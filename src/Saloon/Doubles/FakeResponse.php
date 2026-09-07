@@ -10,7 +10,6 @@ use Psr\Http\Message\RequestInterface;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Helpers\RequestExceptionHelper;
 use Saloon\Http\Connector;
-use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -54,7 +53,7 @@ final readonly class FakeResponse
     {
         return new Response(
             new Psr7Response($this->statusCode, [], json_encode($this->body)),
-            new PendingRequest($connector, $this->request),
+            $connector->createPendingRequest($this->request),
             Mockery::mock(RequestInterface::class),
         );
     }
