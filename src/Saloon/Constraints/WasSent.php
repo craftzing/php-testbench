@@ -23,6 +23,11 @@ use function array_reduce;
 use function count;
 use function is_string;
 
+/**
+ * @deprecated since v1.3
+ * @see \Craftzing\TestBench\Saloon\Doubles\FakeResponseConnector
+ * TODO v2: Remove in favour of the new APIs
+ */
 final class WasSent extends Constraint implements Quantable
 {
     use DerivesConstraintsFromObjects;
@@ -44,21 +49,25 @@ final class WasSent extends Constraint implements Quantable
 
     public function times(int $count): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, $count, ...$this->objectConstraints);
     }
 
     public function never(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, 0, ...$this->objectConstraints);
     }
 
     public function once(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, 1, ...$this->objectConstraints);
     }
 
     public function withConstraints(Constraint ...$constraints): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, $this->times, ...$constraints);
     }
 

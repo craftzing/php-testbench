@@ -66,7 +66,7 @@
     "prefer-stable": true,
     "scripts": {
         "mago": "vendor/bin/mago --colors=always",
-        "phpunit": "vendor/bin/phpunit --colors=always --display-phpunit-deprecations --display-deprecations",
+        "phpunit": "vendor/bin/phpunit --colors=always --display-all-issues",
         "lint:check": "@composer mago -- lint --minimum-fail-level=warning --reporting-format=rich",
         "lint:fix": "@composer mago -- lint --fix",
         "format:check": "@composer mago -- format --dry-run",
