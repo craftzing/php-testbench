@@ -53,7 +53,7 @@ final class HttpStatusCodeTest extends TestCase
     {
         $expected = array_filter(
             Response::$statusTexts,
-            static fn (int $code): bool => $code >= 400,
+            static fn(int $code): bool => $code >= 400,
             ARRAY_FILTER_USE_KEY,
         );
 
@@ -67,7 +67,7 @@ final class HttpStatusCodeTest extends TestCase
     {
         $expected = array_filter(
             Response::$statusTexts,
-            static fn (int $code): bool => $code < 300,
+            static fn(int $code): bool => $code < 300,
             ARRAY_FILTER_USE_KEY,
         );
 
@@ -81,7 +81,7 @@ final class HttpStatusCodeTest extends TestCase
     {
         $expected = array_filter(
             Response::$statusTexts,
-            static fn (int $code): bool => $code >= 300 && $code < 400,
+            static fn(int $code): bool => $code >= 300 && $code < 400,
             ARRAY_FILTER_USE_KEY,
         );
 
@@ -95,7 +95,7 @@ final class HttpStatusCodeTest extends TestCase
     {
         $expected = array_filter(
             Response::$statusTexts,
-            static fn (int $code): bool => $code >= 400 && $code < 500,
+            static fn(int $code): bool => $code >= 400 && $code < 500,
             ARRAY_FILTER_USE_KEY,
         );
 
@@ -109,7 +109,7 @@ final class HttpStatusCodeTest extends TestCase
     {
         $expected = array_filter(
             Response::$statusTexts,
-            static fn (int $code): bool => $code >= 500,
+            static fn(int $code): bool => $code >= 500,
             ARRAY_FILTER_USE_KEY,
         );
 

@@ -19,7 +19,7 @@ final class FakeConnector extends Connector
 {
     use AlwaysThrowOnErrors;
 
-    /** @var list<FakeResponse> */
+    /** @var array<array-key, FakeResponse> */
     private array $fakeResponses;
 
     public function __construct(FakeResponse ...$fakeResponses)

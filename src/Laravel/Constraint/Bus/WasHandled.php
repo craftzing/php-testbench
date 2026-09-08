@@ -73,6 +73,7 @@ final class WasHandled extends Constraint implements Quantable
                 self::class . ' can only be evaluated for strings or command instances, got ' . gettype($other) . '.',
             ),
         };
+        /** @var object|class-string $other */
         $command = match ($other) {
             $commandName => new ReflectionClass($other)->newInstanceWithoutConstructor(),
             default => $other,

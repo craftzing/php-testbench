@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Saloon\Doubles;
 
+use GuzzleHttp\Psr7\Request as Psr7Request;
 use GuzzleHttp\Psr7\Response as Psr7Response;
-use Mockery;
-use Psr\Http\Message\RequestInterface;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Helpers\RequestExceptionHelper;
 use Saloon\Http\Connector;
@@ -52,9 +51,9 @@ final readonly class FakeResponse
     public function toResponse(Connector $connector): Response
     {
         return new Response(
-            new Psr7Response($this->statusCode, [], json_encode($this->body)),
+            new Psr7Response($this->statusCode, [], json_encode($this->body, JSON_THROW_ON_ERROR)),
             $connector->createPendingRequest($this->request),
-            Mockery::mock(RequestInterface::class),
+            new Psr7Request($this->request->getMethod()->name, $this->request->resolveEndpoint()),
         );
     }
 

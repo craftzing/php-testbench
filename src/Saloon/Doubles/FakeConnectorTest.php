@@ -119,6 +119,7 @@ final class FakeConnectorTest extends TestCase
         try {
             $instance->send($request);
         } catch (RequestException) {
+            // @mago-expect lint:no-empty-catch-clause
             // Regardless of whether an exception is thrown, the middleware should never be called...
         }
 

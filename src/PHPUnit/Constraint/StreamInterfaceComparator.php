@@ -8,7 +8,6 @@ use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Util\Exporter;
 use Psr\Http\Message\StreamInterface;
 use SebastianBergmann\Comparator\Comparator;
-
 use SebastianBergmann\Comparator\ComparisonFailure;
 
 use function assert;
@@ -22,14 +21,14 @@ final class StreamInterfaceComparator extends Comparator
 
     public function assertEquals(mixed $expected, mixed $actual, float $delta = 0.0, bool $canonicalize = false, bool $ignoreCase = false): void
     {
-        assert($expected instanceof StreamInterface);
-        assert($actual instanceof StreamInterface);
+        assert($expected instanceof StreamInterface, 'Expected value is not an instance of ' . StreamInterface::class);
+        assert($actual instanceof StreamInterface, 'Actual value is not an instance of ' . StreamInterface::class);
 
         if ($actual::class !== $expected::class) {
             throw self::comparisonFailure(
                 $expected,
                 $actual,
-                $actual::class.' is not a '.$expected::class,
+                $actual::class . ' is not a ' . $expected::class,
             );
         }
 

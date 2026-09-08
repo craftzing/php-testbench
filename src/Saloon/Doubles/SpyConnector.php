@@ -21,9 +21,9 @@ final class SpyConnector extends Connector
     ) {
         $this->send = new SpyCallable();
         $this->authenticator = $this->connector?->getAuthenticator();
-        $this->middlewarePipeline = $this->connector?->middleware() ?: new MiddlewarePipeline();
+        $this->middlewarePipeline = $this->connector?->middleware() ?? new MiddlewarePipeline();
         $this->mockClient = $this->connector?->getMockClient();
-        $this->sender = $this->connector?->sender() ?: $this->defaultSender();
+        $this->sender = $this->connector?->sender() ?? $this->defaultSender();
     }
 
     public function resolveBaseUrl(): string

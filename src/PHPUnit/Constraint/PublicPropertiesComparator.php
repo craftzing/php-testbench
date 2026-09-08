@@ -18,6 +18,7 @@ use function is_object;
 final class PublicPropertiesComparator extends Comparator
 {
     public function __construct(
+        /** @var class-string */
         private readonly string $classFQN,
     ) {}
 
@@ -33,14 +34,14 @@ final class PublicPropertiesComparator extends Comparator
         bool $canonicalize = false,
         bool $ignoreCase = false,
     ): void {
-        assert(is_object($expected));
-        assert(is_object($actual));
+        assert(is_object($expected), description: 'Expected value is not an object');
+        assert(is_object($actual), description: 'Actual value is not an object');
 
         if ($actual::class !== $expected::class) {
             throw self::comparisonFailure(
                 $expected,
                 $actual,
-                $actual::class.' is not a '.$expected::class,
+                $actual::class . ' is not a ' . $expected::class,
             );
         }
 

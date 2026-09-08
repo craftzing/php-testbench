@@ -114,7 +114,8 @@ final class PublicPropertiesComparatorTest extends TestCase
 
         yield 'Equal public properties' => [
             $expected = self::subject(),
-            $expected->public($expected->public)
+            $expected
+                ->public($expected->public)
                 ->protected('Different Protected')
                 ->private('Different Private')
                 ->virtual('Different Virtual'),
