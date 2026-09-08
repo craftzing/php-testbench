@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
  * @deprecated since v1.3
- * @see \Craftzing\TestBench\Saloon\Doubles\FakeConnector
+ * @see \Craftzing\TestBench\Saloon\Doubles\FakeResponseConnector
  * @see \Craftzing\TestBench\PHPUnit\DataProviders\HttpStatusCode
  * TODO v2: Remove in favour of the new APIs
  */
