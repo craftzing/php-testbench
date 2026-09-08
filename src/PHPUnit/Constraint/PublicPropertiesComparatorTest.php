@@ -55,7 +55,7 @@ final class PublicPropertiesComparatorTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('unacceptableInstances', validateArgumentCount: false)]
+    #[DataProvider('unacceptableInstances')]
     public function itDoesntAcceptClassesThatDontMatchGivenClasses(
         string $givenClassFQN,
         mixed $expected,
