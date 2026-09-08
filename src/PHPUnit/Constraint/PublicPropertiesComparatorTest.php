@@ -60,6 +60,7 @@ final class PublicPropertiesComparatorTest extends TestCase
         string $givenClassFQN,
         mixed $expected,
         mixed $actual,
+        string $exceptionClassFQN,
     ): void {
         $instance = new PublicPropertiesComparator($givenClassFQN);
 
