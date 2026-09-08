@@ -21,5 +21,6 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: pcov
           extensions: -pdo_mysql, -mysqli
+          ini-values: zend.assertions=1, assert.exception=1
       - run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
       - run: composer test:coverage
