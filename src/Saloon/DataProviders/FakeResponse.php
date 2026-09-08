@@ -33,11 +33,13 @@ final readonly class FakeResponse
      */
     public static function make(string|array $response, int $status = SymfonyResponse::HTTP_OK): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self(MockResponse::make($response, $status));
     }
 
     public static function badRequest(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self(
             MockResponse::make(['message' => 'Bad request'], SymfonyResponse::HTTP_BAD_REQUEST),
             ClientException::class,
@@ -46,6 +48,7 @@ final readonly class FakeResponse
 
     public static function forbidden(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self(
             MockResponse::make(['message' => 'Forbidden'], SymfonyResponse::HTTP_FORBIDDEN),
             ForbiddenException::class,
@@ -54,6 +57,7 @@ final readonly class FakeResponse
 
     public static function notFound(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self(
             MockResponse::make(['message' => 'Not found'], SymfonyResponse::HTTP_NOT_FOUND),
             NotFoundException::class,
@@ -62,6 +66,7 @@ final readonly class FakeResponse
 
     public static function serverError(): self
     {
+        // @mago-expect analyzer:deprecated-class
         return new self(
             MockResponse::make(['message' => 'Server error'], SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR),
             InternalServerErrorException::class,
