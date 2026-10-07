@@ -23,7 +23,7 @@ final class ImmutableFactoryTest extends TestCase
     use Conditionable;
 
     private ImmutableFactory $instance {
-        get => $this->instance ??= new class extends ImmutableFactory {
+        get => $this->instance ??= new readonly class extends ImmutableFactory {
             public function definition(): array
             {
                 return [

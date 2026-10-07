@@ -16,7 +16,7 @@ use function iterator_to_array;
  * @template TClass of object
  * @mago-expect lint:too-many-methods
  */
-abstract class ImmutableFactory
+abstract readonly class ImmutableFactory
 {
     public Generator $faker;
 
@@ -25,8 +25,8 @@ abstract class ImmutableFactory
      */
     final public function __construct(
         ?Generator $faker = null,
-        public readonly array $state = [],
-        public readonly int $count = 1,
+        public array $state = [],
+        public int $count = 1,
     ) {
         $this->faker = $faker ?? FakerFactory::create();
     }
