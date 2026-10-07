@@ -9,6 +9,7 @@ use Faker\Generator;
 use Illuminate\Support\Collection;
 
 use function array_map;
+use function array_replace_recursive;
 use function is_iterable;
 use function iterator_to_array;
 
@@ -37,7 +38,7 @@ abstract readonly class ImmutableFactory
      */
     public function state(array $state): static
     {
-        return new static($this->faker, [...$this->state, ...$state], $this->count);
+        return new static($this->faker, array_replace_recursive($this->state, $state), $this->count);
     }
 
     /**
@@ -81,11 +82,11 @@ abstract readonly class ImmutableFactory
      */
     public function raw(array $attributes = []): array
     {
-        return array_map($this->resolveValue(...), [
-            ...$this->definition(),
-            ...$this->state,
-            ...$attributes,
-        ]);
+        return array_map($this->resolveValue(...), array_replace_recursive(
+            $this->definition(),
+            $this->state,
+            $attributes,
+        ));
     }
 
     /**
