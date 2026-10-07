@@ -50,15 +50,15 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @return array<string, mixed>
-     */
-    abstract public function definition(): array;
-
-    /**
      * @param array<string, mixed> $attributes
      * @return TClass
      */
     abstract protected function instance(array $attributes): object;
+
+    /**
+     * @return array<string, mixed>
+     */
+    abstract public function definition(): array;
 
     private function resolveValue(mixed $value): mixed
     {
