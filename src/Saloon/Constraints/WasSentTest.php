@@ -7,7 +7,7 @@ namespace Craftzing\TestBench\Saloon\Constraints;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingFakes;
 use Craftzing\TestBench\PHPUnit\Constraint\Objects\DeriveConstraintsFromObjectUsingReflection;
 use Craftzing\TestBench\PHPUnit\DataProviders\QuantableConstraint;
-use Craftzing\TestBench\Saloon\Doubles\FakeConnector;
+use Craftzing\TestBench\Saloon\Doubles\StubConnector;
 use Craftzing\TestBench\Saloon\Doubles\FakeRequest;
 use InvalidArgumentException;
 use LogicException;
@@ -34,7 +34,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itFailsToConstructWithoutMockClients(): void
     {
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
 
         $this->expectException(LogicException::class);
 
@@ -44,7 +44,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itCanConstructWithMockClientsOnGivenConnectors(): void
     {
-        $connector = new FakeConnector()->withMockClient(new MockClient());
+        $connector = new StubConnector()->withMockClient(new MockClient());
 
         $instance = new WasSent($connector);
 
@@ -57,7 +57,7 @@ final class WasSentTest extends TestCase
     public function itCanConstructWithGlobalMockClients(): void
     {
         MockClient::global();
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
 
         $instance = new WasSent($connector);
 
@@ -69,7 +69,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itCanConstructWithConstraints(): void
     {
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
         $constraints = [new IsIdentical('event')];
 
         $instance = new WasSent($connector)->withConstraints(...$constraints);
@@ -83,7 +83,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itImplementsTheQuantableInterface(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
         $constraints = [new IsIdentical('event')];
         $instance = new WasSent($connector)->withConstraints(...$constraints);
 
@@ -103,7 +103,7 @@ final class WasSentTest extends TestCase
     #[TestWith([['event']], 'Array')]
     public function itCannotEvaluateUnsupportedValueTypes(mixed $value): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -116,7 +116,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itFailsWhenNotSent(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage('was sent.');
@@ -128,7 +128,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenSent(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
@@ -138,8 +138,8 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itFailsWhenSentButNotThroughGivenConnector(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient('Different\Request'));
-        $differentConnector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient('Different\Request'));
+        $differentConnector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage('was sent.');
@@ -152,7 +152,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itFailsWhenSentButNotWithGivenConstraints(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $connector->send(new FakeRequest());
 
         $this->expectException(ExpectationFailedException::class);
@@ -166,7 +166,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itPassesWhenSentWithGivenConstraints(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $connector->send(new FakeRequest());
 
@@ -179,7 +179,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
     public function itFailsWhenSentButNotGivenTimes(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
@@ -192,7 +192,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenSentGivenTimes(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
@@ -203,7 +203,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'tooFewOrTooManyTimes')]
     public function itFailsWhenSentWithGivenConstrainsButNotGivenTimes(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
@@ -220,7 +220,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'atLeastOnce')]
     public function itFailsWhenSentGivenTimesButNotWithGivenConstrains(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
         $this->expectException(ExpectationFailedException::class);
@@ -237,7 +237,7 @@ final class WasSentTest extends TestCase
     #[DataProviderExternal(QuantableConstraint::class, 'cases')]
     public function itPassesWhenSentGivenTimesWithGivenConstraints(QuantableConstraint $quantise): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $quantise->applyTo(static fn() => $connector->send(new FakeRequest()));
 
@@ -252,7 +252,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itCannotDeriveConstraintsFromRequestStrings(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
 
         $constraints = new WasSent($connector)->givenOrDerivedObjectConstraints(FakeRequest::class);
 
@@ -262,7 +262,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itCanDeriveConstraintsFromEventObjects(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $request = new FakeRequest();
         $expected = new DeriveConstraintsFromObjectUsingReflection()->__invoke($request);
 
@@ -275,7 +275,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itCanDeriveConstraintsFromEventObjectsUsingCustomImplementations(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $request = new FakeRequest();
         $deriveConstraintsFromObject = DeriveConstraintsFromObjectUsingFakes::passingConstraints();
         WasSent::deriveConstraintsFromObjectUsing($deriveConstraintsFromObject);
@@ -288,7 +288,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itFailsWhenNotSentWithDerivedConstraints(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $request = new FakeRequest();
         WasSent::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::failingConstraints());
         $connector->send($request);
@@ -302,7 +302,7 @@ final class WasSentTest extends TestCase
     #[Test]
     public function itPassesWhenSentWithDerivedConstraints(): void
     {
-        $connector = new FakeConnector()->withMockClient($this->mockClient(FakeRequest::class));
+        $connector = new StubConnector()->withMockClient($this->mockClient(FakeRequest::class));
         $request = new FakeRequest();
         WasSent::deriveConstraintsFromObjectUsing(DeriveConstraintsFromObjectUsingFakes::passingConstraints());
 

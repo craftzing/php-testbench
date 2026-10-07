@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Saloon\DataProviders;
 
-use Craftzing\TestBench\Saloon\Doubles\FakeConnector;
+use Craftzing\TestBench\Saloon\Doubles\StubConnector;
 use Craftzing\TestBench\Saloon\Doubles\FakeRequest;
 use LogicException;
 use PHPUnit\Framework\Attributes\Before;
@@ -41,7 +41,7 @@ final class FakeResponseTest extends TestCase
     #[DataProvider('responses')]
     public function itCanFakeResponsesForGivenConnectors(string|array $response, int $status): void
     {
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
         FakeResponse::make($response, $status)->__invoke(FakeRequest::class, $connector);
 
         $result = $connector->send(new FakeRequest());
@@ -54,12 +54,12 @@ final class FakeResponseTest extends TestCase
     #[DataProvider('responses')]
     public function itShouldNotFakeResponsesForOtherThanGivenConnectors(string|array $response, int $status): void
     {
-        $connector = new FakeConnector();
+        $connector = new StubConnector();
         FakeResponse::make($response, $status)->__invoke(FakeRequest::class, $connector);
 
         $this->expectException(FatalRequestException::class);
 
-        new FakeConnector()->send(new FakeRequest());
+        new StubConnector()->send(new FakeRequest());
     }
 
     #[Test]
@@ -68,8 +68,8 @@ final class FakeResponseTest extends TestCase
     {
         FakeResponse::make($response, $status)->__invoke(FakeRequest::class);
 
-        $firstResult = new FakeConnector()->send(new FakeRequest());
-        $lastResult = new FakeConnector()->send(new FakeRequest());
+        $firstResult = new StubConnector()->send(new FakeRequest());
+        $lastResult = new StubConnector()->send(new FakeRequest());
 
         $this->assertSame($status, $firstResult->status());
         $this->assertBody($response, $firstResult);
@@ -78,7 +78,7 @@ final class FakeResponseTest extends TestCase
     }
 
     #[Test]
-    #[TestWith([new FakeConnector()], 'With given connector instance')]
+    #[TestWith([new StubConnector()], 'With given connector instance')]
     #[TestWith([null], 'Without given connector instance')]
     public function itShouldFailRequestsWithoutResponseMock(?Connector $connector): void
     {
@@ -86,7 +86,7 @@ final class FakeResponseTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        new FakeConnector()->send(new class extends Request {
+        new StubConnector()->send(new class extends Request {
             public function resolveEndpoint(): string
             {
                 return 'not-faked';

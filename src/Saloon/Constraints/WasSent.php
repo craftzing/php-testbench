@@ -25,7 +25,7 @@ use function is_string;
 
 /**
  * @deprecated since v1.3
- * @see \Craftzing\TestBench\Saloon\Doubles\FakeResponseConnector
+ * @see \Craftzing\TestBench\Saloon\Doubles\FakeConnector
  * TODO v2: Remove in favour of the new APIs
  */
 final class WasSent extends Constraint implements Quantable
