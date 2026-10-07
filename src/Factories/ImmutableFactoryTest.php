@@ -23,7 +23,7 @@ final class ImmutableFactoryTest extends TestCase
     use Conditionable;
 
     private ImmutableFactory $instance {
-        get => $this->instance ??= new class extends ImmutableFactory {
+        get => $this->instance ??= new readonly class extends ImmutableFactory {
             public function definition(): array
             {
                 return [
@@ -143,7 +143,7 @@ final class ImmutableFactoryTest extends TestCase
 
     public static function state(): iterable
     {
-        yield [
+        yield 'Flat merge' => [
             $attributes = [
                 'last' => Str::ulid()->toBase32(),
                 'attributes' => Str::ulid()->toBase32(),
@@ -154,6 +154,28 @@ final class ImmutableFactoryTest extends TestCase
                 'state' => Str::ulid()->toBase32(),
             ],
             [...$state, ...$attributes],
+        ];
+
+        yield 'Recursive merge' => [
+            [
+                'config' => [
+                    'attribute_only' => true,
+                    'shared' => 'from_attribute',
+                ],
+            ],
+            [
+                'config' => [
+                    'state_only' => true,
+                    'shared' => 'from_state',
+                ],
+            ],
+            [
+                'config' => [
+                    'state_only' => true,
+                    'shared' => 'from_attribute',
+                    'attribute_only' => true,
+                ],
+            ],
         ];
     }
 
@@ -250,6 +272,68 @@ final class ImmutableFactoryTest extends TestCase
             });
             $this->assertHasPropertyForEachDefinition($result);
         });
+    }
+
+    #[Test]
+    public function itMergesSequentialStateCallsRecursively(): void
+    {
+        $instance = $this->instance
+            ->state([
+                'settings' => [
+                    'theme' => 'light',
+                    'notifications' => true,
+                ],
+            ])
+            ->state([
+                'settings' => [
+                    'theme' => 'dark',
+                    'timezone' => 'UTC',
+                ],
+            ]);
+
+        $this->assertSame(
+            [
+                'theme' => 'dark',
+                'notifications' => true,
+                'timezone' => 'UTC',
+            ],
+            $instance->state['settings'],
+        );
+    }
+
+    #[Test]
+    public function itRecursivelyMergesDefinitionStateAndAttributes(): void
+    {
+        $factory = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): stdClass
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return [
+                    'nested' => [
+                        'from_definition' => true,
+                        'overridden_by_state' => false,
+                        'overridden_by_attributes' => false,
+                    ],
+                ];
+            }
+        };
+
+        $result = $factory
+            ->state(['nested' => ['overridden_by_state' => true]])
+            ->raw(['nested' => ['overridden_by_attributes' => true]]);
+
+        $this->assertSame(
+            [
+                'from_definition' => true,
+                'overridden_by_state' => true,
+                'overridden_by_attributes' => true,
+            ],
+            $result['nested'],
+        );
     }
 
     public static function nestedFactories(): iterable

@@ -9,6 +9,7 @@ use Faker\Generator;
 use Illuminate\Support\Collection;
 
 use function array_map;
+use function array_replace_recursive;
 use function is_iterable;
 use function iterator_to_array;
 
@@ -16,7 +17,7 @@ use function iterator_to_array;
  * @template TClass of object
  * @mago-expect lint:too-many-methods
  */
-abstract class ImmutableFactory
+abstract readonly class ImmutableFactory
 {
     public Generator $faker;
 
@@ -25,8 +26,8 @@ abstract class ImmutableFactory
      */
     final public function __construct(
         ?Generator $faker = null,
-        public readonly array $state = [],
-        public readonly int $count = 1,
+        public array $state = [],
+        public int $count = 1,
     ) {
         $this->faker = $faker ?? FakerFactory::create();
     }
@@ -37,7 +38,7 @@ abstract class ImmutableFactory
      */
     public function state(array $state): static
     {
-        return new static($this->faker, [...$this->state, ...$state], $this->count);
+        return new static($this->faker, array_replace_recursive($this->state, $state), $this->count);
     }
 
     /**
@@ -49,15 +50,15 @@ abstract class ImmutableFactory
     }
 
     /**
-     * @return array<string, mixed>
-     */
-    abstract public function definition(): array;
-
-    /**
      * @param array<string, mixed> $attributes
      * @return TClass
      */
     abstract protected function instance(array $attributes): object;
+
+    /**
+     * @return array<string, mixed>
+     */
+    abstract public function definition(): array;
 
     private function resolveValue(mixed $value): mixed
     {
@@ -81,11 +82,11 @@ abstract class ImmutableFactory
      */
     public function raw(array $attributes = []): array
     {
-        return array_map($this->resolveValue(...), [
-            ...$this->definition(),
-            ...$this->state,
-            ...$attributes,
-        ]);
+        return array_map($this->resolveValue(...), array_replace_recursive(
+            $this->definition(),
+            $this->state,
+            $attributes,
+        ));
     }
 
     /**
