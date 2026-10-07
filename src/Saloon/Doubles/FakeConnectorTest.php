@@ -16,12 +16,12 @@ use Saloon\Http\Auth\NullAuthenticator;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Senders\GuzzleSender;
 
-final class FakeResponseConnectorTest extends TestCase
+final class FakeConnectorTest extends TestCase
 {
     #[Test]
     public function itCanBeDecoratedAsSpy(): void
     {
-        $instance = new FakeResponseConnector();
+        $instance = new FakeConnector();
 
         $result = $instance->spy();
 
@@ -31,7 +31,7 @@ final class FakeResponseConnectorTest extends TestCase
     #[Test]
     public function itCanApplyNullAuthentication(): void
     {
-        $instance = new FakeResponseConnector();
+        $instance = new FakeConnector();
 
         $result = $instance->withAuthentication();
 
@@ -42,7 +42,7 @@ final class FakeResponseConnectorTest extends TestCase
     #[Test]
     public function itAlwaysUsesGuzzleSendersToAvoidSideEffectsOfGlobalState(): void
     {
-        $instance = new FakeResponseConnector();
+        $instance = new FakeConnector();
 
         $result = $instance->sender();
 
@@ -57,7 +57,7 @@ final class FakeResponseConnectorTest extends TestCase
         $client = new MockClient();
         $request = new FakeRequest();
         $fakeResponse = new FakeResponse($request, [], $httpStatusCode->code);
-        $instance = new FakeResponseConnector($fakeResponse);
+        $instance = new FakeConnector($fakeResponse);
 
         $result = $instance->createPendingRequest($request, $client);
 
@@ -69,7 +69,7 @@ final class FakeResponseConnectorTest extends TestCase
     public function itFailsWhenSendingRequestsWithoutFakeResponse(): void
     {
         $request = new FakeRequest();
-        $instance = new FakeResponseConnector();
+        $instance = new FakeConnector();
 
         $this->expectExceptionObject(new MissingFakeResponseForRequest($request));
 
@@ -84,7 +84,7 @@ final class FakeResponseConnectorTest extends TestCase
         $this->registerComparator(new StreamInterfaceComparator());
         $request = new FakeRequest();
         $fakeResponse = new FakeResponse($request, ['Some response'], $httpStatusCode->code);
-        $instance = new FakeResponseConnector($fakeResponse);
+        $instance = new FakeConnector($fakeResponse);
 
         $result = $instance->send($request);
 
@@ -97,7 +97,7 @@ final class FakeResponseConnectorTest extends TestCase
     {
         $request = new FakeRequest();
         $fakeResponse = new FakeResponse($request, [], $httpStatusCode->code);
-        $instance = new FakeResponseConnector($fakeResponse);
+        $instance = new FakeConnector($fakeResponse);
 
         $this->expectExceptionObject($fakeResponse->toRequestException($instance));
 
@@ -111,7 +111,7 @@ final class FakeResponseConnectorTest extends TestCase
         $request = new FakeRequest();
         $fakeResponse = new FakeResponse($request, [], $httpStatusCode->code);
         $middleware = new SpyCallable();
-        $instance = new FakeResponseConnector($fakeResponse);
+        $instance = new FakeConnector($fakeResponse);
         $instance->middleware()->onRequest($middleware);
         $instance->middleware()->onResponse($middleware);
         $instance->middleware()->onFatalException($middleware);
