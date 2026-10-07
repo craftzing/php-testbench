@@ -291,11 +291,14 @@ final class ImmutableFactoryTest extends TestCase
                 ],
             ]);
 
-        $this->assertSame([
-            'theme' => 'dark',
-            'notifications' => true,
-            'timezone' => 'UTC',
-        ], $instance->state['settings']);
+        $this->assertSame(
+            [
+                'theme' => 'dark',
+                'notifications' => true,
+                'timezone' => 'UTC',
+            ],
+            $instance->state['settings'],
+        );
     }
 
     #[Test]
@@ -323,11 +326,14 @@ final class ImmutableFactoryTest extends TestCase
             ->state(['nested' => ['overridden_by_state' => true]])
             ->raw(['nested' => ['overridden_by_attributes' => true]]);
 
-        $this->assertSame([
-            'from_definition' => true,
-            'overridden_by_state' => true,
-            'overridden_by_attributes' => true,
-        ], $result['nested']);
+        $this->assertSame(
+            [
+                'from_definition' => true,
+                'overridden_by_state' => true,
+                'overridden_by_attributes' => true,
+            ],
+            $result['nested'],
+        );
     }
 
     public static function nestedFactories(): iterable
