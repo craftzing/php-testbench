@@ -8,7 +8,6 @@ use ArgumentCountError;
 use Error;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use LogicException;
 use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -32,7 +31,7 @@ final class TestIdTest extends TestCase
     public function itGeneratesInstancesOfGivenClasses(): void
     {
         $ulid = new Ulid();
-        Str::createUlidsUsing(static fn (): Ulid => $ulid);
+        Str::createUlidsUsing(static fn(): Ulid => $ulid);
         $classFQN = self::namedIdClass('FakeId');
 
         $instance = TestId::generate($classFQN);
@@ -44,7 +43,7 @@ final class TestIdTest extends TestCase
     public static function unsupportedClasses(): iterable
     {
         yield 'Constructor rejecting the value' => [
-            new readonly class ('accepted') {
+            new readonly class('accepted') {
                 public function __construct(string $value)
                 {
                     if ($value !== 'accepted') {
@@ -56,7 +55,7 @@ final class TestIdTest extends TestCase
         ];
 
         yield 'Constructor requiring more arguments' => [
-            new readonly class ('value', 'secondary') {
+            new readonly class('value', 'secondary') {
                 public function __construct(
                     public string $value,
                     public string $secondary,
@@ -66,7 +65,7 @@ final class TestIdTest extends TestCase
         ];
 
         yield 'Constructor expecting another type' => [
-            new readonly class (1) {
+            new readonly class(1) {
                 public function __construct(
                     public int $value,
                 ) {}
@@ -87,7 +86,7 @@ final class TestIdTest extends TestCase
         try {
             TestId::generate($classFQN);
         } catch (Throwable $exception) {
-            $this->assertInstanceOf(LogicException::class, $exception);
+            $this->assertInstanceOf(InvalidArgumentException::class, $exception);
             $this->assertSame(
                 'TestIds can only be generated for ID value objects with a read-tolerant default constructor accepting a single string argument.',
                 $exception->getMessage(),
@@ -99,7 +98,7 @@ final class TestIdTest extends TestCase
     /** @return class-string */
     private static function idClass(): string
     {
-        return new readonly class ('') {
+        return new readonly class('') {
             public function __construct(
                 public string $value,
             ) {}
@@ -116,7 +115,7 @@ final class TestIdTest extends TestCase
     {
         $alias = __NAMESPACE__ . "\\{$basename}";
 
-        if (! class_exists($alias, autoload: false)) {
+        if (!class_exists($alias, autoload: false)) {
             class_alias(self::idClass(), $alias);
         }
 
