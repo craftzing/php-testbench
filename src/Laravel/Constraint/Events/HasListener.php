@@ -58,6 +58,7 @@ final class HasListener extends Constraint
             throw new InvalidArgumentException('The given listener method is not callable.');
         }
 
+        // @mago-expect analyzer:invalid-destructuring-source
         [$listener, $method] = $listen;
 
         if (is_object($listener)) {
