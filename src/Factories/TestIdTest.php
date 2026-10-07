@@ -89,7 +89,7 @@ final class TestIdTest extends TestCase
         } catch (Throwable $exception) {
             $this->assertInstanceOf(LogicException::class, $exception);
             $this->assertSame(
-                'TestIds can only be generated for ID value objects with a read-tolerant default constructor accepting a single argument.',
+                'TestIds can only be generated for ID value objects with a read-tolerant default constructor accepting a single string argument.',
                 $exception->getMessage(),
             );
             $this->assertInstanceOf($expectedPrevious, $exception->getPrevious());
