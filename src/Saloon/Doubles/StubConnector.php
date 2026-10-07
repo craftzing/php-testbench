@@ -14,7 +14,6 @@ final class StubConnector extends Connector
 
     public function withAuthentication(): self
     {
-        // @mago-expect analyzer:deprecated-class
         return new self()->authenticate(new NullAuthenticator());
     }
 
