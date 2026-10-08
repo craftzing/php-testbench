@@ -13,10 +13,6 @@
         {
             "name": "Rémi Pelhate",
             "email": "remi.pelhate@craftzing.com"
-        },
-        {
-            "name": "Pieter Pelgrims",
-            "email": "pieter.pelgrims@craftzing.com"
         }
     ],
     "require": {
@@ -54,10 +50,7 @@
     "autoload": {
         "psr-4": {
             "Craftzing\\TestBench\\": "src"
-        },
-        "files": [
-            "src/deprecated_aliases.php"
-        ]
+        }
     },
     "config": {
         "sort-packages": true
