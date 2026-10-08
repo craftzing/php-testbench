@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\Saloon\Doubles;
 
 use Craftzing\TestBench\Doubles\Callable\SpyCallable;
+use Craftzing\TestBench\PHPUnit\Constraint\PublicPropertiesComparator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Saloon\Config;
 use Saloon\Contracts\Sender;
+use Saloon\Data\Pipe;
 use Saloon\Helpers\MiddlewarePipeline;
+use Saloon\Helpers\Pipeline;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Auth\NullAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
+use Saloon\Http\Senders\GuzzleSender;
+
+use function array_map;
 
 final class SpyConnectorTest extends TestCase
 {
@@ -95,7 +101,20 @@ final class SpyConnectorTest extends TestCase
 
         $result = $instance->middleware()->merge($middlewarePipeline);
 
-        $this->assertEquals($middlewarePipeline, $result);
+        $this->assertSame($instance->middleware(), $result);
+        $this->assertSamePipes($middlewarePipeline->getRequestPipeline(), $result->getRequestPipeline());
+        $this->assertSamePipes($middlewarePipeline->getResponsePipeline(), $result->getResponsePipeline());
+        $this->assertSamePipes($middlewarePipeline->getFatalPipeline(), $result->getFatalPipeline());
+    }
+
+    private function assertSamePipes(Pipeline $expected, Pipeline $actual): void
+    {
+        $describe = static fn(Pipeline $pipeline): array => array_map(
+            static fn(Pipe $pipe): array => [$pipe->callable, $pipe->name, $pipe->order],
+            $pipeline->getPipes(),
+        );
+
+        $this->assertSame($describe($expected), $describe($actual));
     }
 
     #[Test]
@@ -137,6 +156,7 @@ final class SpyConnectorTest extends TestCase
     #[Test]
     public function itCanHandleNoDefaultSender(): void
     {
+        $this->registerComparator(new PublicPropertiesComparator(GuzzleSender::class));
         $instance = new SpyConnector();
 
         $result = $instance->sender();

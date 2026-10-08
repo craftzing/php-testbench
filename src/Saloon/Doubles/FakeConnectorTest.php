@@ -6,6 +6,7 @@ namespace Craftzing\TestBench\Saloon\Doubles;
 
 use Craftzing\TestBench\Doubles\Callable\SpyCallable;
 use Craftzing\TestBench\PHPUnit\Constraint\Callables\WasCalled;
+use Craftzing\TestBench\PHPUnit\Constraint\PublicPropertiesComparator;
 use Craftzing\TestBench\PHPUnit\Constraint\StreamInterfaceComparator;
 use Craftzing\TestBench\PHPUnit\DataProviders\HttpStatusCode;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
@@ -42,6 +43,7 @@ final class FakeConnectorTest extends TestCase
     #[Test]
     public function itAlwaysUsesGuzzleSendersToAvoidSideEffectsOfGlobalState(): void
     {
+        $this->registerComparator(new PublicPropertiesComparator(GuzzleSender::class));
         $instance = new FakeConnector();
 
         $result = $instance->sender();
@@ -88,7 +90,10 @@ final class FakeConnectorTest extends TestCase
 
         $result = $instance->send($request);
 
-        $this->assertEquals($fakeResponse->toResponse($instance), $result);
+        $this->assertSame($instance, $result->getConnector());
+        $this->assertSame($request, $result->getRequest());
+        $this->assertSame($fakeResponse->statusCode, $result->status());
+        $this->assertSame($fakeResponse->body, $result->json());
     }
 
     #[Test]
