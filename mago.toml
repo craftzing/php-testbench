@@ -1,5 +1,5 @@
 extends = "mago.dist.toml"
-version = "1.47"
+version = "1.53"
 php-version = "8.4.0"
 
 [source]

@@ -20,6 +20,8 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\Senders\GuzzleSender;
 
+use function array_map;
+
 final class SpyConnectorTest extends TestCase
 {
     #[Test]
