@@ -336,6 +336,47 @@ final class ImmutableFactoryTest extends TestCase
         );
     }
 
+    #[Test]
+    public function itMergesMapsRecursivelyButReplacesLists(): void
+    {
+        $factory = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): object
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return [
+                    'list' => ['default'],
+                    'map' => [
+                        'first' => 'First value',
+                        'last' => 'Last value',
+                    ],
+                ];
+            }
+        };
+
+        $raw = $factory
+            ->state(['list' => []])
+            ->raw(['map' => [
+                'last' => 'Updated value',
+                'added' => 'Added value',
+            ]]);
+
+        $this->assertSame(
+            [
+                'list' => [],
+                'map' => [
+                    'first' => 'First value',
+                    'last' => 'Updated value',
+                    'added' => 'Added value',
+                ],
+            ],
+            $raw,
+        );
+    }
+
     public static function nestedFactories(): iterable
     {
         yield [
