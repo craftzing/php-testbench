@@ -51,7 +51,10 @@ final class WasHandledTest extends TestCase
     {
         WasHandled::using($handler, $this->app);
 
-        $this->assertEquals(new SpyCallable($handler), Bus::getCommandHandler(new stdClass()));
+        $result = Bus::getCommandHandler(new stdClass());
+
+        $this->assertInstanceOf(SpyCallable::class, $result);
+        $this->assertSame($handler, $result->return);
     }
 
     #[Test]
