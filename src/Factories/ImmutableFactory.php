@@ -8,8 +8,9 @@ use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Support\Collection;
 
+use function array_is_list;
 use function array_map;
-use function array_replace_recursive;
+use function is_array;
 use function is_iterable;
 use function iterator_to_array;
 
@@ -21,9 +22,7 @@ abstract readonly class ImmutableFactory
 {
     public Generator $faker;
 
-    /**
-     * @param array<string, mixed> $state
-     */
+    /** @param array<array-key, mixed> $state */
     final public function __construct(
         ?Generator $faker = null,
         public array $state = [],
@@ -33,31 +32,27 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @param array<string, mixed> $state
+     * @param array<array-key, mixed> $state
      * @return static<TClass>
      */
     public function state(array $state): static
     {
-        return new static($this->faker, array_replace_recursive($this->state, $state), $this->count);
+        return new static($this->faker, self::merge($this->state, $state), $this->count);
     }
 
-    /**
-     * @return static<TClass>
-     */
+    /** @return static<TClass> */
     public function times(int $count): static
     {
         return new static($this->faker, $this->state, $count);
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<array-key, mixed> $attributes
      * @return TClass
      */
-    abstract protected function instance(array $attributes): object;
+    abstract protected function instance(array $attributes): mixed;
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<array-key, mixed> */
     abstract public function definition(): array;
 
     private function resolveValue(mixed $value): mixed
@@ -77,12 +72,12 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @param array<string, mixed> $attributes
-     * @return array<string, mixed>
+     * @param array<array-key, mixed> $attributes
+     * @return array<array-key, mixed>
      */
     public function raw(array $attributes = []): array
     {
-        return array_map($this->resolveValue(...), array_replace_recursive(
+        return array_map($this->resolveValue(...), self::merge(
             $this->definition(),
             $this->state,
             $attributes,
@@ -91,7 +86,7 @@ abstract readonly class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return array<int, array<string, mixed>>
+     * @return array<int, array<array-key, mixed>>
      */
     public function rawMany(array $attributes = []): array
     {
@@ -100,7 +95,7 @@ abstract readonly class ImmutableFactory
 
     /**
      * @param array<string, mixed> $attributes
-     * @return Collection<int, array<string, mixed>>
+     * @return Collection<int, array<array-key, mixed>>
      */
     public function rawCollection(array $attributes = []): Collection
     {
@@ -108,16 +103,16 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<array-key, mixed> $attributes
      * @return TClass
      */
-    public function makeOne(array $attributes = []): mixed
+    public function makeOne(array $attributes = []): object
     {
         return $this->instance($this->raw($attributes));
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<array-key, mixed> $attributes
      * @return array<TClass>
      */
     public function makeMany(array $attributes = []): array
@@ -126,11 +121,36 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<array-key, mixed> $attributes
      * @return Collection<int, TClass>
      */
     public function makeCollection(array $attributes = []): Collection
     {
         return Collection::times($this->count, fn(): mixed => $this->makeOne($attributes));
+    }
+
+    /**
+     * @param array<array-key, mixed> $base
+     * @param array<array-key, mixed> ...$replacements
+     * @return array<array-key, mixed>
+     */
+    private static function merge(array $base, array ...$replacements): array
+    {
+        foreach ($replacements as $replacement) {
+            foreach ($replacement as $key => $value) {
+                $current = $base[$key] ?? null;
+                $base[$key] = match (false) {
+                    self::isMap($value), self::isMap($current) => $value,
+                    default => self::merge($current, $value),
+                };
+            }
+        }
+
+        return $base;
+    }
+
+    private static function isMap(mixed $value): bool
+    {
+        return is_array($value) && !array_is_list($value);
     }
 }
