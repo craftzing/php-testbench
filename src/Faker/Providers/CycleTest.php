@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\Faker;
+namespace Craftzing\TestBench\Faker\Providers;
 
 use Craftzing\TestBench\Doubles\Enum\UnitEnum;
 use Faker\Factory;
@@ -15,7 +15,7 @@ use stdClass;
 
 use function array_reduce;
 
-final class CycleProviderTest extends TestCase
+final class CycleTest extends TestCase
 {
     private Generator $faker {
         get => Factory::create();
@@ -26,7 +26,7 @@ final class CycleProviderTest extends TestCase
     #[TestWith([[1]], 'List with only 1 option')]
     public function itCannotCycleThroughListsWithLessThanTwoOptions(array $options): void
     {
-        $instance = new CycleProvider($this->faker);
+        $instance = new Cycle($this->faker);
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -39,7 +39,7 @@ final class CycleProviderTest extends TestCase
     #[TestWith([[UnitEnum::One, UnitEnum::Three, UnitEnum::Two], [UnitEnum::One, UnitEnum::Three, UnitEnum::Two, UnitEnum::One]])]
     public function itCyclesThroughOptionsOfTheSameType(array $options, array $expected): void
     {
-        $instance = new CycleProvider($this->faker);
+        $instance = new Cycle($this->faker);
 
         $results = array_reduce($expected, static function (array $results) use ($instance, $options): array {
             $results[] = $instance->cycle($options);
@@ -55,7 +55,7 @@ final class CycleProviderTest extends TestCase
     {
         $options = ['first', UnitEnum::One, $class = new stdClass()];
         $expected = ['first', UnitEnum::One, $class, 'first', UnitEnum::One, $class];
-        $instance = new CycleProvider($this->faker);
+        $instance = new Cycle($this->faker);
 
         $results = array_reduce($expected, static function (array $results) use ($instance, $options): array {
             $results[] = $instance->cycle($options);
@@ -72,7 +72,7 @@ final class CycleProviderTest extends TestCase
         $firstOptionList = ['a', 'b', 'c', 'd', 'e'];
         $secondOptionList = [1, 2, 3];
         $lastOptionList = UnitEnum::cases();
-        $instance = new CycleProvider($this->faker);
+        $instance = new Cycle($this->faker);
 
         $results = [
             $instance->cycle($firstOptionList),

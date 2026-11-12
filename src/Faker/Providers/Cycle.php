@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Craftzing\TestBench\Faker;
+namespace Craftzing\TestBench\Faker\Providers;
 
 use Faker\Provider\Base;
 use InvalidArgumentException;
@@ -12,7 +12,7 @@ use function array_values;
 use function count;
 use function serialize;
 
-final class CycleProvider extends Base
+final class Cycle extends Base
 {
     /** @var array<string, list<mixed>> */
     private array $queues = [];

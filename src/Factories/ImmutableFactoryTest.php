@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Factories;
 
-use Craftzing\TestBench\Faker\CycleProvider;
+use Craftzing\TestBench\Faker\Providers\Cycle;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Str;
@@ -53,7 +53,7 @@ final class ImmutableFactoryTest extends TestCase
     {
         $cycleProviders = array_filter(
             $this->instance->faker->getProviders(),
-            static fn($provider) => $provider instanceof CycleProvider,
+            static fn($provider) => $provider instanceof Cycle,
         );
 
         $this->assertCount(1, $cycleProviders);
@@ -77,7 +77,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $cycleProviders = array_filter(
             $faker->getProviders(),
-            static fn($provider) => $provider instanceof CycleProvider,
+            static fn($provider) => $provider instanceof Cycle,
         );
 
         $this->assertCount(1, $cycleProviders);
@@ -87,7 +87,7 @@ final class ImmutableFactoryTest extends TestCase
     public function itDoesNotEnableCycleProviderOnGivenFakerInstancesWhenAlreadyEnabled(): void
     {
         $faker = Factory::create();
-        $faker->addProvider(new CycleProvider($faker));
+        $faker->addProvider(new Cycle($faker));
         new readonly class($faker) extends ImmutableFactory {
             protected function instance(array $attributes): stdClass
             {
@@ -102,7 +102,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $cycleProviders = array_filter(
             $faker->getProviders(),
-            static fn($provider) => $provider instanceof CycleProvider,
+            static fn($provider) => $provider instanceof Cycle,
         );
 
         $this->assertCount(1, $cycleProviders);
