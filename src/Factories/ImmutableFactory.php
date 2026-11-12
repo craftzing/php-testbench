@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Factories;
 
+use Craftzing\TestBench\Faker\CycleProvider;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Support\Collection;
 
+use function array_any;
 use function array_is_list;
 use function array_map;
 use function is_array;
@@ -20,6 +22,7 @@ use function iterator_to_array;
  */
 abstract readonly class ImmutableFactory
 {
+    /** @var Generator&CycleProvider */
     public Generator $faker;
 
     /** @param array<array-key, mixed> $state */
@@ -28,7 +31,21 @@ abstract readonly class ImmutableFactory
         public array $state = [],
         public int $count = 1,
     ) {
-        $this->faker = $faker ?? FakerFactory::create();
+        if ($faker === null) {
+            $faker = FakerFactory::create();
+        }
+
+        if (! self::hasCycleProvider($faker)) {
+            $faker->addProvider(new CycleProvider($faker));
+        }
+
+        /** @var Generator&CycleProvider $faker */
+        $this->faker = $faker;
+    }
+
+    private static function hasCycleProvider(Generator $faker): bool
+    {
+        return array_any($faker->getProviders(), static fn($provider) => $provider instanceof CycleProvider);
     }
 
     /**

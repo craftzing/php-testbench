@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Factories;
 
+use Craftzing\TestBench\Faker\CycleProvider;
+use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
@@ -12,6 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function array_filter;
 use function array_keys;
 use function collect;
 use function count;
@@ -24,17 +27,17 @@ final class ImmutableFactoryTest extends TestCase
 
     private ImmutableFactory $instance {
         get => $this->instance ??= new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): stdClass
+            {
+                return (object) $attributes;
+            }
+
             public function definition(): array
             {
                 return [
                     'first' => $this->faker->uuid(),
                     'last' => $this->faker->uuid(),
                 ];
-            }
-
-            protected function instance(array $attributes): stdClass
-            {
-                return (object) $attributes;
             }
         };
     }
@@ -43,6 +46,66 @@ final class ImmutableFactoryTest extends TestCase
     public function itCanConstructWithDefaults(): void
     {
         $this->assertFactoryProperties($this->instance, state: [], times: 1);
+    }
+
+    #[Test]
+    public function itCanEnableCycleProviderOnDefaultFakerInstances(): void
+    {
+        $cycleProviders = array_filter(
+            $this->instance->faker->getProviders(),
+            static fn($provider) => $provider instanceof CycleProvider,
+        );
+
+        $this->assertCount(1, $cycleProviders);
+    }
+
+    #[Test]
+    public function itCanEnableCycleProviderOnGivenFakerInstances(): void
+    {
+        $faker = Factory::create();
+        new readonly class($faker) extends ImmutableFactory {
+            protected function instance(array $attributes): stdClass
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return [];
+            }
+        };
+
+        $cycleProviders = array_filter(
+            $faker->getProviders(),
+            static fn($provider) => $provider instanceof CycleProvider,
+        );
+
+        $this->assertCount(1, $cycleProviders);
+    }
+
+    #[Test]
+    public function itDoesNotEnableCycleProviderOnGivenFakerInstancesWhenAlreadyEnabled(): void
+    {
+        $faker = Factory::create();
+        $faker->addProvider(new CycleProvider($faker));
+        new readonly class($faker) extends ImmutableFactory {
+            protected function instance(array $attributes): stdClass
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return [];
+            }
+        };
+
+        $cycleProviders = array_filter(
+            $faker->getProviders(),
+            static fn($provider) => $provider instanceof CycleProvider,
+        );
+
+        $this->assertCount(1, $cycleProviders);
     }
 
     #[Test]
@@ -505,7 +568,6 @@ final class ImmutableFactoryTest extends TestCase
         int $times,
         ?Generator $faker = null,
     ): void {
-        $this->assertInstanceOf(Generator::class, $factory->faker);
         $this->when($faker !== null, function () use ($factory, $faker): void {
             $this->assertSame($faker, $factory->faker);
         });
