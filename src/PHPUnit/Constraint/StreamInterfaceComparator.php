@@ -34,7 +34,7 @@ final class StreamInterfaceComparator extends Comparator
 
         $isEqual = new IsEqual((string) $expected);
 
-        if ($isEqual->evaluate((string) $actual, returnResult: true)) {
+        if ($isEqual->evaluate((string) $actual, '', true)) {
             return;
         }
 

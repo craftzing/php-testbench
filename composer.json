@@ -28,7 +28,7 @@
         "illuminate/support": "^12.0|^13.0",
         "orchestra/testbench": "^10.0|^11.0",
         "phpunit/phpunit": "^11.5|^12.0|^13.0",
-        "saloonphp/saloon": "^3.13"
+        "saloonphp/saloon": "^4.0"
     },
     "suggest": {
         "illuminate/collections": "Needed to use testbench utils for Laravel (Craftzing\\TestBench\\Laravel) and factories",
@@ -45,7 +45,7 @@
         "illuminate/contracts": "<10.10",
         "illuminate/support": "<10.10",
         "phpunit/phpunit": "<11.5",
-        "saloonphp/saloon": "<3.0"
+        "saloonphp/saloon": "<4.0"
     },
     "autoload": {
         "psr-4": {
