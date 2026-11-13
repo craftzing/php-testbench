@@ -22,16 +22,17 @@ use function value;
 final class ContainerFactoryTest extends TestCase
 {
     #[Test]
-    public function itCannotConstructWhenConfiguredToCreateContainersWithLessThanOneInstance(): void
+    public function itCannotConstructWhenConfiguredToCreateContainersNegativeInstances(): void
     {
         $factory = self::createStub(ImmutableFactory::class);
 
         $this->expectException(InvalidArgumentException::class);
 
-        new ContainerFactory($factory, 0);
+        new ContainerFactory($factory, -1);
     }
 
     #[Test]
+    #[TestWith([0])]
     #[TestWith([1])]
     #[TestWith([10])]
     #[TestWith([PHP_INT_MAX])]

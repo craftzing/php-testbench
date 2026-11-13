@@ -21,9 +21,9 @@ final readonly class ContainerFactory
         public ImmutableFactory $factory,
         public int $count,
     ) {
-        if ($count < 1) {
+        if ($count < 0) {
             throw new InvalidArgumentException(
-                self::class . ' must be configured to create containers with at least one instance.',
+                self::class . " cannot be configured to create containers {$count} instance.",
             );
         }
     }
