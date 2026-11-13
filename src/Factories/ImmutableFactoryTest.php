@@ -7,6 +7,7 @@ namespace Craftzing\TestBench\Factories;
 use Craftzing\TestBench\Faker\Providers\Cycle;
 use Faker\Factory;
 use Faker\Generator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,9 +15,6 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function array_filter;
-use function array_keys;
-use function collect;
-use function count;
 
 final class ImmutableFactoryTest extends TestCase
 {
@@ -197,13 +195,13 @@ final class ImmutableFactoryTest extends TestCase
     #[Test]
     public function makeOnePrioritisesAttributesOverStates(): void
     {
+        $attributes = ['last' => 'Attribute'];
         $instance = new FakeImmutableFactory()->state(['last' => 'State']);
 
-        $result = $instance->makeOne(['last' => 'Attribute']);
+        $result = $instance->makeOne($attributes);
 
         $this->assertInstanceOf(stdClass::class, $result);
-        $this->assertHasPropertyForEachDefinition($result);
-        $this->assertSame('Attribute', $result->last);
+        $this->assertEquals((object) $attributes, $result);
     }
 
     public static function state(): iterable
@@ -250,10 +248,7 @@ final class ImmutableFactoryTest extends TestCase
     {
         $result = new FakeImmutableFactory()->state($state)->raw($attributes);
 
-        collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-            $this->assertSame($value, $result[$attribute]);
-        });
-        $this->assertHasArrayKeyForEachDefinition($result);
+        $this->assertSame($expected, $result);
     }
 
     #[Test]
@@ -263,10 +258,7 @@ final class ImmutableFactoryTest extends TestCase
         $result = new FakeImmutableFactory()->state($state)->makeOne($attributes);
 
         $this->assertInstanceOf(stdClass::class, $result);
-        collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-            $this->assertSame($value, $result->{$attribute});
-        });
-        $this->assertHasPropertyForEachDefinition($result);
+        $this->assertEquals((object) $expected, $result);
     }
 
     #[Test]
@@ -372,37 +364,161 @@ final class ImmutableFactoryTest extends TestCase
         );
     }
 
-    public static function nestedClosures(): iterable
+    public static function deferredAttributes(): iterable
     {
-        yield 'Nested' => [
-            ['nested' => fn () => 'Deferred #1'],
-            ['nested' => 'Deferred #1'],
+        $closureResult = 'Deferred Closure';
+        $factoryAttributes = ['factory' => 'Deferred Factory'];
+
+        yield 'Nested closures' => [
+            ['nested' => fn () => $closureResult],
+            ['nested' => $closureResult],
         ];
 
-        yield 'Deeply nested' => [
+        yield 'Nested ImmutableFactory instances' => [
+            ['nested' => new FakeImmutableFactory()->state($factoryAttributes)],
+            [
+                'nested' => (object) $factoryAttributes,
+            ],
+        ];
+
+        yield 'Nested ContainerFactory instances' => [
+            [
+                'nested' => new FakeImmutableFactory()
+                    ->state($factoryAttributes)
+                    ->times(2),
+            ],
+            [
+                'nested' => [
+                    (object) $factoryAttributes,
+                    (object) $factoryAttributes,
+                ],
+            ],
+        ];
+
+        yield 'Deeply nested closures' => [
             [
                 'deeply' => [
-                    'nested' => fn () => 'Deferred',
+                    'nested' => fn () => $closureResult,
                 ],
             ],
             [
-                'deeply' => ['nested' => 'Deferred'],
+                'deeply' => ['nested' => $closureResult],
             ],
         ];
 
-        yield 'Closure returning another Closure' => [
+        yield 'Deeply nested ImmutableFactory instances' => [
+            [
+                'deeply' => [
+                    'nested' => new FakeImmutableFactory()->state($factoryAttributes),
+                ],
+            ],
+            [
+                'deeply' => [
+                    'nested' => (object) $factoryAttributes,
+                ],
+            ],
+        ];
+
+        yield 'Deeply nested ContainerFactory instances' => [
+            [
+                'deeply' => [
+                    'nested' => new FakeImmutableFactory()
+                        ->state($factoryAttributes)
+                        ->times(2),
+                ],
+            ],
+            [
+                'deeply' => [
+                    'nested' => [
+                        (object) $factoryAttributes,
+                        (object) $factoryAttributes,
+                    ],
+                ],
+            ],
+        ];
+
+        yield 'Closures returning another Closure' => [
             [
                 'nested' => fn() => (
-                    fn() => 'Deferred'
+                    fn() => $closureResult
                 ),
             ],
-            ['nested' => 'Deferred'],
+            ['nested' => $closureResult],
+        ];
+
+        yield 'Closures returning ImmutableFactory instance' => [
+            [
+                'nested' => fn() => (
+                    fn() => new FakeImmutableFactory()->state($factoryAttributes)
+                ),
+            ],
+            ['nested' => (object) $factoryAttributes],
+        ];
+
+        yield 'Closures returning ContainerFactory instance' => [
+            [
+                'nested' => fn() => (
+                    fn() => new FakeImmutableFactory()
+                        ->state($factoryAttributes)
+                        ->times(2)
+                ),
+            ],
+            [
+                'nested' => [
+                    (object) $factoryAttributes,
+                    (object) $factoryAttributes,
+                ],
+            ],
+        ];
+
+        yield 'Nested array of deferred attributes' => [
+            [
+                'nested' => [
+                    fn() => $closureResult,
+                    new FakeImmutableFactory()->state($factoryAttributes),
+                    new FakeImmutableFactory()
+                        ->state(['containerFactory' => 'Deferred ContainerFactory'])
+                        ->times(2),
+                ],
+            ],
+            [
+                'nested' => [
+                    $closureResult,
+                    (object) $factoryAttributes,
+                    [
+                        (object) ['containerFactory' => 'Deferred ContainerFactory'],
+                        (object) ['containerFactory' => 'Deferred ContainerFactory'],
+                    ],
+                ],
+            ],
+        ];
+
+        yield 'Nested collection of deferred attributes' => [
+            [
+                'nested' => new Collection([
+                    fn() => $closureResult,
+                    new FakeImmutableFactory()->state($factoryAttributes),
+                    new FakeImmutableFactory()
+                        ->state(['containerFactory' => 'Deferred ContainerFactory'])
+                        ->times(2),
+                ]),
+            ],
+            [
+                'nested' => [
+                    $closureResult,
+                    (object) $factoryAttributes,
+                    [
+                        (object) ['containerFactory' => 'Deferred ContainerFactory'],
+                        (object) ['containerFactory' => 'Deferred ContainerFactory'],
+                    ],
+                ],
+            ],
         ];
     }
 
     #[Test]
-    #[DataProvider('nestedClosures')]
-    public function rawResolvesNestedClosuresInStates(array $attributes, array $expected): void
+    #[DataProvider('deferredAttributes')]
+    public function rawResolvesDeferredAttributesInStates(array $attributes, array $expected): void
     {
         $instance = new FakeImmutableFactory()->state($attributes);
 
@@ -412,19 +528,19 @@ final class ImmutableFactoryTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('nestedClosures')]
-    public function rawResolvesNestedClosuresInAttributes(array $attributes, array $expected): void
+    #[DataProvider('deferredAttributes')]
+    public function rawResolvesDeferredAttributesInAttributes(array $attributes, array $expected): void
     {
         $instance = new FakeImmutableFactory();
 
         $result = $instance->raw($attributes);
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     #[Test]
-    #[DataProvider('nestedClosures')]
-    public function makeOneResolvesNestedClosuresInStates(array $attributes, array $expected): void
+    #[DataProvider('deferredAttributes')]
+    public function makeOneResolvesDeferredAttributesInStates(array $attributes, array $expected): void
     {
         $instance = new FakeImmutableFactory()->state($attributes);
 
@@ -434,83 +550,13 @@ final class ImmutableFactoryTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('nestedClosures')]
-    public function makeOneResolvesNestedClosuresInAttributes(array $attributes, array $expected): void
+    #[DataProvider('deferredAttributes')]
+    public function makeOneResolvesDeferredAttributesInAttributes(array $attributes, array $expected): void
     {
         $instance = new FakeImmutableFactory();
 
         $result = $instance->makeOne($attributes);
 
         $this->assertEquals((object) $expected, $result);
-    }
-
-    public static function nestedFactories(): iterable
-    {
-        yield [
-            static fn(ImmutableFactory $instance): ImmutableFactory => $instance->state([
-                'nested' => $instance->state([
-                    'deeplyNested' => $instance->state(['resolved' => true]),
-                ]),
-                'nestedArray' => $instance->times(2)->state(['resolvedTimes' => true]),
-            ]),
-            static function (stdClass $result): void {
-                self::assertObjectHasProperty('nested', $result);
-                self::assertInstanceOf(stdClass::class, $result->nested);
-                self::assertObjectHasProperty('deeplyNested', $result->nested);
-                self::assertInstanceOf(stdClass::class, $result->nested->deeplyNested);
-                self::assertObjectHasProperty('resolved', $result->nested->deeplyNested);
-                self::assertObjectHasProperty('nestedArray', $result);
-                self::assertContainsOnlyInstancesOf(stdClass::class, $result->nestedArray);
-                self::assertCount(2, $result->nestedArray);
-                collect($result->nestedArray)->each(static function (stdClass $item): void {
-                    self::assertObjectHasProperty('resolvedTimes', $item);
-                    self::assertTrue($item->resolvedTimes);
-                });
-            },
-        ];
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
-    public function itCanReturnRawAttributesWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass): void $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $result = $instance->raw();
-
-        $assert((object) $result);
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
-    public function itCanMakeOneWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass): void $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $result = $instance->makeOne();
-
-        $assert($result);
-    }
-
-    private function assertHasPropertyForEachDefinition(stdClass $result): void
-    {
-        foreach (array_keys(new FakeImmutableFactory()->definition()) as $attribute) {
-            self::assertObjectHasProperty($attribute, $result);
-        }
-    }
-
-    private function assertHasArrayKeyForEachDefinition(array $result): void
-    {
-        foreach (array_keys(new FakeImmutableFactory()->definition()) as $attribute) {
-            self::assertArrayHasKey($attribute, $result);
-        }
     }
 }
