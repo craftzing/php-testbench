@@ -15,9 +15,6 @@ final readonly class FakeImmutableFactory extends ImmutableFactory
 
     public function definition(): array
     {
-        return [
-            'first' => $this->faker->uuid(),
-            'last' => $this->faker->uuid(),
-        ];
+        return [];
     }
 }

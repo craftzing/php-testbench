@@ -87,16 +87,6 @@ final class ImmutableFactoryTest extends TestCase
     }
 
     #[Test]
-    public function itDefinesAttributes(): void
-    {
-        $instance = new FakeImmutableFactory();
-
-        $result = $instance->definition();
-
-        $this->assertHasArrayKeyForEachDefinition($result);
-    }
-
-    #[Test]
     public function itAcceptsState(): void
     {
         $originalInstance = new FakeImmutableFactory();
@@ -112,62 +102,96 @@ final class ImmutableFactoryTest extends TestCase
     #[Test]
     public function rawUsesDefinitions(): void
     {
-        $instance = new FakeImmutableFactory();
-        $definition = $instance->definition();
+        $instance = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): object
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return ['attribute' => 'Defined'];
+            }
+        };
+
 
         $result = $instance->raw();
 
-        $this->assertCount(count($definition), $result);
-        $this->assertHasArrayKeyForEachDefinition($result);
+        $this->assertSame(['attribute' => 'Defined'], $result);
     }
 
     #[Test]
     public function rawPrioritisesStatesOverDefinitions(): void
     {
-        $instance = new FakeImmutableFactory()->state(['first' => 'State']);
-        $definition = $instance->definition();
+        $instance = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): object
+            {
+                return (object) $attributes;
+            }
 
-        $result = $instance->raw();
+            public function definition(): array
+            {
+                return ['attribute' => 'Defined'];
+            }
+        };
 
-        $this->assertCount(count($definition), $result);
-        $this->assertHasArrayKeyForEachDefinition($result);
-        $this->assertSame('State', $result['first']);
+        $result = $instance->state(['attribute' => 'State'])->raw();
+
+        $this->assertSame(['attribute' => 'State'], $result);
     }
 
     #[Test]
     public function rawPrioritisesAttributesOverStates(): void
     {
-        $instance = new FakeImmutableFactory()->state(['first' => 'State']);
-        $definition = $instance->definition();
+        $instance = new FakeImmutableFactory()->state(['attribute' => 'State']);
 
-        $result = $instance->raw(['first' => 'Raw']);
+        $result = $instance->raw(['attribute' => 'Raw']);
 
-        $this->assertCount(count($definition), $result);
-        $this->assertHasArrayKeyForEachDefinition($result);
-        $this->assertSame('Raw', $result['first']);
+        $this->assertSame(['attribute' => 'Raw'], $result);
     }
 
     #[Test]
     public function makeOneUsesDefinitions(): void
     {
-        $instance = new FakeImmutableFactory();
+        $instance = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): object
+            {
+                return (object) $attributes;
+            }
+
+            public function definition(): array
+            {
+                return ['attribute' => 'Defined'];
+            }
+        };
+
 
         $result = $instance->makeOne();
 
         $this->assertInstanceOf(stdClass::class, $result);
-        $this->assertHasPropertyForEachDefinition($result);
+        $this->assertEquals((object) ['attribute' => 'Defined'], $result);
     }
 
     #[Test]
     public function makeOnePrioritisesStatesOverDefinitions(): void
     {
-        $instance = new FakeImmutableFactory()->state(['last' => 'State']);
+        $instance = new readonly class extends ImmutableFactory {
+            protected function instance(array $attributes): object
+            {
+                return (object) $attributes;
+            }
 
-        $result = $instance->makeOne();
+            public function definition(): array
+            {
+                return ['attribute' => 'Defined'];
+            }
+        };
+
+
+        $result = $instance->state(['attribute' => 'State'])->makeOne();
 
         $this->assertInstanceOf(stdClass::class, $result);
-        $this->assertHasPropertyForEachDefinition($result);
-        $this->assertSame('State', $result->last);
+        $this->assertEquals((object) ['attribute' => 'State'], $result);
     }
 
     #[Test]
@@ -346,6 +370,78 @@ final class ImmutableFactoryTest extends TestCase
             ],
             $raw,
         );
+    }
+
+    public static function nestedClosures(): iterable
+    {
+        yield 'Nested' => [
+            ['nested' => fn () => 'Deferred #1'],
+            ['nested' => 'Deferred #1'],
+        ];
+
+        yield 'Deeply nested' => [
+            [
+                'deeply' => [
+                    'nested' => fn () => 'Deferred',
+                ],
+            ],
+            [
+                'deeply' => ['nested' => 'Deferred'],
+            ],
+        ];
+
+        yield 'Closure returning another Closure' => [
+            [
+                'nested' => fn() => (
+                    fn() => 'Deferred'
+                ),
+            ],
+            ['nested' => 'Deferred'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('nestedClosures')]
+    public function rawResolvesNestedClosuresInStates(array $attributes, array $expected): void
+    {
+        $instance = new FakeImmutableFactory()->state($attributes);
+
+        $result = $instance->raw();
+
+        $this->assertEquals($expected, $result);
+    }
+
+    #[Test]
+    #[DataProvider('nestedClosures')]
+    public function rawResolvesNestedClosuresInAttributes(array $attributes, array $expected): void
+    {
+        $instance = new FakeImmutableFactory();
+
+        $result = $instance->raw($attributes);
+
+        $this->assertSame($expected, $result);
+    }
+
+    #[Test]
+    #[DataProvider('nestedClosures')]
+    public function makeOneResolvesNestedClosuresInStates(array $attributes, array $expected): void
+    {
+        $instance = new FakeImmutableFactory()->state($attributes);
+
+        $result = $instance->makeOne();
+
+        $this->assertEquals((object) $expected, $result);
+    }
+
+    #[Test]
+    #[DataProvider('nestedClosures')]
+    public function makeOneResolvesNestedClosuresInAttributes(array $attributes, array $expected): void
+    {
+        $instance = new FakeImmutableFactory();
+
+        $result = $instance->makeOne($attributes);
+
+        $this->assertEquals((object) $expected, $result);
     }
 
     public static function nestedFactories(): iterable
