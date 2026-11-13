@@ -39,7 +39,7 @@ final class ImmutableFactoryTest extends TestCase
         );
 
         $this->assertCount(1, $cycleProviders);
-        $this->assertSame(1, $instance->faker->cycle([1, 2]));
+        $this->assertSame(1, $instance->faker->cycle(1, 2));
     }
 
     #[Test]
@@ -54,7 +54,7 @@ final class ImmutableFactoryTest extends TestCase
         );
 
         $this->assertCount(1, $cycleProviders);
-        $this->assertSame(1, $instance->faker->cycle([1, 2]));
+        $this->assertSame(1, $instance->faker->cycle(1, 2));
     }
 
     #[Test]
@@ -70,7 +70,7 @@ final class ImmutableFactoryTest extends TestCase
         );
 
         $this->assertCount(1, $cycleProviders);
-        $this->assertSame(1, $instance->faker->cycle([1, 2]));
+        $this->assertSame(1, $instance->faker->cycle(1, 2));
     }
 
     #[Test]

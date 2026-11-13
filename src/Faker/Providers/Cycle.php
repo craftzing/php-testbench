@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Craftzing\TestBench\Faker\Providers;
 
 use Faker\Provider\Base;
-use InvalidArgumentException;
 
 use function array_shift;
 use function array_values;
-use function count;
 use function serialize;
 
 /** @template TOption */
@@ -19,15 +17,14 @@ final class Cycle extends Base
     private array $queues = [];
 
     /**
-     * @param non-empty-array<TOption> $options
+     * @param TOption $first
+     * @param TOption $second
+     * @param TOption ...$additional
      * @return TOption
      */
-    public function cycle(array $options): mixed
+    public function cycle(mixed $first, mixed $second, mixed ...$additional): mixed
     {
-        if (count($options) < 2) {
-            throw new InvalidArgumentException('Cannot cycle through lists with less than 2 options.');
-        }
-
+        $options = [$first, $second, ...$additional];
         $key = serialize($options);
         $queue = $this->queues[$key] ?? array_values($options);
         $option = array_shift($queue);

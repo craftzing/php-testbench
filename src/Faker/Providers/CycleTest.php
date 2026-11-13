@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Faker\Providers;
 
+use ArgumentCountError;
 use Craftzing\TestBench\Doubles\Enum\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -21,21 +21,21 @@ final class CycleTest extends TestCase
         get => $this->faker ??= Factory::create();
     }
 
-    public static function lessThanTwoOptions(): iterable
+    public static function tooFewOptions(): iterable
     {
         yield 'Empty list' => [[]];
         yield 'List with only 1 option' => [[1]];
     }
 
     #[Test]
-    #[DataProvider('lessThanTwoOptions')]
-    public function itCannotCycleThroughListsWithLessThanTwoOptions(array $options): void
+    #[DataProvider('tooFewOptions')]
+    public function itCannotCycleThroughListsWithTooFewOptions(array $options): void
     {
         $instance = new Cycle($this->faker);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ArgumentCountError::class);
 
-        $instance->cycle($options);
+        $instance->cycle(...$options);
     }
 
     public static function options(): iterable
@@ -72,7 +72,7 @@ final class CycleTest extends TestCase
     {
         $instance = new Cycle($this->faker);
 
-        $results = array_map(static fn() => $instance->cycle($options), $expected);
+        $results = array_map(static fn() => $instance->cycle(...$options), $expected);
 
         $this->assertSame($expected, $results);
     }
@@ -86,21 +86,21 @@ final class CycleTest extends TestCase
         $instance = new Cycle($this->faker);
 
         $results = [
-            $instance->cycle($firstOptionList),
-            $instance->cycle($firstOptionList),
-            $instance->cycle($secondOptionList),
-            $instance->cycle($firstOptionList),
-            $instance->cycle($secondOptionList),
-            $instance->cycle($lastOptionList),
-            $instance->cycle($firstOptionList),
-            $instance->cycle($secondOptionList),
-            $instance->cycle($lastOptionList),
-            $instance->cycle($lastOptionList),
-            $instance->cycle($secondOptionList),
-            $instance->cycle($firstOptionList),
-            $instance->cycle($secondOptionList),
-            $instance->cycle($firstOptionList),
-            $instance->cycle($firstOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$secondOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$secondOptionList),
+            $instance->cycle(...$lastOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$secondOptionList),
+            $instance->cycle(...$lastOptionList),
+            $instance->cycle(...$lastOptionList),
+            $instance->cycle(...$secondOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$secondOptionList),
+            $instance->cycle(...$firstOptionList),
+            $instance->cycle(...$firstOptionList),
         ];
 
         $this->assertSame(
@@ -131,7 +131,7 @@ final class CycleTest extends TestCase
     {
         $this->faker->addProvider(new Cycle($this->faker));
 
-        $results = array_map(fn() => $this->faker->cycle($options), $expected);
+        $results = array_map(fn() => $this->faker->cycle(...$options), $expected);
 
         $this->assertSame($expected, $results);
     }
