@@ -12,12 +12,14 @@ use function is_callable;
 
 /**
  * @template TClass of object
- * @mixin ImmutableFactory<TClass>
+ * @template TFactory of ImmutableFactory<TClass>
+ * @mixin TFactory
  */
 final readonly class ContainerFactory
 {
+    /** @param TFactory $factory */
     public function __construct(
-        /** @var ImmutableFactory<TClass> */
+        /** @var TFactory */
         public ImmutableFactory $factory,
         public int $count,
     ) {

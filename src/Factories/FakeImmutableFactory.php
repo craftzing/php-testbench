@@ -6,7 +6,10 @@ namespace Craftzing\TestBench\Factories;
 
 use stdClass;
 
-/** @extends ImmutableFactory<stdClass> */
+/**
+ * @extends ImmutableFactory<stdClass>
+ * @method \Craftzing\TestBench\Factories\ContainerFactory<stdClass, self> times(int $count)
+ */
 final readonly class FakeImmutableFactory extends ImmutableFactory
 {
     protected function instance(array $attributes): stdClass

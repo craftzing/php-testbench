@@ -55,9 +55,10 @@ abstract readonly class ImmutableFactory
         return new static($this->faker, self::merge($this->state, $state));
     }
 
-    /** @return ContainerFactory<TClass> */
+    /** @return ContainerFactory<TClass, static> */
     public function times(int $count): ContainerFactory
     {
+        // @mago-expect analyzer:less-specific-return-statement
         return new ContainerFactory($this, $count);
     }
 
