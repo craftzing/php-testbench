@@ -7,12 +7,9 @@ namespace Craftzing\TestBench\Factories;
 use Craftzing\TestBench\Faker\Providers\Cycle;
 use Faker\Factory;
 use Faker\Generator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Support\Traits\Conditionable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -20,19 +17,16 @@ use function array_filter;
 use function array_keys;
 use function collect;
 use function count;
-use function mt_rand;
-use function random_int;
 
 final class ImmutableFactoryTest extends TestCase
 {
-    use Conditionable;
-
     #[Test]
-    public function itConstructWithDefaults(): void
+    public function itConstructsWithDefaults(): void
     {
         $instance = new FakeImmutableFactory();
 
-        $this->assertFactoryProperties($instance, state: [], times: 1);
+        $this->assertInstanceOf(Generator::class, $instance->faker);
+        $this->assertSame([], $instance->state);
     }
 
     #[Test]
@@ -46,20 +40,22 @@ final class ImmutableFactoryTest extends TestCase
         );
 
         $this->assertCount(1, $cycleProviders);
+        $this->assertSame(1, $instance->faker->cycle([1, 2]));
     }
 
     #[Test]
     public function itEnablesCycleProviderOnGivenFakerInstances(): void
     {
         $faker = Factory::create();
-        new FakeImmutableFactory($faker);
+        $instance = new FakeImmutableFactory($faker);
 
         $cycleProviders = array_filter(
-            $faker->getProviders(),
+            $instance->faker->getProviders(),
             static fn($provider) => $provider instanceof Cycle,
         );
 
         $this->assertCount(1, $cycleProviders);
+        $this->assertSame(1, $instance->faker->cycle([1, 2]));
     }
 
     #[Test]
@@ -67,14 +63,37 @@ final class ImmutableFactoryTest extends TestCase
     {
         $faker = Factory::create();
         $faker->addProvider(new Cycle($faker));
-        new FakeImmutableFactory($faker);
+        $instance = new FakeImmutableFactory($faker);
 
         $cycleProviders = array_filter(
-            $faker->getProviders(),
+            $instance->faker->getProviders(),
             static fn($provider) => $provider instanceof Cycle,
         );
 
         $this->assertCount(1, $cycleProviders);
+        $this->assertSame(1, $instance->faker->cycle([1, 2]));
+    }
+
+    #[Test]
+    public function itAcceptsTimes(): void
+    {
+        $instance = new FakeImmutableFactory();
+        $count = 10;
+
+        $result = $instance->times($count);
+
+        $this->assertSame($instance, $result->factory);
+        $this->assertSame($count, $result->count);
+    }
+
+    #[Test]
+    public function itDefinesAttributes(): void
+    {
+        $instance = new FakeImmutableFactory();
+
+        $result = $instance->definition();
+
+        $this->assertHasArrayKeyForEachDefinition($result);
     }
 
     #[Test]
@@ -85,28 +104,9 @@ final class ImmutableFactoryTest extends TestCase
 
         $instance = $originalInstance->state($state);
 
-        $this->assertNotEquals($originalInstance, $instance);
-        $this->assertFactoryProperties($originalInstance, state: [], times: 1);
-        $this->assertFactoryProperties($instance, state: $state, times: 1, faker: $originalInstance->faker);
-    }
-
-    #[Test]
-    public function itAcceptsTimes(): void
-    {
-        $originalInstance = new FakeImmutableFactory();
-        $count = random_int(2, 10);
-
-        $instance = $originalInstance->times($count);
-
-        $this->assertNotEquals($originalInstance, $instance);
-        $this->assertFactoryProperties($originalInstance, state: [], times: 1);
-        $this->assertFactoryProperties($instance, state: [], times: $count, faker: $originalInstance->faker);
-    }
-
-    public static function rawSetMethods(): iterable
-    {
-        yield 'rawMany' => ['rawMany', mt_rand(1, 10)];
-        yield 'rawCollection' => ['rawCollection', mt_rand(1, 10)];
+        $this->assertSame($state, $instance->state);
+        $this->assertEmpty($originalInstance->state);
+        $this->assertSame($originalInstance->faker, $instance->faker);
     }
 
     #[Test]
@@ -119,22 +119,6 @@ final class ImmutableFactoryTest extends TestCase
 
         $this->assertCount(count($definition), $result);
         $this->assertHasArrayKeyForEachDefinition($result);
-    }
-
-    #[Test]
-    #[DataProvider('rawSetMethods')]
-    public function rawSetsUseDefinitions(string $method, int $times): void
-    {
-        $instance = new FakeImmutableFactory()->times($times);
-        $definition = $instance->definition();
-
-        $results = $instance->{$method}();
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (array $actual) use ($definition): void {
-            $this->assertCount(count($definition), $actual);
-            $this->assertHasArrayKeyForEachDefinition($actual);
-        });
     }
 
     #[Test]
@@ -151,28 +135,9 @@ final class ImmutableFactoryTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('rawSetMethods')]
-    public function rawSetsPrioritiseStatesOverDefinitions(string $method, int $times): void
+    public function rawPrioritisesAttributesOverStates(): void
     {
-        $instance = new FakeImmutableFactory()
-            ->times($times)
-            ->state(['first' => 'State']);
-        $definition = $instance->definition();
-
-        $results = $instance->{$method}();
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (array $actual) use ($definition): void {
-            $this->assertCount(count($definition), $actual);
-            $this->assertHasArrayKeyForEachDefinition($actual);
-            $this->assertSame('State', $actual['first']);
-        });
-    }
-
-    #[Test]
-    public function rawPrioritisesAttributesOveStates(): void
-    {
-        $instance = new FakeImmutableFactory()->state(['first' => 'Prio']);
+        $instance = new FakeImmutableFactory()->state(['first' => 'State']);
         $definition = $instance->definition();
 
         $result = $instance->raw(['first' => 'Raw']);
@@ -180,31 +145,6 @@ final class ImmutableFactoryTest extends TestCase
         $this->assertCount(count($definition), $result);
         $this->assertHasArrayKeyForEachDefinition($result);
         $this->assertSame('Raw', $result['first']);
-    }
-
-    #[Test]
-    #[DataProvider('rawSetMethods')]
-    public function rawSetsPrioritiseAttributesOverStates(string $method, int $times): void
-    {
-        $instance = new FakeImmutableFactory()
-            ->times($times)
-            ->state(['first' => 'State']);
-        $definition = $instance->definition();
-
-        $results = $instance->{$method}(['first' => 'Raw']);
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (array $actual) use ($definition): void {
-            $this->assertCount(count($definition), $actual);
-            $this->assertHasArrayKeyForEachDefinition($actual);
-            $this->assertSame('Raw', $actual['first']);
-        });
-    }
-
-    public static function instanceSetMethods(): iterable
-    {
-        yield 'makeMany' => ['makeMany', mt_rand(1, 10)];
-        yield 'makeCollection' => ['makeCollection', mt_rand(1, 10)];
     }
 
     #[Test]
@@ -216,20 +156,6 @@ final class ImmutableFactoryTest extends TestCase
 
         $this->assertInstanceOf(stdClass::class, $result);
         $this->assertHasPropertyForEachDefinition($result);
-    }
-
-    #[Test]
-    #[DataProvider('instanceSetMethods')]
-    public function makeSetsUseDefinitions(string $method, int $times): void
-    {
-        $instance = new FakeImmutableFactory()->times($times);
-
-        $results = $instance->{$method}();
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (stdClass $actual): void {
-            $this->assertHasPropertyForEachDefinition($actual);
-        });
     }
 
     #[Test]
@@ -245,23 +171,6 @@ final class ImmutableFactoryTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('instanceSetMethods')]
-    public function makeSetsPrioritisesStatesOverDefinitions(string $method, int $times): void
-    {
-        $instance = new FakeImmutableFactory()
-            ->times($times)
-            ->state(['last' => 'State']);
-
-        $results = $instance->{$method}();
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (stdClass $actual): void {
-            $this->assertHasPropertyForEachDefinition($actual);
-            $this->assertSame('State', $actual->last);
-        });
-    }
-
-    #[Test]
     public function makeOnePrioritisesAttributesOverStates(): void
     {
         $instance = new FakeImmutableFactory()->state(['last' => 'State']);
@@ -271,23 +180,6 @@ final class ImmutableFactoryTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $result);
         $this->assertHasPropertyForEachDefinition($result);
         $this->assertSame('Attribute', $result->last);
-    }
-
-    #[Test]
-    #[DataProvider('instanceSetMethods')]
-    public function makeSetsPrioritisesAttributesOverStates(string $method, int $times): void
-    {
-        $instance = new FakeImmutableFactory()
-            ->times($times)
-            ->state(['last' => 'State']);
-
-        $results = $instance->{$method}(['last' => 'Attribute']);
-
-        $this->assertCount($times, $results);
-        collect($results)->each(function (stdClass $actual): void {
-            $this->assertHasPropertyForEachDefinition($actual);
-            $this->assertSame('Attribute', $actual->last);
-        });
     }
 
     public static function state(): iterable
@@ -342,40 +234,6 @@ final class ImmutableFactoryTest extends TestCase
 
     #[Test]
     #[DataProvider('state')]
-    public function itCanReturnManyRawAttributesWithState(array $attributes, array $state, array $expected): void
-    {
-        $results = new FakeImmutableFactory()
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->rawMany($attributes);
-
-        collect($results)->each(function (array $result) use ($expected): void {
-            collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-                $this->assertSame($value, $result[$attribute]);
-            });
-            $this->assertHasArrayKeyForEachDefinition($result);
-        });
-    }
-
-    #[Test]
-    #[DataProvider('state')]
-    public function itCanReturnRawAttributesCollectionsWithState(array $attributes, array $state, array $expected): void
-    {
-        $results = new FakeImmutableFactory()
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->rawCollection($attributes);
-
-        $results->each(function (array $result) use ($expected): void {
-            collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-                $this->assertSame($value, $result[$attribute]);
-            });
-            $this->assertHasArrayKeyForEachDefinition($result);
-        });
-    }
-
-    #[Test]
-    #[DataProvider('state')]
     public function itCanMakeOneWithState(array $attributes, array $state, array $expected): void
     {
         $result = new FakeImmutableFactory()->state($state)->makeOne($attributes);
@@ -385,42 +243,6 @@ final class ImmutableFactoryTest extends TestCase
             $this->assertSame($value, $result->{$attribute});
         });
         $this->assertHasPropertyForEachDefinition($result);
-    }
-
-    #[Test]
-    #[DataProvider('state')]
-    public function itCanMakeManyWithState(array $attributes, array $state, array $expected): void
-    {
-        $results = new FakeImmutableFactory()
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->makeMany($attributes);
-
-        $this->assertContainsOnlyInstancesOf(stdClass::class, $results);
-        collect($results)->each(function (stdClass $result) use ($expected): void {
-            collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-                $this->assertSame($value, $result->{$attribute});
-            });
-            $this->assertHasPropertyForEachDefinition($result);
-        });
-    }
-
-    #[Test]
-    #[DataProvider('state')]
-    public function itCanMakeCollectionsWithState(array $attributes, array $state, array $expected): void
-    {
-        $results = new FakeImmutableFactory()
-            ->times(random_int(1, 10))
-            ->state($state)
-            ->makeCollection($attributes);
-
-        $this->assertContainsOnlyInstancesOf(stdClass::class, $results);
-        $results->each(function (stdClass $result) use ($expected): void {
-            collect($expected)->each(function (mixed $value, string $attribute) use ($result): void {
-                $this->assertSame($value, $result->{$attribute});
-            });
-            $this->assertHasPropertyForEachDefinition($result);
-        });
     }
 
     #[Test]
@@ -569,40 +391,6 @@ final class ImmutableFactoryTest extends TestCase
 
     #[Test]
     #[DataProvider('nestedFactories')]
-    public function itCanReturnManyRawAttributesWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass): void $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $results = $instance->rawMany();
-
-        collect($results)->each(static function (array $result) use ($assert): void {
-            $assert((object) $result);
-        });
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
-    public function itCanReturnRawAttributesCollectionsWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass): void $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $results = $instance->rawCollection();
-
-        $results->each(static function (array $result) use ($assert): void {
-            $assert((object) $result);
-        });
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
     public function itCanMakeOneWithNestedFactories(
         /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
         callable $resolveInstance,
@@ -614,49 +402,6 @@ final class ImmutableFactoryTest extends TestCase
         $result = $instance->makeOne();
 
         $assert($result);
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
-    public function itCanMakeManyWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass): void $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $results = $instance->makeMany();
-
-        collect($results)->each($assert(...));
-    }
-
-    #[Test]
-    #[DataProvider('nestedFactories')]
-    public function itCanMakeCollectionsWithNestedFactories(
-        /** @param callable(ImmutableFactory): ImmutableFactory $resolveInstance */
-        callable $resolveInstance,
-        /** @param callable(stdClass, int): mixed $assert */
-        callable $assert,
-    ): void {
-        $instance = $resolveInstance(new FakeImmutableFactory());
-
-        $results = $instance->makeCollection();
-
-        $results->each($assert(...));
-    }
-
-    private function assertFactoryProperties(
-        ImmutableFactory $factory,
-        array $state,
-        int $times,
-        ?Generator $faker = null,
-    ): void {
-        $this->when($faker !== null, function () use ($factory, $faker): void {
-            $this->assertSame($faker, $factory->faker);
-        });
-        $this->assertSame($state, $factory->state);
-        $this->assertSame($times, $factory->count);
     }
 
     private function assertHasPropertyForEachDefinition(stdClass $result): void

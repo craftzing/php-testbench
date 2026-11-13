@@ -7,7 +7,6 @@ namespace Craftzing\TestBench\Factories;
 use Craftzing\TestBench\Faker\Providers\Cycle;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Illuminate\Support\Collection;
 
 use function array_any;
 use function array_is_list;
@@ -29,7 +28,6 @@ abstract readonly class ImmutableFactory
     final public function __construct(
         ?Generator $faker = null,
         public array $state = [],
-        public int $count = 1,
     ) {
         if ($faker === null) {
             $faker = FakerFactory::create();
@@ -54,13 +52,13 @@ abstract readonly class ImmutableFactory
      */
     public function state(array $state): static
     {
-        return new static($this->faker, self::merge($this->state, $state), $this->count);
+        return new static($this->faker, self::merge($this->state, $state));
     }
 
-    /** @return static<TClass> */
-    public function times(int $count): static
+    /** @return ContainerFactory<TClass> */
+    public function times(int $count): ContainerFactory
     {
-        return new static($this->faker, $this->state, $count);
+        return new ContainerFactory($this, $count);
     }
 
     /**
@@ -78,14 +76,15 @@ abstract readonly class ImmutableFactory
             return array_map($this->resolveValue(...), iterator_to_array($value));
         }
 
-        if (!$value instanceof self) {
-            return $value;
+        if ($value instanceof ContainerFactory) {
+            return $value->makeMany();
         }
 
-        return match ($value->count > 1) {
-            true => $value->makeMany(),
-            default => $value->makeOne(),
-        };
+        if ($value instanceof self) {
+            return $value->makeOne();
+        }
+
+        return $value;
     }
 
     /**
@@ -102,48 +101,12 @@ abstract readonly class ImmutableFactory
     }
 
     /**
-     * @param array<string, mixed> $attributes
-     * @return array<int, array<array-key, mixed>>
-     */
-    public function rawMany(array $attributes = []): array
-    {
-        return $this->rawCollection($attributes)->all();
-    }
-
-    /**
-     * @param array<string, mixed> $attributes
-     * @return Collection<int, array<array-key, mixed>>
-     */
-    public function rawCollection(array $attributes = []): Collection
-    {
-        return Collection::times($this->count, fn(): array => $this->raw($attributes));
-    }
-
-    /**
      * @param array<array-key, mixed> $attributes
      * @return TClass
      */
     public function makeOne(array $attributes = []): object
     {
         return $this->instance($this->raw($attributes));
-    }
-
-    /**
-     * @param array<array-key, mixed> $attributes
-     * @return array<TClass>
-     */
-    public function makeMany(array $attributes = []): array
-    {
-        return $this->makeCollection($attributes)->all();
-    }
-
-    /**
-     * @param array<array-key, mixed> $attributes
-     * @return Collection<int, TClass>
-     */
-    public function makeCollection(array $attributes = []): Collection
-    {
-        return Collection::times($this->count, fn(): mixed => $this->makeOne($attributes));
     }
 
     /**

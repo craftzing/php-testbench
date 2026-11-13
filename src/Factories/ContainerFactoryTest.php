@@ -120,7 +120,7 @@ final class ContainerFactoryTest extends TestCase
         $this->assertSame($state, $result->factory->state);
         $this->assertSame($count, $result->count);
         $this->assertNotEquals($instance, $result);
-        $this->assertSame([], $instance->factory->state);
+        $this->assertEmpty($instance->factory->state);
     }
 
     #[Test]
