@@ -74,7 +74,7 @@ abstract readonly class ImmutableFactory
     private function resolveValue(mixed $value): mixed
     {
         if ($value instanceof Closure) {
-            return $this->resolveValue($value());
+            return $this->resolveValue($value($this));
         }
 
         if (is_iterable($value)) {

@@ -552,4 +552,30 @@ final class ImmutableFactoryTest extends TestCase
 
         $this->assertEquals((object) $expected, $result);
     }
+
+    #[Test]
+    public function nestedClosuresShouldAcceptImmutableFactoryInstancesAsArgument(): void
+    {
+        $attributes = [
+            'nested' => static fn(ImmutableFactory $factory) => $factory->faker->randomElement(['Random']),
+        ];
+        $instance = new FakeImmutableFactory();
+
+        $results = [
+            $instance->raw($attributes),
+            $instance->state($attributes)->raw(),
+            $instance->makeOne($attributes),
+            $instance->state($attributes)->makeOne(),
+        ];
+
+        $this->assertEquals(
+            [
+                ['nested' => 'Random'],
+                ['nested' => 'Random'],
+                (object) ['nested' => 'Random'],
+                (object) ['nested' => 'Random'],
+            ],
+            $results,
+        );
+    }
 }
