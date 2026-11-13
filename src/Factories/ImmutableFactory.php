@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Factories;
 
-use Closure;
 use Craftzing\TestBench\Faker\Providers\Cycle;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
@@ -73,7 +72,7 @@ abstract readonly class ImmutableFactory
 
     private function resolveValue(mixed $value): mixed
     {
-        if ($value instanceof Closure) {
+        if ($value instanceof DeferredAttribute) {
             return $this->resolveValue($value($this));
         }
 

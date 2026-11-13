@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function array_filter;
+use function value;
 
 final class ImmutableFactoryTest extends TestCase
 {
@@ -368,16 +369,14 @@ final class ImmutableFactoryTest extends TestCase
         $closureResult = 'Deferred Closure';
         $factoryAttributes = ['factory' => 'Deferred Factory'];
 
-        yield 'Nested closures' => [
-            ['nested' => static fn() => $closureResult],
+        yield 'Nested DeferredAttribute instance' => [
+            ['nested' => self::fakeDeferredAttribute($closureResult)],
             ['nested' => $closureResult],
         ];
 
         yield 'Nested ImmutableFactory instances' => [
             ['nested' => new FakeImmutableFactory()->state($factoryAttributes)],
-            [
-                'nested' => (object) $factoryAttributes,
-            ],
+            ['nested' => (object) $factoryAttributes],
         ];
 
         yield 'Nested ContainerFactory instances' => [
@@ -394,10 +393,10 @@ final class ImmutableFactoryTest extends TestCase
             ],
         ];
 
-        yield 'Deeply nested closures' => [
+        yield 'Deeply nested DeferredAttribute instance' => [
             [
                 'deeply' => [
-                    'nested' => static fn() => $closureResult,
+                    'nested' => self::fakeDeferredAttribute($closureResult),
                 ],
             ],
             [
@@ -436,25 +435,27 @@ final class ImmutableFactoryTest extends TestCase
             ],
         ];
 
-        yield 'Closures returning another Closure' => [
+        yield 'DeferredAttribute instances returning another DeferredAttribute instance' => [
             [
-                'nested' => static fn() => static fn() => $closureResult,
+                'nested' => self::fakeDeferredAttribute(
+                    self::fakeDeferredAttribute($closureResult),
+                ),
             ],
             ['nested' => $closureResult],
         ];
 
-        yield 'Closures returning ImmutableFactory instance' => [
-            [
-                'nested' => static fn() => static fn() => new FakeImmutableFactory()->state($factoryAttributes),
-            ],
+        yield 'DeferredAttribute returning ImmutableFactory instance' => [
+            ['nested' => self::fakeDeferredAttribute(new FakeImmutableFactory()->state($factoryAttributes))],
             ['nested' => (object) $factoryAttributes],
         ];
 
-        yield 'Closures returning ContainerFactory instance' => [
+        yield 'DeferredAttribute returning ContainerFactory instance' => [
             [
-                'nested' => static fn() => static fn() => new FakeImmutableFactory()
-                    ->state($factoryAttributes)
-                    ->times(2),
+                'nested' => self::fakeDeferredAttribute(
+                    new FakeImmutableFactory()
+                        ->state($factoryAttributes)
+                        ->times(2),
+                ),
             ],
             [
                 'nested' => [
@@ -467,7 +468,7 @@ final class ImmutableFactoryTest extends TestCase
         yield 'Nested array of deferred attributes' => [
             [
                 'nested' => [
-                    static fn() => $closureResult,
+                    self::fakeDeferredAttribute($closureResult),
                     new FakeImmutableFactory()->state($factoryAttributes),
                     new FakeImmutableFactory()
                         ->state(['containerFactory' => 'Deferred ContainerFactory'])
@@ -489,7 +490,7 @@ final class ImmutableFactoryTest extends TestCase
         yield 'Nested collection of deferred attributes' => [
             [
                 'nested' => new Collection([
-                    static fn() => $closureResult,
+                    self::fakeDeferredAttribute($closureResult),
                     new FakeImmutableFactory()->state($factoryAttributes),
                     new FakeImmutableFactory()
                         ->state(['containerFactory' => 'Deferred ContainerFactory'])
@@ -557,7 +558,9 @@ final class ImmutableFactoryTest extends TestCase
     public function nestedClosuresShouldAcceptImmutableFactoryInstancesAsArgument(): void
     {
         $attributes = [
-            'nested' => static fn(ImmutableFactory $factory) => $factory->faker->randomElement(['Random']),
+            'nested' => self::fakeDeferredAttribute(
+                static fn(ImmutableFactory $factory) => $factory->faker->randomElement(['Random']),
+            ),
         ];
         $instance = new FakeImmutableFactory();
 
@@ -577,5 +580,19 @@ final class ImmutableFactoryTest extends TestCase
             ],
             $results,
         );
+    }
+
+    private static function fakeDeferredAttribute(mixed $result): DeferredAttribute
+    {
+        return new readonly class($result) implements DeferredAttribute {
+            public function __construct(
+                private mixed $result,
+            ) {}
+
+            public function __invoke(ImmutableFactory $factory): mixed
+            {
+                return value($this->result, $factory);
+            }
+        };
     }
 }
