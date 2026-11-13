@@ -17,6 +17,7 @@ use function is_callable;
 final readonly class ContainerFactory
 {
     public function __construct(
+        /** @var ImmutableFactory<TClass> */
         public ImmutableFactory $factory,
         public int $count,
     ) {
@@ -29,10 +30,11 @@ final readonly class ContainerFactory
 
     public function __call(string $name, array $arguments): mixed
     {
-        if (! is_callable([$this->factory, $name])) {
+        if (!is_callable([$this->factory, $name])) {
             throw new BadMethodCallException("Method [{$name}] does not exist on " . $this->factory::class . '.');
         }
 
+        // @mago-expect analyzer:string-member-selector
         $result = $this->factory->{$name}(...$arguments);
 
         if ($result instanceof ImmutableFactory) {

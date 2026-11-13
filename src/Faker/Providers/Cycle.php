@@ -12,15 +12,15 @@ use function array_values;
 use function count;
 use function serialize;
 
+/** @template TOption */
 final class Cycle extends Base
 {
-    /** @var array<string, list<mixed>> */
+    /** @var array<string, list<TOption>> */
     private array $queues = [];
 
     /**
-     * @template T
-     * @param non-empty-array<T> $options
-     * @return T
+     * @param non-empty-array<TOption> $options
+     * @return TOption
      */
     public function cycle(array $options): mixed
     {

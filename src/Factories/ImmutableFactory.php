@@ -34,7 +34,7 @@ abstract readonly class ImmutableFactory
             $faker = FakerFactory::create();
         }
 
-        if (! self::hasCycleProvider($faker)) {
+        if (!self::hasCycleProvider($faker)) {
             $faker->addProvider(new Cycle($faker));
         }
 

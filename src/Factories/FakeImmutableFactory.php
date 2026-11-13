@@ -6,6 +6,7 @@ namespace Craftzing\TestBench\Factories;
 
 use stdClass;
 
+/** @extends ImmutableFactory<stdClass> */
 final readonly class FakeImmutableFactory extends ImmutableFactory
 {
     protected function instance(array $attributes): stdClass

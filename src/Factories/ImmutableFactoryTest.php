@@ -112,7 +112,6 @@ final class ImmutableFactoryTest extends TestCase
             }
         };
 
-
         $result = $instance->raw();
 
         $this->assertSame(['attribute' => 'Defined'], $result);
@@ -163,7 +162,6 @@ final class ImmutableFactoryTest extends TestCase
             }
         };
 
-
         $result = $instance->makeOne();
 
         $this->assertInstanceOf(stdClass::class, $result);
@@ -184,7 +182,6 @@ final class ImmutableFactoryTest extends TestCase
                 return ['attribute' => 'Defined'];
             }
         };
-
 
         $result = $instance->state(['attribute' => 'State'])->makeOne();
 
@@ -255,7 +252,9 @@ final class ImmutableFactoryTest extends TestCase
     #[DataProvider('state')]
     public function itCanMakeOneWithState(array $attributes, array $state, array $expected): void
     {
-        $result = new FakeImmutableFactory()->state($state)->makeOne($attributes);
+        $result = new FakeImmutableFactory()
+            ->state($state)
+            ->makeOne($attributes);
 
         $this->assertInstanceOf(stdClass::class, $result);
         $this->assertEquals((object) $expected, $result);
@@ -370,7 +369,7 @@ final class ImmutableFactoryTest extends TestCase
         $factoryAttributes = ['factory' => 'Deferred Factory'];
 
         yield 'Nested closures' => [
-            ['nested' => fn () => $closureResult],
+            ['nested' => static fn() => $closureResult],
             ['nested' => $closureResult],
         ];
 
@@ -398,7 +397,7 @@ final class ImmutableFactoryTest extends TestCase
         yield 'Deeply nested closures' => [
             [
                 'deeply' => [
-                    'nested' => fn () => $closureResult,
+                    'nested' => static fn() => $closureResult,
                 ],
             ],
             [
@@ -439,29 +438,23 @@ final class ImmutableFactoryTest extends TestCase
 
         yield 'Closures returning another Closure' => [
             [
-                'nested' => fn() => (
-                    fn() => $closureResult
-                ),
+                'nested' => static fn() => static fn() => $closureResult,
             ],
             ['nested' => $closureResult],
         ];
 
         yield 'Closures returning ImmutableFactory instance' => [
             [
-                'nested' => fn() => (
-                    fn() => new FakeImmutableFactory()->state($factoryAttributes)
-                ),
+                'nested' => static fn() => static fn() => new FakeImmutableFactory()->state($factoryAttributes),
             ],
             ['nested' => (object) $factoryAttributes],
         ];
 
         yield 'Closures returning ContainerFactory instance' => [
             [
-                'nested' => fn() => (
-                    fn() => new FakeImmutableFactory()
-                        ->state($factoryAttributes)
-                        ->times(2)
-                ),
+                'nested' => static fn() => static fn() => new FakeImmutableFactory()
+                    ->state($factoryAttributes)
+                    ->times(2),
             ],
             [
                 'nested' => [
@@ -474,7 +467,7 @@ final class ImmutableFactoryTest extends TestCase
         yield 'Nested array of deferred attributes' => [
             [
                 'nested' => [
-                    fn() => $closureResult,
+                    static fn() => $closureResult,
                     new FakeImmutableFactory()->state($factoryAttributes),
                     new FakeImmutableFactory()
                         ->state(['containerFactory' => 'Deferred ContainerFactory'])
@@ -496,7 +489,7 @@ final class ImmutableFactoryTest extends TestCase
         yield 'Nested collection of deferred attributes' => [
             [
                 'nested' => new Collection([
-                    fn() => $closureResult,
+                    static fn() => $closureResult,
                     new FakeImmutableFactory()->state($factoryAttributes),
                     new FakeImmutableFactory()
                         ->state(['containerFactory' => 'Deferred ContainerFactory'])
