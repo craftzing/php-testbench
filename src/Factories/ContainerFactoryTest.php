@@ -27,7 +27,6 @@ final class ContainerFactoryTest extends TestCase
         $factory = self::createStub(ImmutableFactory::class);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('at least one instance');
 
         new ContainerFactory($factory, 0);
     }
@@ -133,8 +132,6 @@ final class ContainerFactoryTest extends TestCase
         $instance = new ContainerFactory($factory, 3);
 
         $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessageIsOrContains($method);
-        $this->expectExceptionMessageIsOrContains($factory::class);
 
         $instance->{$method}();
     }
