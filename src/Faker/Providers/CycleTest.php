@@ -8,17 +8,18 @@ use Craftzing\TestBench\Doubles\Enum\UnitEnum;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-use function array_reduce;
+use function array_map;
 
 final class CycleTest extends TestCase
 {
     private Generator $faker {
-        get => Factory::create();
+        get => $this->faker ??= Factory::create();
     }
 
     #[Test]
@@ -33,19 +34,36 @@ final class CycleTest extends TestCase
         $instance->cycle($options);
     }
 
+    public static function sameTypeOptions(): iterable
+    {
+        yield 'Integers' => [
+            [10, 20, 30],
+            [10, 20, 30, 10, 20],
+        ];
+
+        yield 'Strings' => [
+            ['craftzing', 'itsme'],
+            ['craftzing', 'itsme', 'craftzing', 'itsme'],
+        ];
+
+        yield 'Enums' => [
+            [UnitEnum::One, UnitEnum::Three, UnitEnum::Two],
+            [UnitEnum::One, UnitEnum::Three, UnitEnum::Two, UnitEnum::One],
+        ];
+
+        yield 'Class instances' => [
+            [$first = new stdClass(), $last = new stdClass()],
+            [$first, $last, $first, $last, $first],
+        ];
+    }
+
     #[Test]
-    #[TestWith([[10, 20, 30], [10, 20, 30, 10, 20]])]
-    #[TestWith([['craftzing', 'itsme'], ['craftzing', 'itsme', 'craftzing', 'itsme']])]
-    #[TestWith([[UnitEnum::One, UnitEnum::Three, UnitEnum::Two], [UnitEnum::One, UnitEnum::Three, UnitEnum::Two, UnitEnum::One]])]
+    #[DataProvider('sameTypeOptions')]
     public function itCyclesThroughOptionsOfTheSameType(array $options, array $expected): void
     {
         $instance = new Cycle($this->faker);
 
-        $results = array_reduce($expected, static function (array $results) use ($instance, $options): array {
-            $results[] = $instance->cycle($options);
-
-            return $results;
-        }, []);
+        $results = array_map(static fn() => $instance->cycle($options), $expected);
 
         $this->assertSame($expected, $results);
     }
@@ -57,11 +75,7 @@ final class CycleTest extends TestCase
         $expected = ['first', UnitEnum::One, $class, 'first', UnitEnum::One, $class];
         $instance = new Cycle($this->faker);
 
-        $results = array_reduce($expected, static function (array $results) use ($instance, $options): array {
-            $results[] = $instance->cycle($options);
-
-            return $results;
-        }, []);
+        $results = array_map(static fn() => $instance->cycle($options), $expected);
 
         $this->assertSame($expected, $results);
     }
@@ -112,5 +126,16 @@ final class CycleTest extends TestCase
             ],
             $results,
         );
+    }
+
+    #[Test]
+    #[DataProvider('sameTypeOptions')]
+    public function itCanBeAddedAsProviderToFakerFactories(array $options, array $expected): void
+    {
+        $this->faker->addProvider(new Cycle($this->faker));
+
+        $results = array_map(fn() => $this->faker->cycle($options), $expected);
+
+        $this->assertSame($expected, $results);
     }
 }
