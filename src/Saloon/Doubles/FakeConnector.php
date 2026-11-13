@@ -61,7 +61,7 @@ final class FakeConnector extends Connector
     private function fakeResponseMatchingRequest(Request $request): ?FakeResponse
     {
         foreach ($this->fakeResponses as $fakeResponse) {
-            if (new IsEqual($request)->evaluate($fakeResponse->request, returnResult: true)) {
+            if (new IsEqual($request)->evaluate($fakeResponse->request, '', true)) {
                 return $fakeResponse;
             }
         }

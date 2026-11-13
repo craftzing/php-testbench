@@ -47,7 +47,7 @@ final class PublicPropertiesComparator extends Comparator
 
         $isEqual = new IsEqual($this->comparableProperties($expected));
 
-        if ($isEqual->evaluate($this->comparableProperties($actual), returnResult: true)) {
+        if ($isEqual->evaluate($this->comparableProperties($actual), '', true)) {
             return;
         }
 

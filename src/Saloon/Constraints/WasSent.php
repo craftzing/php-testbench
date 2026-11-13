@@ -51,25 +51,21 @@ final class WasSent extends Constraint implements Quantable
 
     public function times(int $count): self
     {
-        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, $count, ...$this->objectConstraints);
     }
 
     public function never(): self
     {
-        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, 0, ...$this->objectConstraints);
     }
 
     public function once(): self
     {
-        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, 1, ...$this->objectConstraints);
     }
 
     public function withConstraints(Constraint ...$constraints): self
     {
-        // @mago-expect analyzer:deprecated-class
         return new self($this->connector, $this->times, ...$constraints);
     }
 
