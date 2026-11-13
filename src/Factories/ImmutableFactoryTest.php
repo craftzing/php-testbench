@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Craftzing\TestBench\Factories;
 
-use Craftzing\TestBench\Faker\Providers\Cycle;
+use Craftzing\TestBench\Faker\Providers\Cycle as FakerCycleProvider;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\Collection;
@@ -35,7 +35,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $cycleProviders = array_filter(
             $instance->faker->getProviders(),
-            static fn($provider) => $provider instanceof Cycle,
+            static fn($provider) => $provider instanceof FakerCycleProvider,
         );
 
         $this->assertCount(1, $cycleProviders);
@@ -50,7 +50,7 @@ final class ImmutableFactoryTest extends TestCase
 
         $cycleProviders = array_filter(
             $instance->faker->getProviders(),
-            static fn($provider) => $provider instanceof Cycle,
+            static fn($provider) => $provider instanceof FakerCycleProvider,
         );
 
         $this->assertCount(1, $cycleProviders);
@@ -61,12 +61,12 @@ final class ImmutableFactoryTest extends TestCase
     public function itDoesNotEnableCycleProviderOnGivenFakerInstancesWhenAlreadyEnabled(): void
     {
         $faker = Factory::create();
-        $faker->addProvider(new Cycle($faker));
+        $faker->addProvider(new FakerCycleProvider($faker));
         $instance = new FakeImmutableFactory($faker);
 
         $cycleProviders = array_filter(
             $instance->faker->getProviders(),
-            static fn($provider) => $provider instanceof Cycle,
+            static fn($provider) => $provider instanceof FakerCycleProvider,
         );
 
         $this->assertCount(1, $cycleProviders);
@@ -577,6 +577,75 @@ final class ImmutableFactoryTest extends TestCase
                 ['nested' => 'Random'],
                 (object) ['nested' => 'Random'],
                 (object) ['nested' => 'Random'],
+            ],
+            $results,
+        );
+    }
+
+    #[Test]
+    public function itCyclesAcrossSuccessiveCalls(): void
+    {
+        $factory = new FakeImmutableFactory()->state([
+            'cycle' => new Cycle('Alpha', 'Beta', 'Gamma'),
+        ]);
+
+        $results = [
+            $factory->raw(),
+            $factory->raw(),
+            $factory->makeOne(),
+            $factory->makeOne(),
+        ];
+
+        $this->assertEquals(
+            [
+                ['cycle' => 'Alpha'],
+                ['cycle' => 'Beta'],
+                (object) ['cycle' => 'Gamma'],
+                (object) ['cycle' => 'Alpha'],
+            ],
+            $results,
+        );
+    }
+
+    #[Test]
+    public function itSharesQueuesWhenCyclingOptionsWithIdenticalOptions(): void
+    {
+        $factory = new FakeImmutableFactory();
+
+        $results = [
+            $factory->raw(['first' => new Cycle('Alpha', 'Beta')]),
+            $factory->makeOne(['last' => new Cycle('Alpha', 'Beta')]),
+        ];
+
+        $this->assertEquals(
+            [
+                ['first' => 'Alpha'],
+                (object) ['last' => 'Beta'],
+            ],
+            $results,
+        );
+    }
+
+    #[Test]
+    public function itCyclesAcrossContainers(): void
+    {
+        $factory = new FakeImmutableFactory()->state([
+            'cycle' => new Cycle('Alpha', 'Beta'),
+        ]);
+
+        $results = [
+            $factory->times(3)->rawMany(),
+            $factory->times(2)->rawMany(),
+            $factory->times(3)->makeMany(),
+            $factory->times(2)->makeMany(),
+        ];
+
+        $this->assertEquals(
+            [
+                [['cycle' => 'Alpha'], ['cycle' => 'Beta'], ['cycle' => 'Alpha']],
+                [['cycle' => 'Beta'], ['cycle' => 'Alpha']],
+                [(object) ['cycle' => 'Beta'], (object) ['cycle' => 'Alpha'], (object) ['cycle' => 'Beta']],
+                [(object) ['cycle' => 'Alpha'], (object) ['cycle' => 'Beta']],
             ],
             $results,
         );

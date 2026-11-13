@@ -10,7 +10,6 @@ use Faker\Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -22,9 +21,14 @@ final class CycleTest extends TestCase
         get => $this->faker ??= Factory::create();
     }
 
+    public static function lessThanTwoOptions(): iterable
+    {
+        yield 'Empty list' => [[]];
+        yield 'List with only 1 option' => [[1]];
+    }
+
     #[Test]
-    #[TestWith([[]], 'Empty list')]
-    #[TestWith([[1]], 'List with only 1 option')]
+    #[DataProvider('lessThanTwoOptions')]
     public function itCannotCycleThroughListsWithLessThanTwoOptions(array $options): void
     {
         $instance = new Cycle($this->faker);
@@ -34,7 +38,7 @@ final class CycleTest extends TestCase
         $instance->cycle($options);
     }
 
-    public static function sameTypeOptions(): iterable
+    public static function options(): iterable
     {
         yield 'Integers' => [
             [10, 20, 30],
@@ -55,24 +59,17 @@ final class CycleTest extends TestCase
             [$first = new stdClass(), $last = new stdClass()],
             [$first, $last, $first, $last, $first],
         ];
+
+        yield 'Mixed type options' => [
+            ['first', UnitEnum::One, $class = new stdClass()],
+            ['first', UnitEnum::One, $class, 'first', UnitEnum::One, $class],
+        ];
     }
 
     #[Test]
-    #[DataProvider('sameTypeOptions')]
-    public function itCyclesThroughOptionsOfTheSameType(array $options, array $expected): void
+    #[DataProvider('options')]
+    public function itCyclesThroughOptions(array $options, array $expected): void
     {
-        $instance = new Cycle($this->faker);
-
-        $results = array_map(static fn() => $instance->cycle($options), $expected);
-
-        $this->assertSame($expected, $results);
-    }
-
-    #[Test]
-    public function itCyclesThroughOptionsOfDifferentTypes(): void
-    {
-        $options = ['first', UnitEnum::One, $class = new stdClass()];
-        $expected = ['first', UnitEnum::One, $class, 'first', UnitEnum::One, $class];
         $instance = new Cycle($this->faker);
 
         $results = array_map(static fn() => $instance->cycle($options), $expected);
@@ -129,7 +126,7 @@ final class CycleTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('sameTypeOptions')]
+    #[DataProvider('options')]
     public function itCanBeAddedAsProviderToFakerFactories(array $options, array $expected): void
     {
         $this->faker->addProvider(new Cycle($this->faker));

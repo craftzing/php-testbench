@@ -31,7 +31,7 @@ final class DeferTest extends TestCase
     public static function closureResultLists(): iterable
     {
         foreach (self::closureResults() as $case => [$result]) {
-            yield "List of $case" => [[$result]];
+            yield "List of {$case}" => [[$result]];
         }
     }
 
