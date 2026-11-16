@@ -38,7 +38,7 @@ final class StreamInterfaceComparator extends Comparator
             return;
         }
 
-        throw self::comparisonFailure($expected, $actual, 'Data streams are not equal.');
+        throw self::comparisonFailure($expected, $actual, message: 'Data streams are not equal.');
     }
 
     private static function comparisonFailure(object $expected, object $actual, string $message): ComparisonFailure

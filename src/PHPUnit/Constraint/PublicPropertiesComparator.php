@@ -51,7 +51,7 @@ final class PublicPropertiesComparator extends Comparator
             return;
         }
 
-        throw self::comparisonFailure($expected, $actual, 'Class does not have expected property values');
+        throw self::comparisonFailure($expected, $actual, message: 'Class does not have expected property values');
     }
 
     /** @return array<string, mixed> */
