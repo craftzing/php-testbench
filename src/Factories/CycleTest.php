@@ -22,8 +22,8 @@ final class CycleTest extends TestCase
     }
 
     #[Test]
-    #[DataProviderExternal(FakerCycleProviderTest::class, 'lessThanTwoOptions')]
-    public function itCannotConstructWithLessThanTwoOptions(array $options): void
+    #[DataProviderExternal(FakerCycleProviderTest::class, 'tooFewOptions')]
+    public function itCannotConstructWithTooFewOptions(array $options): void
     {
         $this->expectException(ArgumentCountError::class);
 
