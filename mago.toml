@@ -4,3 +4,6 @@ php-version = "8.4.0"
 
 [source]
 paths = ["src"]
+
+[linter.rules]
+literal-named-argument = { enabled = false }

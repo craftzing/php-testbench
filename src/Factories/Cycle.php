@@ -18,7 +18,6 @@ final readonly class Cycle implements DeferredAttribute
 
     public function __invoke(ImmutableFactory $factory): mixed
     {
-        // @mago-expect analyzer:too-few-arguments
         return $factory->faker->cycle(...$this->options);
     }
 

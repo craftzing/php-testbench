@@ -58,7 +58,7 @@ abstract readonly class ImmutableFactory
     /** @return ContainerFactory<TClass, static> */
     public function times(int $count): ContainerFactory
     {
-        // @mago-expect analyzer:less-specific-return-statement
+        // @mago-expect analyzer:invalid-return-statement
         return new ContainerFactory($this, $count);
     }
 
