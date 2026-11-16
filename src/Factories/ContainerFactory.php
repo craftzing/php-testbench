@@ -25,7 +25,7 @@ final readonly class ContainerFactory
     ) {
         if ($count < 0) {
             throw new InvalidArgumentException(
-                self::class . " cannot be configured to create containers {$count} instance.",
+                self::class . " cannot create a negative number ({$count}) of instances.",
             );
         }
     }
